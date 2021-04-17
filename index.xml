@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>DaShaun</title>
+    <link>https://dashaun.com/</link>
+    <description>Recent content on DaShaun</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 31 Mar 2021 08:35:07 -0500</lastBuildDate><atom:link href="https://dashaun.com/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>5 Reasons Redis Enterprise on Azure is the Right Move for App Developers</title>
+      <link>https://dashaun.com/posts/5-reasons-redis-enterprise-on-azure-for-developers/</link>
+      <pubDate>Wed, 31 Mar 2021 08:35:07 -0500</pubDate>
+      
+      <guid>https://dashaun.com/posts/5-reasons-redis-enterprise-on-azure-for-developers/</guid>
+      <description>The (Azure Cache for Redis Enterprise tiers)[https://redislabs.com/cloud-partners/microsoft-azure/] are now released for general availability, and that’s great news for app developers. It brings together the advanced performance, high availability, and extended data structure functionality of Redis Enterprise with Azure’s global presence, flexibility, security, and compliance in an incredible tool for developers.
+The service consists of two new Enterprise tiers:
+ Enterprise, which uses volatile memory (DRAM) on a virtual machine to store data.</description>
+    </item>
+    
+    <item>
+      <title>Activate Calendly</title>
+      <link>https://dashaun.com/posts/calendly-activated-with-friendly-push-by-mrxinu/</link>
+      <pubDate>Fri, 12 Mar 2021 21:13:58 -0600</pubDate>
+      
+      <guid>https://dashaun.com/posts/calendly-activated-with-friendly-push-by-mrxinu/</guid>
+      <description>I setup Calendly today    An amazing person, an amazing friend, knew what I needed. It took a few reminders. Fairly regular reminders. It was planting the seeds, with a little watering along the way. The perfect amount of water with a little sunshine along the way. Today, I realized I absolutely needed it.
+I&amp;rsquo;ve been trying to make myself more available. I recently added &amp;ldquo;Lift as we climb&amp;rdquo; to my frequently used one-liners.</description>
+    </item>
+    
+    <item>
+      <title>Active Geo-Replication in Azure Cache for Redis</title>
+      <link>https://dashaun.com/posts/azure-cache-for-redis-active-geo-terraform-ga-preview/</link>
+      <pubDate>Fri, 05 Mar 2021 21:57:24 -0600</pubDate>
+      
+      <guid>https://dashaun.com/posts/azure-cache-for-redis-active-geo-terraform-ga-preview/</guid>
+      <description>Azure Cache for Redis Enterprise is GA    Last week was a super high energy week for me. I was exhausted most of the weekend. This week, was more of the same. Azure Cache for Redis Enterprise (ACRE) became generally available (GA) on Tuesday. Microsoft made the big announcement during Microsoft Ignite 2021. For me, it was a big relief, followed by dozens and dozens of tests and validation.</description>
+    </item>
+    
+    <item>
+      <title>Homelab BOM February 2021</title>
+      <link>https://dashaun.com/posts/homelab-bom-feb-2021/</link>
+      <pubDate>Sat, 27 Feb 2021 14:11:50 -0600</pubDate>
+      
+      <guid>https://dashaun.com/posts/homelab-bom-feb-2021/</guid>
+      <description>Homelab Redux    My homelab is always under construction. Like the dude that is always working on his car, I&amp;#39;m always working on my homelab. I&amp;#39;m always wiping it clean and building it over. I&amp;#39;m always trying out different configurations. I&amp;#39;m swapping out some type of hardware about every 3 months. BOM     (4) CompuLab HDMI Display Emulator (fit-headless) 1 2 (4) SanDisk UltraFit 32GB USB 3.</description>
+    </item>
+    
+    <item>
+      <title>Azurerm Terraform provider version 2.49.0</title>
+      <link>https://dashaun.com/posts/azurerm-terraform-provider-2-49-0/</link>
+      <pubDate>Sat, 27 Feb 2021 13:32:01 -0600</pubDate>
+      
+      <guid>https://dashaun.com/posts/azurerm-terraform-provider-2-49-0/</guid>
+      <description>That new Terraform smell    I&amp;rsquo;m a fan of Terraform. I like to stand things up from scratch, before I use them. I like to tear things down when I&amp;rsquo;m done.
+I&amp;rsquo;m also a fan of Redis Enterprise. (Yes, I am biased, because I work for Redis Labs.) Yesterday, version 2.49.0 of the &amp;lsquo;azurerm&amp;rsquo; provider was released. Before yesterday, I needed to use an ARM template to deploy Azure Cache for Redis Enterprise (ACRE) clusters.</description>
+    </item>
+    
+    <item>
+      <title>Tanzu Tuesday</title>
+      <link>https://dashaun.com/posts/tanzu-tuesday/</link>
+      <pubDate>Thu, 15 Oct 2020 10:14:22 -0600</pubDate>
+      
+      <guid>https://dashaun.com/posts/tanzu-tuesday/</guid>
+      <description>My Tanzu Tuesday Session Review    Tanzu Tuesday is one of my favorite shows. I love the content, the people and pretty much everything about it. This show represents the group (Spring Team) that provided me with a lot of new ideas and concepts that I leveraged during my start-up days. In retrospect, it’s one of the biggest reasons I fell in love with it and keep tuning in every week.</description>
+    </item>
+    
+    <item>
+      <title>My First Week With Go</title>
+      <link>https://dashaun.com/posts/my-first-week-with-go/</link>
+      <pubDate>Wed, 30 Sep 2020 10:00:35 -0500</pubDate>
+      
+      <guid>https://dashaun.com/posts/my-first-week-with-go/</guid>
+      <description>My First Week with Go    Knowing how to do something, and being able to do something are not the same. I learn best by doing. One of the skills I have been working on in 2020 is learning how to learn. There were a couple of projects that I was wanting to jump into, written in Go. Now, when it comes to learning programming languages (probably anything, for that matter), the first week is vital.</description>
+    </item>
+    
+    <item>
+      <title>Google Cloud Functions - with Sendgrid</title>
+      <link>https://dashaun.com/posts/google-cloud-functions-again/</link>
+      <pubDate>Sun, 26 Apr 2020 20:59:47 -0500</pubDate>
+      
+      <guid>https://dashaun.com/posts/google-cloud-functions-again/</guid>
+      <description>I&amp;rsquo;ve been doing some simple sites for my friends, just to keep some muscle memory going. It&amp;rsquo;s hard being at 10000ft all the time. I really needed to get some code to production.
+I remember how amazing it was to have people generate an email from my website, way back, in the long long ago. Well, the first time people get a website of their own, that seems to be an automatic desire.</description>
+    </item>
+    
+    <item>
+      <title>Plan B: TKG</title>
+      <link>https://dashaun.com/posts/plan-b-tkg/</link>
+      <pubDate>Tue, 21 Apr 2020 23:23:29 -0500</pubDate>
+      
+      <guid>https://dashaun.com/posts/plan-b-tkg/</guid>
+      <description>During the lockdown I&amp;rsquo;ve been &amp;ldquo;drinking from the firehose&amp;rdquo; trying to learn all of the Tanzu products. I&amp;rsquo;ve even been lucky enough to get custom coaching from experts like Sean Noyes - Tanzu Observability, and Jason Marchesano - NSXT. Some products are easier to learn than others. Tanzu Observability is a SaaS product, so no homelab required. NSX-T on the other hand, 3.0 specifically, takes newer hardware and with VSphere 7, everyone is learning the new tricks and traps.</description>
+    </item>
+    
+    <item>
+      <title>Homelab - The Big Rack</title>
+      <link>https://dashaun.com/posts/homelab-big-rack/</link>
+      <pubDate>Sat, 07 Mar 2020 18:47:02 -0600</pubDate>
+      
+      <guid>https://dashaun.com/posts/homelab-big-rack/</guid>
+      <description>Homelab Updates    This morning I had 3 separate DCs and 3 separate VCSA instances. Right now I have 4 &amp;ldquo;servers&amp;rdquo; ready for action with another 4 NUCs on deck.
+Wipe em    With ESXi, my current approach has been to make a bootable USB from an ISO. So that&amp;rsquo;s what I&amp;rsquo;ve done with the first 4. I think this part is pretty trivial, but I have done it at least a 100 times.</description>
+    </item>
+    
+    <item>
+      <title>Spring Cloud Gateway Micrometer</title>
+      <link>https://dashaun.com/posts/spring-cloud-gateway-micrometer/</link>
+      <pubDate>Wed, 04 Mar 2020 23:44:07 -0600</pubDate>
+      
+      <guid>https://dashaun.com/posts/spring-cloud-gateway-micrometer/</guid>
+      <description>I&amp;rsquo;ve been trying to sharpen my tools. I&amp;rsquo;m encouraged to keep going because things are coming back. I&amp;rsquo;ve got all of these new patterns to: demonstrate, practice, and deep-dive into. This time, I&amp;rsquo;m looking at metrics with Spring Boot and Micrometer. I&amp;rsquo;m also using the prometheus rsocket proxy, which is really cool. I&amp;rsquo;m using gradle this time. Lastly, I&amp;rsquo;m going to be using Spring Cloud Gateway because it checks a couple of other boxes on my list.</description>
+    </item>
+    
+    <item>
+      <title>Making Pi with the kids</title>
+      <link>https://dashaun.com/posts/making-pi-with-the-kids/</link>
+      <pubDate>Sat, 08 Feb 2020 16:19:56 -0600</pubDate>
+      
+      <guid>https://dashaun.com/posts/making-pi-with-the-kids/</guid>
+      <description>I started them young, they were 3 and 5 the first time they put together a Raspberry Pi. They were Pi 3B+ and they had clear acrylic cases with tiny touch screens. They both slept with them bedside for a few months. I wrote a program that changed the color of the clock on the display. Between 7pm and 6am, the clock was dim (red I think), which meant sleepy time.</description>
+    </item>
+    
+    <item>
+      <title>CKAD In Action</title>
+      <link>https://dashaun.com/posts/ckad-in-action/</link>
+      <pubDate>Fri, 08 Nov 2019 14:15:51 -0600</pubDate>
+      
+      <guid>https://dashaun.com/posts/ckad-in-action/</guid>
+      <description>My first day as a Certified Kubernetes Application Developer    I did it. Last night, I got the results of my CKAD exam. I passed. I sent Sean and Paul messages on Slack. I actually sent my mom and dad a message too. My wife and kids were asleep, so I just sat there, looking at my phone. That was it. The minimum suggested amount of celebration was not met.</description>
+    </item>
+    
+    <item>
+      <title>About</title>
+      <link>https://dashaun.com/about/</link>
+      <pubDate>Fri, 08 Nov 2019 09:59:20 -0600</pubDate>
+      
+      <guid>https://dashaun.com/about/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Second attempt at the CKAD exam</title>
+      <link>https://dashaun.com/posts/second-attempt-at-ckad/</link>
+      <pubDate>Thu, 07 Nov 2019 11:14:30 -0600</pubDate>
+      
+      <guid>https://dashaun.com/posts/second-attempt-at-ckad/</guid>
+      <description>CKAD Take Two    Last Friday, I attempted the CKAD exam. I had studied for weeks and was trying to pass before November 1st. I went way too slow. I only answered 10 of the 19 questions completely. I left 5 questions completely unanswered. I tried to pay attention to the weights of each question, so there was a chance that I was going to pass. I answered all of the highest weight questions.</description>
+    </item>
+    
+    <item>
+      <title>Homelab Bill of Materials August 2019</title>
+      <link>https://dashaun.com/posts/homelab-bom-aug-2019/</link>
+      <pubDate>Thu, 29 Aug 2019 22:09:06 -0500</pubDate>
+      
+      <guid>https://dashaun.com/posts/homelab-bom-aug-2019/</guid>
+      <description>I need to give my homelab more power    My homelab is always under construction. Like the dude that is always working on his car, I&amp;rsquo;m always working on my homelab. I&amp;rsquo;m always wiping it clean and building it over. I&amp;rsquo;m always trying out different configurations. I&amp;rsquo;m swapping out some type of hardware about every 3 months. This week I have been doing a ton of studying. I&amp;rsquo;m rebuilding the homelab because of the recent release of 6.</description>
+    </item>
+    
+    <item>
+      <title>Whiteboarding</title>
+      <link>https://dashaun.com/posts/whiteboarding/</link>
+      <pubDate>Mon, 19 Aug 2019 23:44:51 -0500</pubDate>
+      
+      <guid>https://dashaun.com/posts/whiteboarding/</guid>
+      <description>Whiteboarding    One of my new favorite skills is whiteboarding. A recent Harvard Study sited in Forbes decided that PowerPoint was not a productive use of time. One of the things I need to be able to do is deliver high level concepts in a short amount of time. Today, I went to one of our offices to practice my whiteboarding. It was good. I really enjoy delivering content to an audience that has never heard it before.</description>
+    </item>
+    
+    <item>
+      <title>Another Day 1</title>
+      <link>https://dashaun.com/posts/another-day-one/</link>
+      <pubDate>Sun, 18 Aug 2019 15:03:25 -0500</pubDate>
+      
+      <guid>https://dashaun.com/posts/another-day-one/</guid>
+      <description>Day 1 Again    I&amp;rsquo;ve had dozens of iterations of my blog. I&amp;rsquo;ve even had multiple active blogs for different topics, at the same time. My favorite blogging experience was when my wife was also actively blogging and we had a friendly competition. I&amp;rsquo;m going to try again. This time, I&amp;rsquo;m only going to keep one blog for all of the things. I have a short list of outcomes I trying to achieve:</description>
+    </item>
+    
+  </channel>
+</rss>

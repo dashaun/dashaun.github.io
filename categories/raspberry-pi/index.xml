@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>raspberry-pi on DaShaun</title>
+    <link>https://dashaun.com/categories/raspberry-pi/</link>
+    <description>Recent content in raspberry-pi on DaShaun</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 27 Feb 2021 14:11:50 -0600</lastBuildDate><atom:link href="https://dashaun.com/categories/raspberry-pi/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Homelab BOM February 2021</title>
+      <link>https://dashaun.com/posts/homelab-bom-feb-2021/</link>
+      <pubDate>Sat, 27 Feb 2021 14:11:50 -0600</pubDate>
+      
+      <guid>https://dashaun.com/posts/homelab-bom-feb-2021/</guid>
+      <description>Homelab Redux    My homelab is always under construction. Like the dude that is always working on his car, I&amp;#39;m always working on my homelab. I&amp;#39;m always wiping it clean and building it over. I&amp;#39;m always trying out different configurations. I&amp;#39;m swapping out some type of hardware about every 3 months. BOM     (4) CompuLab HDMI Display Emulator (fit-headless) 1 2 (4) SanDisk UltraFit 32GB USB 3.</description>
+    </item>
+    
+  </channel>
+</rss>

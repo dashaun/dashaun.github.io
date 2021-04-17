@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>microsoft on DaShaun</title>
+    <link>https://dashaun.com/categories/microsoft/</link>
+    <description>Recent content in microsoft on DaShaun</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 31 Mar 2021 08:35:07 -0500</lastBuildDate><atom:link href="https://dashaun.com/categories/microsoft/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>5 Reasons Redis Enterprise on Azure is the Right Move for App Developers</title>
+      <link>https://dashaun.com/posts/5-reasons-redis-enterprise-on-azure-for-developers/</link>
+      <pubDate>Wed, 31 Mar 2021 08:35:07 -0500</pubDate>
+      
+      <guid>https://dashaun.com/posts/5-reasons-redis-enterprise-on-azure-for-developers/</guid>
+      <description>The (Azure Cache for Redis Enterprise tiers)[https://redislabs.com/cloud-partners/microsoft-azure/] are now released for general availability, and that’s great news for app developers. It brings together the advanced performance, high availability, and extended data structure functionality of Redis Enterprise with Azure’s global presence, flexibility, security, and compliance in an incredible tool for developers.
+The service consists of two new Enterprise tiers:
+ Enterprise, which uses volatile memory (DRAM) on a virtual machine to store data.</description>
+    </item>
+    
+  </channel>
+</rss>

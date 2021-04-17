@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Categories on DaShaun</title>
+    <link>https://dashaun.com/categories/</link>
+    <description>Recent content in Categories on DaShaun</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 31 Mar 2021 08:35:07 -0500</lastBuildDate><atom:link href="https://dashaun.com/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>azure</title>
+      <link>https://dashaun.com/categories/azure/</link>
+      <pubDate>Wed, 31 Mar 2021 08:35:07 -0500</pubDate>
+      
+      <guid>https://dashaun.com/categories/azure/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>azurerm</title>
+      <link>https://dashaun.com/categories/azurerm/</link>
+      <pubDate>Wed, 31 Mar 2021 08:35:07 -0500</pubDate>
+      
+      <guid>https://dashaun.com/categories/azurerm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>cloud</title>
+      <link>https://dashaun.com/categories/cloud/</link>
+      <pubDate>Wed, 31 Mar 2021 08:35:07 -0500</pubDate>
+      
+      <guid>https://dashaun.com/categories/cloud/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>database</title>
+      <link>https://dashaun.com/categories/database/</link>
+      <pubDate>Wed, 31 Mar 2021 08:35:07 -0500</pubDate>
+      
+      <guid>https://dashaun.com/categories/database/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>microsoft</title>
+      <link>https://dashaun.com/categories/microsoft/</link>
+      <pubDate>Wed, 31 Mar 2021 08:35:07 -0500</pubDate>
+      
+      <guid>https://dashaun.com/categories/microsoft/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>redis-enterprise</title>
+      <link>https://dashaun.com/categories/redis-enterprise/</link>
+      <pubDate>Wed, 31 Mar 2021 08:35:07 -0500</pubDate>
+      
+      <guid>https://dashaun.com/categories/redis-enterprise/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>terraform</title>
+      <link>https://dashaun.com/categories/terraform/</link>
+      <pubDate>Fri, 05 Mar 2021 21:57:24 -0600</pubDate>
+      
+      <guid>https://dashaun.com/categories/terraform/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>nuc</title>
+      <link>https://dashaun.com/categories/nuc/</link>
+      <pubDate>Sat, 27 Feb 2021 14:11:50 -0600</pubDate>
+      
+      <guid>https://dashaun.com/categories/nuc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>raspberry-pi</title>
+      <link>https://dashaun.com/categories/raspberry-pi/</link>
+      <pubDate>Sat, 27 Feb 2021 14:11:50 -0600</pubDate>
+      
+      <guid>https://dashaun.com/categories/raspberry-pi/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
