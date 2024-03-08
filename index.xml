@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>DaShaun</title>
+        <link>https://dashaun.com/</link>
+        <description>Recent content on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Fri, 08 Mar 2024 15:04:21 -0600</lastBuildDate><atom:link href="https://dashaun.com/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Kubectl config cleanup</title>
+            <link>https://dashaun.com/posts/kubectl-config-cleanup/</link>
+            <pubDate>Fri, 08 Mar 2024 15:04:21 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/kubectl-config-cleanup/</guid>
+            <description>&lt;p&gt;I have a bunch of Kubernetes configurations on my machine.  When I need to clean them up, I always forget the steps.  This is just a note to myself, to remember how to clean up my kubectl config files.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectx
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;arm64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;build
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;clusterhat00
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;k3d-juice
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;korifi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mgmt
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;nucs
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectx luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Switched to context &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;luiki&amp;#34;&lt;/span&gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectl get nodes -o wide
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;E0308 15:11:03.839634   &lt;span style=&#34;color:#40a070&#34;&gt;89098&lt;/span&gt; memcache.go:265&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; couldn&lt;span style=&#34;&#34;&gt;&amp;#39;&lt;/span&gt;t get current server API group list: Get &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;https://100.67.74.147:6443/api?timeout=32s&amp;#34;&lt;/span&gt;: dial tcp 100.67.74.147:6443: i/o timeout
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Starting with a context that doesn&amp;rsquo;t work.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Delete the cluster from the config file.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectl config delete-cluster luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;deleted cluster luiki from /Users/dashaun/.kube/config
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectx
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;arm64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;build
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;clusterhat00
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;k3d-juice
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;korifi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mgmt
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;nucs
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;I don&amp;rsquo;t think the order matters, but I start by deleting the cluster.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;After deleting the cluster, the context still shows up in the list.
+So let&amp;rsquo;s delete the context.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectl config delete-context luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;deleted context luiki from /Users/dashaun/.kube/config
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectx
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;arm64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;build
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;clusterhat00
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;k3d-juice
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;korifi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mgmt
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;nucs
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;The context is gone.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;If I tried to create a new context named &lt;code&gt;luiki&lt;/code&gt; I would get an error, because the user still exists.
+So let&amp;rsquo;s delete the user from the config file.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectl config delete-user luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;deleted user luiki from /Users/dashaun/.kube/config
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ 
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;The user is gone.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;All done, I can create a new context named &lt;code&gt;luiki&lt;/code&gt; now.&lt;/p&gt;
+&lt;p&gt;If I want to simplify things for myself I might do something like this going forward:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bb60d5&#34;&gt;K3SUP_NAME&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl config delete-cluster &lt;span style=&#34;color:#bb60d5&#34;&gt;$K3SUP_NAME&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl config delete-context &lt;span style=&#34;color:#bb60d5&#34;&gt;$K3SUP_NAME&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl config delete-user &lt;span style=&#34;color:#bb60d5&#34;&gt;$K3SUP_NAME&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;This would be a good way to clean up after using &lt;code&gt;k3sup&lt;/code&gt; to install a cluster.&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Spring Health Assessment Report</title>
+            <link>https://dashaun.com/posts/spring-health-assessment-report/</link>
+            <pubDate>Fri, 16 Feb 2024 19:48:20 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/spring-health-assessment-report/</guid>
+            <description>&lt;p&gt;Spring Boot 3.0.0 was released 450 days ago. Helping people upgrade, and enjoy all the amazing benefits, has been one of my passions for about 450 days.  I&amp;rsquo;m a Spring Developer Advocate and I love my job.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/tschuehly/status/1723106405756846117&#34;&gt;&lt;img src=&#34;images/normalconversation.png&#34; alt=&#34;Thomas Schuehly has thoughts&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;It&amp;rsquo;s a passion really. Thomas Schuehly gets it.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;At SpringOne 2023 in Las Vegas, my friend, Joachim Pasquali, over at Fiserv, shared a story that I&amp;rsquo;ll not soon forget.  The process of upgrading and patching, doesn&amp;rsquo;t have to be a painful process.  On that day, his flagship product, was on the latest and greatest version of Spring Boot.  &lt;a href=&#34;https://youtube.com/clip/UgkxKNJxAWtsIWDzsFJM8tDB8VvG1E66EMVk?si=0e7-mUIHfjIHl9Qp&#34;&gt;Watch the clip that gave me all the feels here.&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I want you to know about some tools and techniques that can help you upgrade your Spring Boot projects with more joy, frequently, and safely.&lt;/p&gt;
+&lt;p&gt;First things first, let&amp;rsquo;s talk about the challenges. Outdated Spring Boot versions can expose your projects to security risks, leave you without access to the latest features and performance improvements, and can be costing you more money. Have you ever been working, on an outdated JVM perhaps, or an older Spring Boot version, and secretly wished you were using the latest release? I get it, I&amp;rsquo;ve been there too, and I&amp;rsquo;m here to help.&lt;/p&gt;
+&lt;p&gt;I want you to check out the &lt;a href=&#34;https://tanzu.vmware.com/spring-health-assessment&#34;&gt;Spring Health Assessment Report&lt;/a&gt;.  This tool is very similar to something you probably have running already, it tells you about known vulnerabilities. However, this tool is also unique in a few very special ways.  First of all, it&amp;rsquo;s free for you to use.  It also has the support timeline information built in. It provides a measure of how hard it will be to upgrade. Finally, it only reports on the Spring and Micrometer dependencies that you are using. It&amp;rsquo;s very focused and actionable.&lt;/p&gt;
+&lt;p&gt;I like to call &lt;a href=&#34;https://docs.openrewrite.org&#34;&gt;OpenRewrite&lt;/a&gt; my favorite &lt;code&gt;cheat code&lt;/code&gt;. When I say that I demonstrate &lt;code&gt;OpenRewrite&lt;/code&gt; twenty times per week, I&amp;rsquo;m not exaggerating.  It&amp;rsquo;s a powerful tool, and I&amp;rsquo;m still surprised by how many developers still don&amp;rsquo;t know about it.  &lt;a href=&#34;https://github.com/dashaun/openrewrite-spring-boot-upgrade-example&#34;&gt;This repository includes one of those demos, that I deliver multiple times every week&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Software is soft for a reason.  It&amp;rsquo;s meant to be changed.  It&amp;rsquo;s meant to be upgraded.  It&amp;rsquo;s meant to be improved.  Java comes out with a new JVM, every 6-months.  The Spring team releases a new Spring Boot version every 6-months.  It&amp;rsquo;s time to start upgrading more frequently.  In 2023, there were only 4-weeks, of the entire year, that the Spring team didn&amp;rsquo;t release something new.  You can see for yourself over at &lt;a href=&#34;https://calendar.spring.io&#34;&gt;calendar-dot-spring-dot-io&lt;/a&gt;.  It&amp;rsquo;s time to start upgrading more frequently.&lt;/p&gt;
+&lt;p&gt;I believe that the way software is going to be measured, going forward, is by how easy it is to maintain. I&amp;rsquo;m convinced that continuous upgrading, and continuous patching, is going to be a key differentiator for software projects.  I want you to get started, today.&lt;/p&gt;
+&lt;p&gt;By upgrading your Spring Boot projects, you can benefit from improved security, performance, and access to the latest features. You&amp;rsquo;ll also be able to take advantage of the ongoing support and updates provided by the Spring team and the Java team!&lt;/p&gt;
+&lt;p&gt;So why wait? &lt;a href=&#34;https://youtu.be/XI_7mpEiPjI&#34;&gt;Watch this video I made last week&lt;/a&gt;. Check out the Spring Health Assessment Report. You will see a few reasons why you should upgrade.  You will also see how easy it can be. Spring Boot 3.2.3 comes out next Thursday, how long will it take you to upgrade?&lt;/p&gt;
+&lt;h2 id=&#34;links&#34;&gt;
+  Links
+  &lt;a class=&#34;heading-link&#34; href=&#34;#links&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtu.be/XI_7mpEiPjI&#34;&gt;Spring into Action: Boost Your Java Projects with Essential Upgrade Tools!&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://tanzu.vmware.com/spring-health-assessment&#34;&gt;Spring Health Assessment Report&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://twitter.com/tschuehly/status/1723106405756846117&#34;&gt;Thomas Schuehly gets it&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/openrewrite-spring-boot-upgrade-example&#34;&gt;OpenRewrite Spring Boot Upgrade Example&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtube.com/clip/UgkxKNJxAWtsIWDzsFJM8tDB8VvG1E66EMVk?si=bF6GiJRZgWbH78JX&#34;&gt;Joachim Pasquali at SpringOne 2023&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Spring Essential Upgrade Tools</title>
+            <link>https://dashaun.com/posts/spring-essential-upgrade-tools/</link>
+            <pubDate>Wed, 07 Feb 2024 19:47:40 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/spring-essential-upgrade-tools/</guid>
+            <description></description>
+        </item>
+        
+        <item>
+            <title>Event Schedule</title>
+            <link>https://dashaun.com/events/</link>
+            <pubDate>Sun, 10 Dec 2023 11:46:05 -0600</pubDate>
+            
+            <guid>https://dashaun.com/events/</guid>
+            <description>&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Date&lt;/th&gt;
+&lt;th&gt;Event&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;2024-04 8-11&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https://devnexus.com/&#34;&gt;DevNexus : Atlanta, GA&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;2024-06 27-28&lt;/td&gt;
+&lt;td&gt;&lt;a href=&#34;https:/kcdc.info&#34;&gt;KCDC : Kansas City, MO&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Privacy Policy</title>
+            <link>https://dashaun.com/privacy/</link>
+            <pubDate>Sun, 10 Dec 2023 11:46:05 -0600</pubDate>
+            
+            <guid>https://dashaun.com/privacy/</guid>
+            <description>&lt;p&gt;Last updated: December 10, 2023&lt;/p&gt;
+&lt;p&gt;This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You.&lt;/p&gt;
+&lt;p&gt;We use Your Personal data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy. This Privacy Policy has been created with the help of the &lt;a href=&#34;https://www.termsfeed.com/blog/sample-privacy-policy-template/&#34;&gt;Privacy Policy Template&lt;/a&gt;.&lt;/p&gt;
+&lt;h1 id=&#34;interpretation-and-definitions&#34;&gt;
+  Interpretation and Definitions
+  &lt;a class=&#34;heading-link&#34; href=&#34;#interpretation-and-definitions&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;interpretation&#34;&gt;
+  Interpretation
+  &lt;a class=&#34;heading-link&#34; href=&#34;#interpretation&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The words of which the initial letter is capitalized have meanings defined under the following conditions. The following definitions shall have the same meaning regardless of whether they appear in singular or in plural.&lt;/p&gt;
+&lt;h2 id=&#34;definitions&#34;&gt;
+  Definitions
+  &lt;a class=&#34;heading-link&#34; href=&#34;#definitions&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;For the purposes of this Privacy Policy:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Account&lt;/strong&gt; means a unique account created for You to access our Service or parts of our Service.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Affiliate&lt;/strong&gt; means an entity that controls, is controlled by or is under common control with a party, where &amp;ldquo;control&amp;rdquo; means ownership of 50% or more of the shares, equity interest or other securities entitled to vote for election of directors or other managing authority.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Application&lt;/strong&gt; means the software program provided by the Company downloaded by You on any electronic device.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Company&lt;/strong&gt; (referred to as either &amp;ldquo;the Company&amp;rdquo;, &amp;ldquo;We&amp;rdquo;, &amp;ldquo;Us&amp;rdquo; or &amp;ldquo;Our&amp;rdquo; in this Agreement) refers to OpenJack LLC.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Country&lt;/strong&gt; refers to: Missouri,  United States&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Device&lt;/strong&gt; means any device that can access the Service such as a computer, a cellphone or a digital tablet.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Personal Data&lt;/strong&gt; is any information that relates to an identified or identifiable individual.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Service&lt;/strong&gt; refers to the Application.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Service Provider&lt;/strong&gt; means any natural or legal person who processes the data on behalf of the Company. It refers to third-party companies or individuals employed by the Company to facilitate the Service, to provide the Service on behalf of the Company, to perform services related to the Service or to assist the Company in analyzing how the Service is used.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Third-party Social Media Service&lt;/strong&gt; refers to any website or any social network website through which a User can log in or create an account to use the Service.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Usage Data&lt;/strong&gt; refers to data collected automatically, either generated by the use of the Service or from the Service infrastructure itself (for example, the duration of a page visit).&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;You&lt;/strong&gt; means the individual accessing or using the Service, or the company, or other legal entity on behalf of which such individual is accessing or using the Service, as applicable.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;collecting-and-using-your-personal-data&#34;&gt;
+  Collecting and Using Your Personal Data
+  &lt;a class=&#34;heading-link&#34; href=&#34;#collecting-and-using-your-personal-data&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;h2 id=&#34;types-of-data-collected&#34;&gt;
+  Types of Data Collected
+  &lt;a class=&#34;heading-link&#34; href=&#34;#types-of-data-collected&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;personal-data&#34;&gt;
+  Personal Data
+  &lt;a class=&#34;heading-link&#34; href=&#34;#personal-data&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;While using Our Service, We may ask You to provide Us with certain personally identifiable information that can be used to contact or identify You. Personally identifiable information may include, but is not limited to:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Email address&lt;/li&gt;
+&lt;li&gt;First name and last name&lt;/li&gt;
+&lt;li&gt;Phone number&lt;/li&gt;
+&lt;li&gt;Address, State, Province, ZIP/Postal code, City&lt;/li&gt;
+&lt;li&gt;Usage Data&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;usage-data&#34;&gt;
+  Usage Data
+  &lt;a class=&#34;heading-link&#34; href=&#34;#usage-data&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Usage Data is collected automatically when using the Service.&lt;/p&gt;
+&lt;p&gt;Usage Data may include information such as Your Device&amp;rsquo;s Internet Protocol address (e.g. IP address), browser type, browser version, the pages of our Service that You visit, the time and date of Your visit, the time spent on those pages, unique device identifiers and other diagnostic data.&lt;/p&gt;
+&lt;p&gt;When You access the Service by or through a mobile device, We may collect certain information automatically, including, but not limited to, the type of mobile device You use, Your mobile device unique ID, the IP address of Your mobile device, Your mobile operating system, the type of mobile Internet browser You use, unique device identifiers and other diagnostic data.&lt;/p&gt;
+&lt;p&gt;We may also collect information that Your browser sends whenever You visit our Service or when You access the Service by or through a mobile device.&lt;/p&gt;
+&lt;h3 id=&#34;information-from-third-party-social-media-services&#34;&gt;
+  Information from Third-Party Social Media Services
+  &lt;a class=&#34;heading-link&#34; href=&#34;#information-from-third-party-social-media-services&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;The Company allows You to create an account and log in to use the Service through the following Third-party Social Media Services:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Github&lt;/li&gt;
+&lt;li&gt;Gitlab&lt;/li&gt;
+&lt;li&gt;Google&lt;/li&gt;
+&lt;li&gt;Twitch&lt;/li&gt;
+&lt;li&gt;Twitter&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If You decide to register through or otherwise grant us access to a Third-Party Social Media Service, We may collect Personal data that is already associated with Your Third-Party Social Media Service&amp;rsquo;s account, such as Your name, Your email address, Your activities or Your contact list associated with that account.&lt;/p&gt;
+&lt;p&gt;You may also have the option of sharing additional information with the Company through Your Third-Party Social Media Service&amp;rsquo;s account. If You choose to provide such information and Personal Data, during registration or otherwise, You are giving the Company permission to use, share, and store it in a manner consistent with this Privacy Policy.&lt;/p&gt;
+&lt;h3 id=&#34;information-collected-while-using-the-application&#34;&gt;
+  Information Collected while Using the Application
+  &lt;a class=&#34;heading-link&#34; href=&#34;#information-collected-while-using-the-application&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;While using Our Application, in order to provide features of Our Application, We may collect, with Your prior permission:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Information regarding your location&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We use this information to provide features of Our Service, to improve and customize Our Service. The information may be uploaded to the Company&amp;rsquo;s servers and/or a Service Provider&amp;rsquo;s server or it may be simply stored on Your device.&lt;/p&gt;
+&lt;p&gt;You can enable or disable access to this information at any time, through Your Device settings.&lt;/p&gt;
+&lt;h2 id=&#34;use-of-your-personal-data&#34;&gt;
+  Use of Your Personal Data
+  &lt;a class=&#34;heading-link&#34; href=&#34;#use-of-your-personal-data&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The Company may use Personal Data for the following purposes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;To provide and maintain our Service&lt;/strong&gt;, including to monitor the usage of our Service.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;To manage Your Account:&lt;/strong&gt; to manage Your registration as a user of the Service. The Personal Data You provide can give You access to different functionalities of the Service that are available to You as a registered user.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;For the performance of a contract:&lt;/strong&gt; the development, compliance and undertaking of the purchase contract for the products, items or services You have purchased or of any other contract with Us through the Service.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;To contact You:&lt;/strong&gt; To contact You by email, telephone calls, SMS, or other equivalent forms of electronic communication, such as a mobile application&amp;rsquo;s push notifications regarding updates or informative communications related to the functionalities, products or contracted services, including the security updates, when necessary or reasonable for their implementation.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;To provide You&lt;/strong&gt; with news, special offers and general information about other goods, services and events which we offer that are similar to those that you have already purchased or enquired about unless You have opted not to receive such information.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;To manage Your requests:&lt;/strong&gt; To attend and manage Your requests to Us.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;For business transfers:&lt;/strong&gt; We may use Your information to evaluate or conduct a merger, divestiture, restructuring, reorganization, dissolution, or other sale or transfer of some or all of Our assets, whether as a going concern or as part of bankruptcy, liquidation, or similar proceeding, in which Personal Data held by Us about our Service users is among the assets transferred.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;For other purposes&lt;/strong&gt;: We may use Your information for other purposes, such as data analysis, identifying usage trends, determining the effectiveness of our promotional campaigns and to evaluate and improve our Service, products, services, marketing and your experience.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We may share Your personal information in the following situations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;With Service Providers:&lt;/strong&gt; We may share Your personal information with Service Providers to monitor and analyze the use of our Service,  to contact You.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;For business transfers:&lt;/strong&gt; We may share or transfer Your personal information in connection with, or during negotiations of, any merger, sale of Company assets, financing, or acquisition of all or a portion of Our business to another company.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;With Affiliates:&lt;/strong&gt; We may share Your information with Our affiliates, in which case we will require those affiliates to honor this Privacy Policy. Affiliates include Our parent company and any other subsidiaries, joint venture partners or other companies that We control or that are under common control with Us.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;With business partners:&lt;/strong&gt; We may share Your information with Our business partners to offer You certain products, services or promotions.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;With other users:&lt;/strong&gt; when You share personal information or otherwise interact in the public areas with other users, such information may be viewed by all users and may be publicly distributed outside. If You interact with other users or register through a Third-Party Social Media Service, Your contacts on the Third-Party Social Media Service may see Your name, profile, pictures and description of Your activity. Similarly, other users will be able to view descriptions of Your activity, communicate with You and view Your profile.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;With Your consent&lt;/strong&gt;: We may disclose Your personal information for any other purpose with Your consent.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;retention-of-your-personal-data&#34;&gt;
+  Retention of Your Personal Data
+  &lt;a class=&#34;heading-link&#34; href=&#34;#retention-of-your-personal-data&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The Company will retain Your Personal Data only for as long as is necessary for the purposes set out in this Privacy Policy. We will retain and use Your Personal Data to the extent necessary to comply with our legal obligations (for example, if we are required to retain your data to comply with applicable laws), resolve disputes, and enforce our legal agreements and policies.&lt;/p&gt;
+&lt;p&gt;The Company will also retain Usage Data for internal analysis purposes. Usage Data is generally retained for a shorter period of time, except when this data is used to strengthen the security or to improve the functionality of Our Service, or We are legally obligated to retain this data for longer time periods.&lt;/p&gt;
+&lt;h2 id=&#34;transfer-of-your-personal-data&#34;&gt;
+  Transfer of Your Personal Data
+  &lt;a class=&#34;heading-link&#34; href=&#34;#transfer-of-your-personal-data&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Your information, including Personal Data, is processed at the Company&amp;rsquo;s operating offices and in any other places where the parties involved in the processing are located. It means that this information may be transferred to — and maintained on — computers located outside of Your state, province, country or other governmental jurisdiction where the data protection laws may differ than those from Your jurisdiction.&lt;/p&gt;
+&lt;p&gt;Your consent to this Privacy Policy followed by Your submission of such information represents Your agreement to that transfer.&lt;/p&gt;
+&lt;p&gt;The Company will take all steps reasonably necessary to ensure that Your data is treated securely and in accordance with this Privacy Policy and no transfer of Your Personal Data will take place to an organization or a country unless there are adequate controls in place including the security of Your data and other personal information.&lt;/p&gt;
+&lt;h2 id=&#34;disclosure-of-your-personal-data&#34;&gt;
+  Disclosure of Your Personal Data
+  &lt;a class=&#34;heading-link&#34; href=&#34;#disclosure-of-your-personal-data&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;business-transactions&#34;&gt;
+  Business Transactions
+  &lt;a class=&#34;heading-link&#34; href=&#34;#business-transactions&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;If the Company is involved in a merger, acquisition or asset sale, Your Personal Data may be transferred. We will provide notice before Your Personal Data is transferred and becomes subject to a different Privacy Policy.&lt;/p&gt;
+&lt;h3 id=&#34;law-enforcement&#34;&gt;
+  Law enforcement
+  &lt;a class=&#34;heading-link&#34; href=&#34;#law-enforcement&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Under certain circumstances, the Company may be required to disclose Your Personal Data if required to do so by law or in response to valid requests by public authorities (e.g. a court or a government agency).&lt;/p&gt;
+&lt;h3 id=&#34;other-legal-requirements&#34;&gt;
+  Other legal requirements
+  &lt;a class=&#34;heading-link&#34; href=&#34;#other-legal-requirements&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;The Company may disclose Your Personal Data in the good faith belief that such action is necessary to:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Comply with a legal obligation&lt;/li&gt;
+&lt;li&gt;Protect and defend the rights or property of the Company&lt;/li&gt;
+&lt;li&gt;Prevent or investigate possible wrongdoing in connection with the Service&lt;/li&gt;
+&lt;li&gt;Protect the personal safety of Users of the Service or the public&lt;/li&gt;
+&lt;li&gt;Protect against legal liability&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;security-of-your-personal-data&#34;&gt;
+  Security of Your Personal Data
+  &lt;a class=&#34;heading-link&#34; href=&#34;#security-of-your-personal-data&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The security of Your Personal Data is important to Us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While We strive to use commercially acceptable means to protect Your Personal Data, We cannot guarantee its absolute security.&lt;/p&gt;
+&lt;h1 id=&#34;childrens-privacy&#34;&gt;
+  Children&amp;rsquo;s Privacy
+  &lt;a class=&#34;heading-link&#34; href=&#34;#childrens-privacy&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Our Service does not address anyone under the age of 13. We do not knowingly collect personally identifiable information from anyone under the age of 13. If You are a parent or guardian and You are aware that Your child has provided Us with Personal Data, please contact Us. If We become aware that We have collected Personal Data from anyone under the age of 13 without verification of parental consent, We take steps to remove that information from Our servers.&lt;/p&gt;
+&lt;p&gt;If We need to rely on consent as a legal basis for processing Your information and Your country requires consent from a parent, We may require Your parent&amp;rsquo;s consent before We collect and use that information.&lt;/p&gt;
+&lt;h1 id=&#34;links-to-other-websites&#34;&gt;
+  Links to Other Websites
+  &lt;a class=&#34;heading-link&#34; href=&#34;#links-to-other-websites&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Our Service may contain links to other websites that are not operated by Us. If You click on a third party link, You will be directed to that third party&amp;rsquo;s site. We strongly advise You to review the Privacy Policy of every site You visit.&lt;/p&gt;
+&lt;p&gt;We have no control over and assume no responsibility for the content, privacy policies or practices of any third party sites or services.&lt;/p&gt;
+&lt;h1 id=&#34;changes-to-this-privacy-policy&#34;&gt;
+  Changes to this Privacy Policy
+  &lt;a class=&#34;heading-link&#34; href=&#34;#changes-to-this-privacy-policy&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;We may update Our Privacy Policy from time to time. We will notify You of any changes by posting the new Privacy Policy on this page.&lt;/p&gt;
+&lt;p&gt;We will let You know via email and/or a prominent notice on Our Service, prior to the change becoming effective and update the &amp;ldquo;Last updated&amp;rdquo; date at the top of this Privacy Policy.&lt;/p&gt;
+&lt;p&gt;You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.&lt;/p&gt;
+&lt;h1 id=&#34;contact-us&#34;&gt;
+  Contact Us
+  &lt;a class=&#34;heading-link&#34; href=&#34;#contact-us&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;If you have any questions about this Privacy Policy, You can contact us:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;By email: &lt;a href=&#34;mailto:dashaun@dashaun.com&#34;&gt;dashaun@dashaun.com&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

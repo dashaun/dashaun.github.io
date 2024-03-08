@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Java Native Builder Multiarch on DaShaun</title>
+        <link>https://dashaun.com/series/java-native-builder-multiarch/</link>
+        <description>Recent content in Java Native Builder Multiarch on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Sun, 17 Sep 2023 14:42:19 -0500</lastBuildDate><atom:link href="https://dashaun.com/series/java-native-builder-multiarch/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Five Months in the making, multi-architecture builder</title>
+            <link>https://dashaun.com/posts/five-months-in-the-making-multi-arch-builder/</link>
+            <pubDate>Sun, 17 Sep 2023 14:42:19 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/five-months-in-the-making-multi-arch-builder/</guid>
+            <description>&lt;h2 id=&#34;five-months-in-the-making-multi-architecture-builder&#34;&gt;
+  Five months in the making, multi-architecture builder
+  &lt;a class=&#34;heading-link&#34; href=&#34;#five-months-in-the-making-multi-architecture-builder&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;If you have been following along, you are probably asking &amp;ldquo;What took so long?&amp;rdquo; and I totally understand.
+I had no idea what was wrong before today.
+My scripts had been working for over a year, then just stopped.
+I had removed a bunch of the debug info from the logs, which didn&amp;rsquo;t help the situation at all.&lt;/p&gt;
+&lt;h2 id=&#34;upstream-progress&#34;&gt;
+  Upstream progress
+  &lt;a class=&#34;heading-link&#34; href=&#34;#upstream-progress&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The Paketo team continues to put a high priority on ARM64 and multi-architecture tools/buildpacks.
+I had created several ARM64 workarounds over the years.
+The Paketo team continued improving their tools to support ARM64 as well.
+I was not doing a good job of pulling the tooling changes from upstream.
+So my workarounds were breaking the build.&lt;/p&gt;
+&lt;h2 id=&#34;several-failed-attempts&#34;&gt;
+  Several failed attempts
+  &lt;a class=&#34;heading-link&#34; href=&#34;#several-failed-attempts&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I had made several solid attempts at resolving the issues.
+I just kept getting distracted with other priorities.
+I have had this process working on multiple environments.
+Every version of my pipeline seemed to be broken in a slightly different way.
+They were, because of my workarounds.
+I had different workarounds for different environments.&lt;/p&gt;
+&lt;h2 id=&#34;motivation&#34;&gt;
+  Motivation
+  &lt;a class=&#34;heading-link&#34; href=&#34;#motivation&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;This year, I&amp;rsquo;ve been traveling more than ever.
+In fact, I&amp;rsquo;m on my way to Oracle Cloud World 2023, right now.
+The laptop that I was using for work, wasn&amp;rsquo;t keeping up with what I was needing to deliver, to the community.
+My conference sessions were having issues, my customer sessions were also having issues.
+Watching for over 4-minutes, for a native compile, isn&amp;rsquo;t great for anyone.
+So I requested a new M1 laptop.
+When I got home on Friday, my new laptop had arrived.
+Since I&amp;rsquo;m going to be working on an M1 from now on, I needed to have all the fast builds.
+I needed to make sure all of my demos work on the new hardware.
+I also needed to be ready to use Java 21 when it comes out in 2 days.
+In addition to my new laptop from work, my Ampere Dev Kit server also arrived.
+The server had been stuck in US Customs for a couple of months, after arriving from China.
+It was my first time working with US Customs.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;M1&lt;/li&gt;
+&lt;li&gt;Ampere Dev Kit&lt;/li&gt;
+&lt;li&gt;Java 21&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;the-work&#34;&gt;
+  The work
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-work&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;On my new M1, I simply started adding in debug info to the scripts.
+It felt good to get back into the process and remind myself how it all worked.
+When things work, you don&amp;rsquo;t need to keep the details in your mental cache.
+The upstream builder added a few buildpacks.
+Packaging the newer buildpacks is where the problems were.
+Moments ago, I was getting ready to board when my tests passed.
+The KC Chiefs were playing Jacksonville at the same time.
+When I shouted with excitement, the people around me assumed that I was watching the game.
+I love my job.
+I love what I do.
+I could hear the Chiefs game, but getting this build to work was even more exciting that watching the Chiefs win the Super Bowl, twice.&lt;/p&gt;
+&lt;h2 id=&#34;a-huge-surprise&#34;&gt;
+  A huge surprise
+  &lt;a class=&#34;heading-link&#34; href=&#34;#a-huge-surprise&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I don&amp;rsquo;t remember what the number was, from the last time I looked at the stats on Docker Hub.
+When I went to look today, I was hoping for it to be over 2000.
+Maybe 3000?  Is 5000 possible?
+My goosebumps hit when I saw that it was over 8500!
+I am so excited that people are using it.&lt;/p&gt;
+&lt;h2 id=&#34;next-steps&#34;&gt;
+  Next steps
+  &lt;a class=&#34;heading-link&#34; href=&#34;#next-steps&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I am going to try to move away from my scripts, towards what the Paketo team is doing.
+I want to get my version moved over to the &lt;a href=&#34;https://github.com/paketo-community&#34;&gt;paketo-community&lt;/a&gt; repository.
+Hopefully, from there, it will be even closer to being merged upstream.&lt;/p&gt;
+&lt;p&gt;Stay tuned!&lt;/p&gt;
+&lt;h2 id=&#34;feedback-welcome&#34;&gt;
+  Feedback welcome
+  &lt;a class=&#34;heading-link&#34; href=&#34;#feedback-welcome&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Please let me know how it is working for you, all of &lt;a href=&#34;https://dashaun.com&#34;&gt;my socials/contact info can be found here&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;links&#34;&gt;
+  Links
+  &lt;a class=&#34;heading-link&#34; href=&#34;#links&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;&gt;https://github.com/dashaun/paketo-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtu.be/BuqNJl4QrUw&#34;&gt;YouTube.com/@dashaun&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Paketo Steering Committee Candidacy</title>
+            <link>https://dashaun.com/posts/paketo-steering-committee-candidacy/</link>
+            <pubDate>Sat, 29 Apr 2023 01:05:13 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/paketo-steering-committee-candidacy/</guid>
+            <description>&lt;h2 id=&#34;the-news&#34;&gt;
+  The news
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-news&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I first heard about the upcoming election on the Paketo Slack.&lt;/p&gt;
+&lt;p&gt;It wasn&amp;rsquo;t clear to me, how I was supposed to throw my name in the hat, after reading about &lt;a href=&#34;https://github.com/paketo-buildpacks/rfcs/blob/main/text/0054-steering-committee-elections.md&#34;&gt;the election process&lt;/a&gt;.  So, I had some fun with it.&lt;/p&gt;
+&lt;h2 id=&#34;the-announcement&#34;&gt;
+  The announcement
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-announcement&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;First on the Paketo Slack, then LinkedIn, Twitter and Mastodon, I made an announcement like this:&lt;/p&gt;
+&lt;p&gt;Steering Committee Electors and Paketo community!&lt;/p&gt;
+&lt;p&gt;My name is DaShaun Carter and I would appreciate your consideration for membership in the steering committee, in the upcoming election!&lt;/p&gt;
+&lt;p&gt;You might have heard me say &amp;ldquo;Friends don&amp;rsquo;t let friends use Dockerfiles, use buildpacks&amp;rdquo; during &lt;a href=&#34;https://springofficehours.io&#34;&gt;Spring Office Hours&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Perhaps you have seen my work with &lt;a href=&#34;https://cloudnativecobol.com&#34;&gt;Cloud Native Cobol&lt;/a&gt; and the &lt;a href=&#34;https://cloudnativecobol.com&#34;&gt;Cobol Buildpack&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Maybe you have seen or used the &lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;&gt;multi-architecture buildpack&lt;/a&gt;, that I have been &lt;a href=&#34;https://hub.docker.com/r/dashaun/builder&#34;&gt;delivering&lt;/a&gt; for the ARM64 community, with Daniel Mikusa.&lt;/p&gt;
+&lt;p&gt;You can get to know me by visiting &lt;a href=&#34;https://dashaun.com&#34;&gt;https://dashaun.com&lt;/a&gt; where you will find my blog posts, links to all of my socials, and an &amp;ldquo;About&amp;rdquo; page with links to videos that I am proud of.&lt;/p&gt;
+&lt;p&gt;Thank you for your consideration.&lt;/p&gt;
+&lt;h2 id=&#34;what-happens-next&#34;&gt;
+  What happens next
+  &lt;a class=&#34;heading-link&#34; href=&#34;#what-happens-next&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;m not sure if anyone else even wants the role, but I&amp;rsquo;m excited to see what happens next.  I&amp;rsquo;ve been passionate about buildpacks for a long time, and I will continue to be, regardless of the outcome of this election.  I&amp;rsquo;m going to do my best to make sure that the people that are voting, know who I am and what I stand for.  The things that I have been working on and the feedback I have received, have been very encouraging.  I&amp;rsquo;m looking forward to the next few weeks.  Stay tuned for more updates on my &lt;code&gt;campaign&lt;/code&gt; and don&amp;rsquo;t hesitate to reach out with any questions or suggestions.&lt;/p&gt;
+&lt;h2 id=&#34;campaign-slogan&#34;&gt;
+  Campaign Slogan?
+  &lt;a class=&#34;heading-link&#34; href=&#34;#campaign-slogan&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;#34;Embracing Multi-Architecture Buildpacks for a Brighter, Inclusive Future&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+        </item>
+        
+        <item>
+            <title>Multi-architecture stacks and buildpacks</title>
+            <link>https://dashaun.com/posts/multi-architecture-stacks-and-buildpacks/</link>
+            <pubDate>Fri, 28 Apr 2023 13:47:28 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/multi-architecture-stacks-and-buildpacks/</guid>
+            <description>&lt;h2 id=&#34;several-failed-attempts&#34;&gt;
+  Several failed attempts
+  &lt;a class=&#34;heading-link&#34; href=&#34;#several-failed-attempts&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The community had been experiencing issues with broken images in recent releases, which led many users to manually switch to older tags that worked. I realize now, that I should have been deleting the broken, publicly available versions. Over the last two weeks, I&amp;rsquo;ve focused on resolving these issues and have successfully deleted all broken versions from my Docker Hub repository.&lt;/p&gt;
+&lt;h2 id=&#34;multi-architecture-stacks&#34;&gt;
+  Multi-architecture stacks
+  &lt;a class=&#34;heading-link&#34; href=&#34;#multi-architecture-stacks&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The latest release of the multi-architecture buildpack is built upon a multi-architecture stack created by Daniel Mikusa. This update is a significant step towards having a multi-architecture buildpack officially supported by the Paketo team.  Hopefully, this multi-architecture stack gets merged into the Paketo project soon.&lt;/p&gt;
+&lt;h2 id=&#34;next-steps&#34;&gt;
+  Next Steps
+  &lt;a class=&#34;heading-link&#34; href=&#34;#next-steps&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The release of the new multi-architecture buildpack marks a crucial milestone in our journey towards an officially supported Paketo buildpack. As development continues, I look forward to sharing more updates and working together to create a more efficient and seamless developer experience on ARM64 and AMD64. Full transparency, I&amp;rsquo;ve already started working on a RISC-V version as well. Feel free to reach out with any questions or suggestions as we move forward.&lt;/p&gt;
+&lt;h2 id=&#34;simplified&#34;&gt;
+  Simplified
+  &lt;a class=&#34;heading-link&#34; href=&#34;#simplified&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I am no longer creating a separate stack, and will continue to use the multi-architecture stack that Daniel Mikusa has created. This will simplify the process of creating and maintaining the buildpack, and will allow me to focus on the buildpack itself. I&amp;rsquo;ve simplified the scripts used for building and releasing the buildpack.  I&amp;rsquo;ve also removed the related GitHub actions.  All of the work is being done via CircleCI.&lt;/p&gt;
+&lt;h2 id=&#34;keep-learning&#34;&gt;
+  Keep Learning
+  &lt;a class=&#34;heading-link&#34; href=&#34;#keep-learning&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;&gt;dashaun/paketo-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://paketo.io&#34;&gt;Paketo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://buildpacks.io&#34;&gt;Cloud Native Buildpacks&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/cobol-buildpack&#34;&gt;Cobol Buildpack&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>First Impression CircleCI ARM64</title>
+            <link>https://dashaun.com/posts/circleci-arm64-first-impression/</link>
+            <pubDate>Sat, 25 Feb 2023 15:37:47 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/circleci-arm64-first-impression/</guid>
+            <description>&lt;p&gt;For the past two years, I&amp;rsquo;ve been using my own self-hosted ARM64 infrastructure to create a &lt;a href=&#34;https://buildpacks.io/&#34;&gt;Cloud Native Buildpack&lt;/a&gt; for Java that works on ARM64. I started with a cluster of Raspberry Pi 4 devices.  After ramping up with &amp;ldquo;spring-native&amp;rdquo; I switched to a free-tier ARM64 VM in Oracle Cloud. While this setup worked well, I realized that I could streamline my workflow, and perhaps, get my work moved up to &lt;a href=&#34;https://paketo.io&#34;&gt;Paketo&lt;/a&gt; if I used a modern, and accessible, CI/CD platform.&lt;/p&gt;
+&lt;p&gt;After some research, I decided to try out CircleCI, since it offered ARM64 workflow support. Although I have been a fan of CircleCI for some time, this was my first impression with authoring workflows on CircleCI.&lt;/p&gt;
+&lt;p&gt;The process of setting up my account and migrating my GitHub actions was surprisingly easy. I provided CircleCI with access to my public GitHub repositories, and started with a &amp;ldquo;hello world&amp;rdquo; template that worked right out of the gate.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;orbs&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;go&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;circleci/go@1.7.2&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Orbs&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;From there, I consulted the CircleCI documentation on using ARM, and made some simple edits to the template. The biggest takeaway for me was that CircleCI &amp;ldquo;orbs&amp;rdquo; map to GitHub &amp;ldquo;actions&amp;rdquo;, which made the transition even smoother.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;machine&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;ubuntu-2004:latest&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;image&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;ubuntu-2004:latest&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;resource_class&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;arm.medium&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;run&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;echo &amp;#34;Hello, Arm!&amp;#34;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://circleci.com/docs/using-arm/&#34;&gt;https://circleci.com/docs/using-arm/&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;I live-streamed the process of converting my existing workflows to a CircleCI workflows, and encountered a few minor issues along the way. However, these were quickly resolved, and I was able to release everything from my &lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;&gt;paketo-arm64&lt;/a&gt; repository without using any self-hosted infrastructure!&lt;/p&gt;
+&lt;p&gt;Overall, I&amp;rsquo;m thrilled with my first impression of authoring workflows on CircleCI. If I had made the jump sooner, I could have saved myself a lot of headaches. I highly recommend CircleCI to anyone looking for a modern, streamlined CI/CD platform that supports ARM64 workflows.&lt;/p&gt;
+&lt;p&gt;Watch:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/live/n6esDV0Kpn8&#34;&gt;First Impression authoring CircleCI workflows&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/live/2_yrpI74_ss&#34;&gt;Migrating from GitHub Actions to CircleCI&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Update 2023-02-27:&lt;/p&gt;
+&lt;p&gt;I have successfully &lt;code&gt;terraform destroyed&lt;/code&gt; the &lt;a href=&#34;https://github.com/dashaun/tf-oci-arm&#34;&gt;Oracle OCI ARM64&lt;/a&gt; infrastructure that was being used as a self-hosted runner.&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Better late than never video</title>
+            <link>https://dashaun.com/posts/better-late-than-never-video/</link>
+            <pubDate>Sat, 04 Feb 2023 02:37:38 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/better-late-than-never-video/</guid>
+            <description>&lt;p&gt;I&amp;rsquo;m trying to expand the type of content that I create.
+I&amp;rsquo;ve been motivated to start creating more video content for YouTube.
+I&amp;rsquo;ve just had a hard time getting started.
+Very similar to getting out the door for a run.&lt;/p&gt;
+&lt;p&gt;It only took me about 4-hours to record, edit and publish the 9-minute video.
+My last attempt at something like this took over 8-hours to deliver a 1-minute video.
+I&amp;rsquo;m trending in the right direction.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=BuqNJl4QrUw&#34;&gt;&lt;img src=&#34;https://img.youtube.com/vi/BuqNJl4QrUw/0.jpg&#34; alt=&#34;Builder Over and Test&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

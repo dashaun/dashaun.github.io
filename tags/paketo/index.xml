@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Paketo on DaShaun</title>
+        <link>https://dashaun.com/tags/paketo/</link>
+        <description>Recent content in Paketo on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Fri, 30 Jun 2023 18:51:10 -0500</lastBuildDate><atom:link href="https://dashaun.com/tags/paketo/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Spring Boot Maven Plugin Azul Buildpack</title>
+            <link>https://dashaun.com/posts/spring-boot-maven-plugin-azul-buildpack/</link>
+            <pubDate>Fri, 30 Jun 2023 18:51:10 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/spring-boot-maven-plugin-azul-buildpack/</guid>
+            <description>&lt;h1 id=&#34;spring-boot-maven-plugin-using-the-azul-buildpack-from-paketo&#34;&gt;
+  Spring Boot Maven Plugin using the Azul Buildpack from Paketo
+  &lt;a class=&#34;heading-link&#34; href=&#34;#spring-boot-maven-plugin-using-the-azul-buildpack-from-paketo&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;It&amp;rsquo;s a great day to be a Spring Developer. This morning, my good friend Frank Delporte from Azul reached out with some questions about the Spring Boot Maven Plugin and the use of Azul Zulu JDK. It felt like a great opportunity to help out an amazing member of the community. At the end of the day, I spent some time creating a demo to help him out. I thought it would be a good idea to share it with you all as well.&lt;/p&gt;
+&lt;h2 id=&#34;initializr-plusplus&#34;&gt;
+  Initializr-plusplus
+  &lt;a class=&#34;heading-link&#34; href=&#34;#initializr-plusplus&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I do believe this is a great candidate for the &lt;a href=&#34;https://github.com/spring-projects-experimental/spring-cli&#34;&gt;Spring-CLI&lt;/a&gt; project, but for now, I have &lt;a href=&#34;https://github.com/dashaun/initializr-plusplus&#34;&gt;Initializr-plusplus&lt;/a&gt; a much simpler Spring Shell project that I use personally. Since I already had an option for using my &lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;&gt;multi-architecture buildpack&lt;/a&gt; it was a simple matter of copying and pasting with a couple of small edits.  The resulting &lt;code&gt;initializer-plusplus zulu-builder&lt;/code&gt; command is available in &lt;a href=&#34;https://github.com/dashaun/initializr-plusplus/releases/tag/v0.0.34&#34;&gt;v0.0.34&lt;/a&gt; of the project.&lt;/p&gt;
+&lt;h2 id=&#34;the-questions&#34;&gt;
+  The Questions
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-questions&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;How to switch from default &lt;code&gt;paketobuildpacks/builder&lt;/code&gt; to &lt;code&gt;paketobuildpacks/azul-zulu&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;How to add options to the JVM command line like &lt;code&gt;-Xlog:gc:gc.log&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Can it be done &lt;code&gt;simply&lt;/code&gt;?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;the-demo&#34;&gt;
+  The Demo
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-demo&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I can&amp;rsquo;t think of an easier way to switch between buildpacks than using the &lt;code&gt;initializer-plusplus&lt;/code&gt; project. Creating a Spring Shell CLI to manage Maven &lt;code&gt;pom&lt;/code&gt; files or other project features, consistently, feels like a cheat code.&lt;/p&gt;
+&lt;p&gt;In the demo, I switch to the Azul Zulu JDK for the entire demo, even though it isn&amp;rsquo;t required, because the JDK is included in the buildpack. I tried to make things pretty and showed the &lt;code&gt;java -version&lt;/code&gt; output before creating the Spring Boot project.&lt;/p&gt;
+&lt;p&gt;I used &lt;code&gt;curl&lt;/code&gt; to create the Spring Boot project and added dependencies for &lt;code&gt;web&lt;/code&gt; and &lt;code&gt;actuator&lt;/code&gt; in order to get a simple project that is easy to test.  Of course, I also select Java 17 as the JDK version.&lt;/p&gt;
+&lt;p&gt;I run the &lt;code&gt;git init&lt;/code&gt; command to initialize a new git repository. With that, I can easily show the import &lt;code&gt;diff&lt;/code&gt; that I&amp;rsquo;m generating with the &lt;code&gt;initializer-plusplus zulu-builder&lt;/code&gt; command.  I show the new section of the &lt;code&gt;pom.xml&lt;/code&gt; and move on to creating the image with the Spring Boot Maven Plugin.&lt;/p&gt;
+&lt;h2 id=&#34;building-the-image&#34;&gt;
+  Building the Image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#building-the-image&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Our mission is accomplished once the Zulu build pack is incorporated. As long as we put the &lt;code&gt;Azul Zulu&lt;/code&gt; buildpack in front of the Java buildpack, we will get the &lt;code&gt;Azul Zulu&lt;/code&gt; buildpack instead of the default &lt;code&gt;Liberica&lt;/code&gt; version. The image is built successfully, and we pull in all other stuff from the Java build pack.&lt;/p&gt;
+&lt;h2 id=&#34;running-and-validating-the-image&#34;&gt;
+  Running and Validating the Image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#running-and-validating-the-image&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The demo image is run after assigning a unique name to it and exposing Port 8080. I verify the image&amp;rsquo;s status and validate the endpoint&amp;rsquo;s health. A thorough check inside the image confirms the inclusion of the &amp;lsquo;GC log&amp;rsquo; command, one of the options chosen for the demo.&lt;/p&gt;
+&lt;h2 id=&#34;wrapping-up-the-demo&#34;&gt;
+  Wrapping Up the Demo
+  &lt;a class=&#34;heading-link&#34; href=&#34;#wrapping-up-the-demo&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The entire process concludes with a peek into the GC log. And voila! We&amp;rsquo;ve accomplished our mission. The entire process was wrapped up in less than 5 minutes, and all the steps were integrated into a repository for you to experiment and tweak as you please.&lt;/p&gt;
+&lt;h2 id=&#34;afterthoughts-and-tips&#34;&gt;
+  Afterthoughts and Tips
+  &lt;a class=&#34;heading-link&#34; href=&#34;#afterthoughts-and-tips&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;An important concept I wish to emphasize is the flexibility in switching between the buildpacks. It&amp;rsquo;s essential to acknowledge that not all tasks need to follow the same path to production. It is prudent to evaluate as different workloads may have varying requirements, and different JVMs might perform better or worse.&lt;/p&gt;
+&lt;p&gt;So, don&amp;rsquo;t hesitate to put in those 5 minutes to conduct an experiment. Validate your assumptions by testing if an application benefits from using a different JVM or a different garbage collection method. After all, we&amp;rsquo;re dealing with applications that could potentially go into production hundreds or even thousands of times.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/live/6FfP3v40il8&#34;&gt;Watch the demo on YouTube&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/spring-boot-maven-plugin-azul-buildpack-example&#34;&gt;The demo repository&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Paketo Steering Committee Candidacy</title>
+            <link>https://dashaun.com/posts/paketo-steering-committee-candidacy/</link>
+            <pubDate>Sat, 29 Apr 2023 01:05:13 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/paketo-steering-committee-candidacy/</guid>
+            <description>&lt;h2 id=&#34;the-news&#34;&gt;
+  The news
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-news&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I first heard about the upcoming election on the Paketo Slack.&lt;/p&gt;
+&lt;p&gt;It wasn&amp;rsquo;t clear to me, how I was supposed to throw my name in the hat, after reading about &lt;a href=&#34;https://github.com/paketo-buildpacks/rfcs/blob/main/text/0054-steering-committee-elections.md&#34;&gt;the election process&lt;/a&gt;.  So, I had some fun with it.&lt;/p&gt;
+&lt;h2 id=&#34;the-announcement&#34;&gt;
+  The announcement
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-announcement&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;First on the Paketo Slack, then LinkedIn, Twitter and Mastodon, I made an announcement like this:&lt;/p&gt;
+&lt;p&gt;Steering Committee Electors and Paketo community!&lt;/p&gt;
+&lt;p&gt;My name is DaShaun Carter and I would appreciate your consideration for membership in the steering committee, in the upcoming election!&lt;/p&gt;
+&lt;p&gt;You might have heard me say &amp;ldquo;Friends don&amp;rsquo;t let friends use Dockerfiles, use buildpacks&amp;rdquo; during &lt;a href=&#34;https://springofficehours.io&#34;&gt;Spring Office Hours&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Perhaps you have seen my work with &lt;a href=&#34;https://cloudnativecobol.com&#34;&gt;Cloud Native Cobol&lt;/a&gt; and the &lt;a href=&#34;https://cloudnativecobol.com&#34;&gt;Cobol Buildpack&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Maybe you have seen or used the &lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;&gt;multi-architecture buildpack&lt;/a&gt;, that I have been &lt;a href=&#34;https://hub.docker.com/r/dashaun/builder&#34;&gt;delivering&lt;/a&gt; for the ARM64 community, with Daniel Mikusa.&lt;/p&gt;
+&lt;p&gt;You can get to know me by visiting &lt;a href=&#34;https://dashaun.com&#34;&gt;https://dashaun.com&lt;/a&gt; where you will find my blog posts, links to all of my socials, and an &amp;ldquo;About&amp;rdquo; page with links to videos that I am proud of.&lt;/p&gt;
+&lt;p&gt;Thank you for your consideration.&lt;/p&gt;
+&lt;h2 id=&#34;what-happens-next&#34;&gt;
+  What happens next
+  &lt;a class=&#34;heading-link&#34; href=&#34;#what-happens-next&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;m not sure if anyone else even wants the role, but I&amp;rsquo;m excited to see what happens next.  I&amp;rsquo;ve been passionate about buildpacks for a long time, and I will continue to be, regardless of the outcome of this election.  I&amp;rsquo;m going to do my best to make sure that the people that are voting, know who I am and what I stand for.  The things that I have been working on and the feedback I have received, have been very encouraging.  I&amp;rsquo;m looking forward to the next few weeks.  Stay tuned for more updates on my &lt;code&gt;campaign&lt;/code&gt; and don&amp;rsquo;t hesitate to reach out with any questions or suggestions.&lt;/p&gt;
+&lt;h2 id=&#34;campaign-slogan&#34;&gt;
+  Campaign Slogan?
+  &lt;a class=&#34;heading-link&#34; href=&#34;#campaign-slogan&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;#34;Embracing Multi-Architecture Buildpacks for a Brighter, Inclusive Future&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+        </item>
+        
+        <item>
+            <title>A new builder for Spring Boot 3 RC1 on ARM64</title>
+            <link>https://dashaun.com/posts/paketo-aarch64-builder-spring-boot-3-rc1/</link>
+            <pubDate>Thu, 10 Nov 2022 06:18:05 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/paketo-aarch64-builder-spring-boot-3-rc1/</guid>
+            <description>&lt;h2 id=&#34;background&#34;&gt;
+  Background
+  &lt;a class=&#34;heading-link&#34; href=&#34;#background&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;m a fan of using buildpacks.
+I&amp;rsquo;ve been &lt;a href=&#34;https://dashaun.com/posts/springboot-arm64-image/&#34;&gt;using&lt;/a&gt; and updating the &lt;a href=&#34;https://github.com/dmikusa/paketo-arm64&#34;&gt;paketo-arm64 repository started by Daniel Mikusa&lt;/a&gt;.
+With Spring Boot 3 going GA, very soon, more people are wanting to use buildpacks with their M1 machines.
+I feel pressure, in a great way, to get a new version released that includes the latest version of GraalVM.&lt;/p&gt;
+&lt;p&gt;Because I&amp;rsquo;m not doing this regularly, I forget the steps that I take to create a new build.
+So this post, is really a reminder-to-self, but hopefully it helps someone else also.&lt;/p&gt;
+&lt;p&gt;You can follow along with this on &lt;code&gt;M1&lt;/code&gt;,&lt;code&gt;Raspberry Pi&lt;/code&gt;, or a free-tier &lt;code&gt;ARM64&lt;/code&gt; instance from Oracle.&lt;/p&gt;
+&lt;h2 id=&#34;prerequisite&#34;&gt;
+  Prerequisite
+  &lt;a class=&#34;heading-link&#34; href=&#34;#prerequisite&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;ve been setting up a temporary ARM64 machine on Oracle Cloud for ARM64/aarch64 builds.
+The repository I use is &lt;a href=&#34;https://github.com/dashaun/oci-arm64-gha-runner-terraform&#34;&gt;here&lt;/a&gt;.
+I should probably talk about that in another post, also.&lt;/p&gt;
+&lt;p&gt;My first step was to deploy that machine, so it can be used to build the builder!
+Once I got the machine up and connected to my repository, I was ready to update the code.&lt;/p&gt;
+&lt;h2 id=&#34;make-changes&#34;&gt;
+  Make changes
+  &lt;a class=&#34;heading-link&#34; href=&#34;#make-changes&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;First I just made changes to the versions in &lt;a href=&#34;https://raw.githubusercontent.com/dashaun/paketo-arm64/main/.github/workflows/paketo-arm64.yml&#34;&gt;my GitHub workflow&lt;/a&gt;.
+That worked and pushed out a new image, but it wasn&amp;rsquo;t enough.&lt;/p&gt;
+&lt;p&gt;I had to re-read the workflow to understand what I was missing.&lt;/p&gt;
+&lt;p&gt;For each of the files in the &lt;code&gt;arm64-toml&lt;/code&gt; of &lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;&gt;the repository&lt;/a&gt; I needed to update to the latest versions.
+This is a tedious, and currently manual, process that requires copy, paste, merge and then creating sha256 values.&lt;/p&gt;
+&lt;p&gt;For these versions, it was extra messy, because naming conventions changed since my last release.
+In some places &lt;code&gt;arm64&lt;/code&gt; was replaced with &lt;code&gt;aarch64&lt;/code&gt; as one example.&lt;/p&gt;
+&lt;p&gt;Additionally, some dependencies had even more releases, and I decided to go with the &lt;code&gt;full&lt;/code&gt; option when it was available.&lt;/p&gt;
+&lt;p&gt;The last real time-suck was the &lt;code&gt;sha&lt;/code&gt; values.
+In the GitHub releases, the sha values are provided as &lt;code&gt;sha1sum&lt;/code&gt; values.
+In the builder metadata, it requires &lt;code&gt;sha256&lt;/code&gt; values.
+Since I couldn&amp;rsquo;t find &lt;code&gt;sha256&lt;/code&gt; values published anywhere, I had to download the dependencies and calculate the values manually.
+For each dependency update, &lt;code&gt;curl&lt;/code&gt; then &lt;code&gt;shasum&lt;/code&gt;, which can be error prone.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -L https://github.com/bell-sw/Liberica/releases/download/8u352+8/bellsoft-jdk8u352+8-linux-aarch64.tar.gz -O
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;shasum -a &lt;span style=&#34;color:#40a070&#34;&gt;256&lt;/span&gt; bellsoft-jdk8u352+8-linux-aarch64.tar.gz
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Hopefully, this post and the small updates I made to the &lt;code&gt;README.md&lt;/code&gt; will remind me next time.
+I should probably figure out a way to automate some of that.
+Maybe a CLI?&lt;/p&gt;
+&lt;h2 id=&#34;create-an-application-image&#34;&gt;
+  Create an application image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#create-an-application-image&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Create a Spring Boot 3 application with &lt;code&gt;web&lt;/code&gt; and &lt;code&gt;actuator&lt;/code&gt; which is enough for a simple test.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Create a Spring Boot 3 application&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl https://start.spring.io/starter.tgz -d &lt;span style=&#34;color:#bb60d5&#34;&gt;dependencies&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;web,actuator -d &lt;span style=&#34;color:#bb60d5&#34;&gt;javaVersion&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#40a070&#34;&gt;17&lt;/span&gt; -d &lt;span style=&#34;color:#bb60d5&#34;&gt;bootVersion&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;3.0.0-SNAPSHOT -d &lt;span style=&#34;color:#bb60d5&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;maven-project | tar -xzf -
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In the pom.xml replace this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-xml&#34; data-lang=&#34;xml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;build&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;plugins&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;plugin&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.boot&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-boot-maven-plugin&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/plugin&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/plugins&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/build&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;with this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-xml&#34; data-lang=&#34;xml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;build&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;plugins&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;plugin&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.boot&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-boot-maven-plugin&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;image&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;builder&amp;gt;&lt;/span&gt;dashaun/java-native-builder-arm64:7.37.0&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/builder&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/image&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/plugin&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/plugins&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/build&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Build an image using the image builder that we have created and configured.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./mvnw -Pnative spring-boot:build-image
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;run-and-test-the-image&#34;&gt;
+  Run and test the image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#run-and-test-the-image&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Run the OCI image with &lt;code&gt;docker&lt;/code&gt; to start up the server.
+It should start quickly!&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Forward the prt, run in the background, but see the startup time&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run -p 8080:8080 demo:0.0.1-SNAPSHOT &amp;amp;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Check the endpoint to validate&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;http :8080/actuator/health
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;finally&#34;&gt;
+  Finally
+  &lt;a class=&#34;heading-link&#34; href=&#34;#finally&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Because I&amp;rsquo;m done, and moved &lt;a href=&#34;https://hub.docker.com/r/dashaun/java-native-builder-arm64&#34;&gt;builder version 7.37.0 to prod&lt;/a&gt;, I also cleaned up my &lt;code&gt;terraform&lt;/code&gt; deployment.&lt;/p&gt;
+&lt;p&gt;Another huge &amp;ldquo;Thanks&amp;rdquo; to &lt;a href=&#34;https://twitter.com/dmikusa&#34;&gt;Daniel Mikusa&lt;/a&gt; for all of his help.&lt;/p&gt;
+&lt;h2 id=&#34;links&#34;&gt;
+  Links
+  &lt;a class=&#34;heading-link&#34; href=&#34;#links&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://hub.docker.com/r/dashaun/java-native-builder-arm64&#34;&gt;dashaun/java-native-builder-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;&gt;dashaun/paketo-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/oci-arm64-gha-runner-terraform&#34;&gt;dashaun/oci-arm64-gha-runner-terraform&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://dashaun.com/posts/springboot-arm64-image/&#34;&gt;Related Post&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

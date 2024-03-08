@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Posts on DaShaun</title>
+        <link>https://dashaun.com/posts/</link>
+        <description>Recent content in Posts on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Fri, 08 Mar 2024 15:04:21 -0600</lastBuildDate><atom:link href="https://dashaun.com/posts/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Kubectl config cleanup</title>
+            <link>https://dashaun.com/posts/kubectl-config-cleanup/</link>
+            <pubDate>Fri, 08 Mar 2024 15:04:21 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/kubectl-config-cleanup/</guid>
+            <description>&lt;p&gt;I have a bunch of Kubernetes configurations on my machine.  When I need to clean them up, I always forget the steps.  This is just a note to myself, to remember how to clean up my kubectl config files.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectx
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;arm64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;build
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;clusterhat00
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;k3d-juice
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;korifi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mgmt
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;nucs
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectx luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Switched to context &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;luiki&amp;#34;&lt;/span&gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectl get nodes -o wide
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;E0308 15:11:03.839634   &lt;span style=&#34;color:#40a070&#34;&gt;89098&lt;/span&gt; memcache.go:265&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; couldn&lt;span style=&#34;&#34;&gt;&amp;#39;&lt;/span&gt;t get current server API group list: Get &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;https://100.67.74.147:6443/api?timeout=32s&amp;#34;&lt;/span&gt;: dial tcp 100.67.74.147:6443: i/o timeout
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Starting with a context that doesn&amp;rsquo;t work.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Delete the cluster from the config file.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectl config delete-cluster luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;deleted cluster luiki from /Users/dashaun/.kube/config
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectx
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;arm64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;build
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;clusterhat00
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;k3d-juice
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;korifi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mgmt
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;nucs
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;I don&amp;rsquo;t think the order matters, but I start by deleting the cluster.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;After deleting the cluster, the context still shows up in the list.
+So let&amp;rsquo;s delete the context.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectl config delete-context luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;deleted context luiki from /Users/dashaun/.kube/config
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectx
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;arm64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;build
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;clusterhat00
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;k3d-juice
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;korifi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mgmt
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;nucs
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;The context is gone.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;If I tried to create a new context named &lt;code&gt;luiki&lt;/code&gt; I would get an error, because the user still exists.
+So let&amp;rsquo;s delete the user from the config file.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectl config delete-user luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;deleted user luiki from /Users/dashaun/.kube/config
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ 
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;The user is gone.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;All done, I can create a new context named &lt;code&gt;luiki&lt;/code&gt; now.&lt;/p&gt;
+&lt;p&gt;If I want to simplify things for myself I might do something like this going forward:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bb60d5&#34;&gt;K3SUP_NAME&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl config delete-cluster &lt;span style=&#34;color:#bb60d5&#34;&gt;$K3SUP_NAME&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl config delete-context &lt;span style=&#34;color:#bb60d5&#34;&gt;$K3SUP_NAME&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl config delete-user &lt;span style=&#34;color:#bb60d5&#34;&gt;$K3SUP_NAME&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;This would be a good way to clean up after using &lt;code&gt;k3sup&lt;/code&gt; to install a cluster.&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Spring Health Assessment Report</title>
+            <link>https://dashaun.com/posts/spring-health-assessment-report/</link>
+            <pubDate>Fri, 16 Feb 2024 19:48:20 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/spring-health-assessment-report/</guid>
+            <description>&lt;p&gt;Spring Boot 3.0.0 was released 450 days ago. Helping people upgrade, and enjoy all the amazing benefits, has been one of my passions for about 450 days.  I&amp;rsquo;m a Spring Developer Advocate and I love my job.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/tschuehly/status/1723106405756846117&#34;&gt;&lt;img src=&#34;images/normalconversation.png&#34; alt=&#34;Thomas Schuehly has thoughts&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;It&amp;rsquo;s a passion really. Thomas Schuehly gets it.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;At SpringOne 2023 in Las Vegas, my friend, Joachim Pasquali, over at Fiserv, shared a story that I&amp;rsquo;ll not soon forget.  The process of upgrading and patching, doesn&amp;rsquo;t have to be a painful process.  On that day, his flagship product, was on the latest and greatest version of Spring Boot.  &lt;a href=&#34;https://youtube.com/clip/UgkxKNJxAWtsIWDzsFJM8tDB8VvG1E66EMVk?si=0e7-mUIHfjIHl9Qp&#34;&gt;Watch the clip that gave me all the feels here.&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I want you to know about some tools and techniques that can help you upgrade your Spring Boot projects with more joy, frequently, and safely.&lt;/p&gt;
+&lt;p&gt;First things first, let&amp;rsquo;s talk about the challenges. Outdated Spring Boot versions can expose your projects to security risks, leave you without access to the latest features and performance improvements, and can be costing you more money. Have you ever been working, on an outdated JVM perhaps, or an older Spring Boot version, and secretly wished you were using the latest release? I get it, I&amp;rsquo;ve been there too, and I&amp;rsquo;m here to help.&lt;/p&gt;
+&lt;p&gt;I want you to check out the &lt;a href=&#34;https://tanzu.vmware.com/spring-health-assessment&#34;&gt;Spring Health Assessment Report&lt;/a&gt;.  This tool is very similar to something you probably have running already, it tells you about known vulnerabilities. However, this tool is also unique in a few very special ways.  First of all, it&amp;rsquo;s free for you to use.  It also has the support timeline information built in. It provides a measure of how hard it will be to upgrade. Finally, it only reports on the Spring and Micrometer dependencies that you are using. It&amp;rsquo;s very focused and actionable.&lt;/p&gt;
+&lt;p&gt;I like to call &lt;a href=&#34;https://docs.openrewrite.org&#34;&gt;OpenRewrite&lt;/a&gt; my favorite &lt;code&gt;cheat code&lt;/code&gt;. When I say that I demonstrate &lt;code&gt;OpenRewrite&lt;/code&gt; twenty times per week, I&amp;rsquo;m not exaggerating.  It&amp;rsquo;s a powerful tool, and I&amp;rsquo;m still surprised by how many developers still don&amp;rsquo;t know about it.  &lt;a href=&#34;https://github.com/dashaun/openrewrite-spring-boot-upgrade-example&#34;&gt;This repository includes one of those demos, that I deliver multiple times every week&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Software is soft for a reason.  It&amp;rsquo;s meant to be changed.  It&amp;rsquo;s meant to be upgraded.  It&amp;rsquo;s meant to be improved.  Java comes out with a new JVM, every 6-months.  The Spring team releases a new Spring Boot version every 6-months.  It&amp;rsquo;s time to start upgrading more frequently.  In 2023, there were only 4-weeks, of the entire year, that the Spring team didn&amp;rsquo;t release something new.  You can see for yourself over at &lt;a href=&#34;https://calendar.spring.io&#34;&gt;calendar-dot-spring-dot-io&lt;/a&gt;.  It&amp;rsquo;s time to start upgrading more frequently.&lt;/p&gt;
+&lt;p&gt;I believe that the way software is going to be measured, going forward, is by how easy it is to maintain. I&amp;rsquo;m convinced that continuous upgrading, and continuous patching, is going to be a key differentiator for software projects.  I want you to get started, today.&lt;/p&gt;
+&lt;p&gt;By upgrading your Spring Boot projects, you can benefit from improved security, performance, and access to the latest features. You&amp;rsquo;ll also be able to take advantage of the ongoing support and updates provided by the Spring team and the Java team!&lt;/p&gt;
+&lt;p&gt;So why wait? &lt;a href=&#34;https://youtu.be/XI_7mpEiPjI&#34;&gt;Watch this video I made last week&lt;/a&gt;. Check out the Spring Health Assessment Report. You will see a few reasons why you should upgrade.  You will also see how easy it can be. Spring Boot 3.2.3 comes out next Thursday, how long will it take you to upgrade?&lt;/p&gt;
+&lt;h2 id=&#34;links&#34;&gt;
+  Links
+  &lt;a class=&#34;heading-link&#34; href=&#34;#links&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtu.be/XI_7mpEiPjI&#34;&gt;Spring into Action: Boost Your Java Projects with Essential Upgrade Tools!&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://tanzu.vmware.com/spring-health-assessment&#34;&gt;Spring Health Assessment Report&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://twitter.com/tschuehly/status/1723106405756846117&#34;&gt;Thomas Schuehly gets it&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/openrewrite-spring-boot-upgrade-example&#34;&gt;OpenRewrite Spring Boot Upgrade Example&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtube.com/clip/UgkxKNJxAWtsIWDzsFJM8tDB8VvG1E66EMVk?si=bF6GiJRZgWbH78JX&#34;&gt;Joachim Pasquali at SpringOne 2023&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Spring Essential Upgrade Tools</title>
+            <link>https://dashaun.com/posts/spring-essential-upgrade-tools/</link>
+            <pubDate>Wed, 07 Feb 2024 19:47:40 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/spring-essential-upgrade-tools/</guid>
+            <description></description>
+        </item>
+        
+        <item>
+            <title>Spring Boot Le Potato</title>
+            <link>https://dashaun.com/posts/spring-boot-le-potato/</link>
+            <pubDate>Fri, 01 Dec 2023 16:52:44 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/spring-boot-le-potato/</guid>
+            <description>&lt;p&gt;One of the nice things about the &lt;a href=&#34;https://libre.computer/&#34;&gt;Libre Computing&lt;/a&gt; boards is the LTS OS releases.
+The Atomic Pi boards, just confirmed, have only released 20.04, way back in July 2020.
+We should still be able to do some cool things with Atomic Pi, later.
+For now, let&amp;rsquo;s focus on the &lt;a href=&#34;https://libre.computer/products/aml-s905x-cc/&#34;&gt;Libre AML-S905X-CC (Le Potato) board&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;first-pass&#34;&gt;
+  First Pass
+  &lt;a class=&#34;heading-link&#34; href=&#34;#first-pass&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I assumed that I could boot directly from the USB drive, but that did not work.
+I deployed the &lt;a href=&#34;https://distro.libre.computer/ci/ubuntu/22.04/ubuntu-22.04.3-preinstalled-server-arm64%2Baml-s905x-cc.img.xz&#34;&gt;Ubuntu 22.04 image&lt;/a&gt; to the SDCard and booted from that.
+Things worked, I was able to connect the device to my Kubernetes cluster and deploy a Spring Boot application.&lt;/p&gt;
+&lt;h2 id=&#34;i-wasnt-happy&#34;&gt;
+  I wasn&amp;rsquo;t happy
+  &lt;a class=&#34;heading-link&#34; href=&#34;#i-wasnt-happy&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Booting Ubuntu directly from the SDcard works, but it is slower, I didn&amp;rsquo;t want that solution long term.
+I did a little bit of research and found out that I could use the SDcard to deploy the bootloader, and load the OS from the USB drive.&lt;/p&gt;
+&lt;h2 id=&#34;bootloader&#34;&gt;
+  Bootloader
+  &lt;a class=&#34;heading-link&#34; href=&#34;#bootloader&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;This did not work from my Mac, it worked from other Linux machines though.
+The repo for the bootloader is here: &lt;a href=&#34;https://github.com/libre-computer-project/libretech-flash-tool&#34;&gt;https://github.com/libre-computer-project/libretech-flash-tool&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;create-the-usb-drive&#34;&gt;
+  Create the USB drive
+  &lt;a class=&#34;heading-link&#34; href=&#34;#create-the-usb-drive&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Used the Raspberry Pi Imager tool.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://distro.libre.computer/ci/ubuntu/22.04/ubuntu-22.04.3-preinstalled-server-arm64%2Baml-s905x-cc.img.xz&#34;&gt;https://distro.libre.computer/ci/ubuntu/22.04/ubuntu-22.04.3-preinstalled-server-arm64%2Baml-s905x-cc.img.xz&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Needed to use p7zip to unzip the file.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The Raspberry Pi imager tool was able to setup default users and SSH keys, properly.
+This made the process pretty painless.&lt;/p&gt;
+&lt;h2 id=&#34;install-the-sdccard-with-bootloader-and-usb-into-the-new-libre-computer-le-potato&#34;&gt;
+  Install the SDCcard with bootloader and USB into the new Libre Computer &lt;code&gt;Le Potato&lt;/code&gt;
+  &lt;a class=&#34;heading-link&#34; href=&#34;#install-the-sdccard-with-bootloader-and-usb-into-the-new-libre-computer-le-potato&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Red and Blue light mean that power is good.&lt;/li&gt;
+&lt;li&gt;Wait for the green light, which means it found the operating system.&lt;/li&gt;
+&lt;li&gt;Then the blue light starts flashing for what looks like activity.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;images/libre01.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;after-deployment&#34;&gt;
+  After deployment
+  &lt;a class=&#34;heading-link&#34; href=&#34;#after-deployment&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The steps that I took before adding the device to the Kubernetes cluster are here:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt update
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt dist-upgrade -y
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt autoremove -y
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -fsSL https://tailscale.com/install.sh | sh
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt install prometheus-node-exporter -y
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;summary&#34;&gt;
+  Summary
+  &lt;a class=&#34;heading-link&#34; href=&#34;#summary&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I used my &lt;a href=&#34;https://dashaun.com/posts/sping-native-edge-rpi/&#34;&gt;Spring Native Edge Rpi&lt;/a&gt; article as a guideline.
+This time, I added the nodes to a Kubernetes cluster, instead of using Docker.  I&amp;rsquo;ve now got 4 nodes in my cluster.
+I&amp;rsquo;ll be adding more nodes, and more devices, as I continue to build out my home lab.&lt;/p&gt;
+&lt;h2 id=&#34;see-also&#34;&gt;
+  See Also
+  &lt;a class=&#34;heading-link&#34; href=&#34;#see-also&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/live/0Z630tAAOEw?si=wcibGZ5tS346HbLe&#34;&gt;Live stream showing the work&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;homelab-inspiration&#34;&gt;
+  Homelab Inspiration
+  &lt;a class=&#34;heading-link&#34; href=&#34;#homelab-inspiration&#34;&gt;
+    &lt;i class=&#34;fa fa-link&#34; aria-hidden=&#34;true&#34;&gt;&lt;/i&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/beginbotbot/status/1708005689728393266&#34;&gt;&lt;img src=&#34;images/insipration.jpg&#34; alt=&#34;&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>JitterTed. Our Community. And Grateful.</title>
+            <link>https://dashaun.com/posts/jitterted-our-community-and-grateful/</link>
+            <pubDate>Tue, 28 Nov 2023 16:00:15 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/jitterted-our-community-and-grateful/</guid>
+            <description>&lt;p&gt;I want to share a story about my adventure in the world of live-coding. A few years back, I started watching a Twitch streamer named JitterTed (or Ted Young) and I was hooked! Before I knew it, I was watching live-coding more than TV!&lt;/p&gt;
+&lt;p&gt;I remember when I used to watch live-coding on Mixer before it shut down in 2020. But JitterTed on Twitch was different. He was the kind of streamer I wanted to be like. At this point, I&amp;rsquo;ve easily watched him for over 100 hours, learning so much along the way.&lt;/p&gt;
+&lt;p&gt;The coolest part? I got to meet Ted in person, not just once but several times! It&amp;rsquo;s a strange feeling meeting someone you&amp;rsquo;ve watched for hours online. To me, Ted was like a celebrity, but he didn’t know me at all. Yet, when we met, he was amazing. I was a total fanboy, while he was so patient and kind. We ended up having fantastic conversations, and I could see how much he influenced me through his streams.&lt;/p&gt;
+&lt;p&gt;It doesn&amp;rsquo;t stop there. Ted has been a regular in the audience of our &lt;a href=&#34;https://springofficehours.io&#34;&gt;Spring Office Hours&lt;/a&gt;, and even a guest on the show! Hanging out with him and having him on our show has been a blast.&lt;/p&gt;
+&lt;p&gt;Then, last week, something amazing happened. I got to be on &lt;a href=&#34;https://www.twitch.tv/jitterted&#34;&gt;his stream&lt;/a&gt;! The plan was to upgrade a project he had been working on. Guess what? We ended up upgrading two apps! We had lots of fun side conversations, and it felt incredible. His audience was super amazing too. We didn&amp;rsquo;t even need Google because the audience helped us with everything!&lt;/p&gt;
+&lt;p&gt;One cool thing I learned that day, and used today, is around maven dependency upgrade analysis. I used it, and I was immediately reminded of how awesome it is to be part of this community. I&amp;rsquo;m so grateful for my own little community, for Ted&amp;rsquo;s community, the broader Java community, and others.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./mvnw versions:display-dependency-updates
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;The cheat code to see what dependencies have upgrades available.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Live-coding isn&amp;rsquo;t just about coding. It&amp;rsquo;s about the people, the connections, and the shared learning. I&amp;rsquo;m thankful for all these experiences and can&amp;rsquo;t wait to see what comes next!&lt;/p&gt;
+&lt;p&gt;Please, check out &lt;a href=&#34;https://www.youtube.com/watch?v=cPe23uyOJb8&#34;&gt;the episode&lt;/a&gt; and let me know what you think!&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>
