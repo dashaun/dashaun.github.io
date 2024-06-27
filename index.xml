@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>DaShaun</title>
+        <link>https://dashaun.com/</link>
+        <description>Recent content on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Thu, 20 Jun 2024 14:50:00 -0700</lastBuildDate><atom:link href="https://dashaun.com/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Spring Boot 3.3 (Presentation with Bryan Kelly)</title>
+            <link>https://dashaun.com/posts/docs_spring-boot-3-3/</link>
+            <pubDate>Thu, 20 Jun 2024 14:50:00 -0700</pubDate>
+            
+            <guid>https://dashaun.com/posts/docs_spring-boot-3-3/</guid>
+            <description></description>
+        </item>
+        
+        <item>
+            <title>SpringOne Tour Reston (Presentation)</title>
+            <link>https://dashaun.com/posts/docs_springone-tour-reston-2024/</link>
+            <pubDate>Mon, 03 Jun 2024 14:50:00 -0700</pubDate>
+            
+            <guid>https://dashaun.com/posts/docs_springone-tour-reston-2024/</guid>
+            <description></description>
+        </item>
+        
+        <item>
+            <title>Cloud Foundry Day NA 2024</title>
+            <link>https://dashaun.com/posts/15-factor-korifi/</link>
+            <pubDate>Wed, 15 May 2024 21:49:43 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/15-factor-korifi/</guid>
+            <description>&lt;p&gt;I was so honored to present at Cloud Foundry Day NA 2024 in NYC.&lt;/p&gt;
+&lt;p&gt;The &lt;a href=&#34;https://www.youtube.com/watch?v=Whj1LT0Ht1Y&#34;&gt;video&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The &lt;a href=&#34;https://dashaun.com/cloud-foundry-day-na-2024/&#34;&gt;presentation&lt;/a&gt;.&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Monoliths are cool again (Presentation)</title>
+            <link>https://dashaun.com/posts/docs_monoliths_are_cool_again/</link>
+            <pubDate>Wed, 01 May 2024 06:28:30 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/docs_monoliths_are_cool_again/</guid>
+            <description></description>
+        </item>
+        
+        <item>
+            <title>Kubectl config cleanup</title>
+            <link>https://dashaun.com/posts/kubectl-config-cleanup/</link>
+            <pubDate>Fri, 08 Mar 2024 15:04:21 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/kubectl-config-cleanup/</guid>
+            <description>&lt;p&gt;I have a bunch of Kubernetes configurations on my machine.  When I need to clean them up, I always forget the steps.  This is just a note to myself, to remember how to clean up my kubectl config files.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectx
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;arm64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;build
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;clusterhat00
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;k3d-juice
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;korifi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mgmt
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;nucs
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectx luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Switched to context &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;luiki&amp;#34;&lt;/span&gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectl get nodes -o wide
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;E0308 15:11:03.839634   &lt;span style=&#34;color:#40a070&#34;&gt;89098&lt;/span&gt; memcache.go:265&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; couldn&lt;span style=&#34;&#34;&gt;&amp;#39;&lt;/span&gt;t get current server API group list: Get &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;https://100.67.74.147:6443/api?timeout=32s&amp;#34;&lt;/span&gt;: dial tcp 100.67.74.147:6443: i/o timeout
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Starting with a context that doesn&amp;rsquo;t work.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Delete the cluster from the config file.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectl config delete-cluster luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;deleted cluster luiki from /Users/dashaun/.kube/config
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectx
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;arm64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;build
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;clusterhat00
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;k3d-juice
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;korifi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mgmt
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;nucs
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;I don&amp;rsquo;t think the order matters, but I start by deleting the cluster.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;After deleting the cluster, the context still shows up in the list.
+So let&amp;rsquo;s delete the context.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectl config delete-context luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;deleted context luiki from /Users/dashaun/.kube/config
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectx
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;arm64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;build
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;clusterhat00
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;k3d-juice
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;korifi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mgmt
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;nucs
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;The context is gone.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;If I tried to create a new context named &lt;code&gt;luiki&lt;/code&gt; I would get an error, because the user still exists.
+So let&amp;rsquo;s delete the user from the config file.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ kubectl config delete-user luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;deleted user luiki from /Users/dashaun/.kube/config
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;juice :~ $ 
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;The user is gone.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;All done, I can create a new context named &lt;code&gt;luiki&lt;/code&gt; now.&lt;/p&gt;
+&lt;p&gt;If I want to simplify things for myself I might do something like this going forward:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bb60d5&#34;&gt;K3SUP_NAME&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;luiki
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl config delete-cluster &lt;span style=&#34;color:#bb60d5&#34;&gt;$K3SUP_NAME&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl config delete-context &lt;span style=&#34;color:#bb60d5&#34;&gt;$K3SUP_NAME&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl config delete-user &lt;span style=&#34;color:#bb60d5&#34;&gt;$K3SUP_NAME&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;This would be a good way to clean up after using &lt;code&gt;k3sup&lt;/code&gt; to install a cluster.&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>
