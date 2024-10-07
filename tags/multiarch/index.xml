@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Multiarch on DaShaun</title>
+        <link>https://dashaun.com/tags/multiarch/</link>
+        <description>Recent content in Multiarch on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Sun, 17 Sep 2023 14:42:19 -0500</lastBuildDate><atom:link href="https://dashaun.com/tags/multiarch/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Five Months in the making, multi-architecture builder</title>
+            <link>https://dashaun.com/posts/five-months-in-the-making-multi-arch-builder/</link>
+            <pubDate>Sun, 17 Sep 2023 14:42:19 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/five-months-in-the-making-multi-arch-builder/</guid>
+            <description>&lt;h2 id=&#34;five-months-in-the-making-multi-architecture-builder&#34;&gt;
+  Five months in the making, multi-architecture builder
+  &lt;a class=&#34;heading-link&#34; href=&#34;#five-months-in-the-making-multi-architecture-builder&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;If you have been following along, you are probably asking &amp;ldquo;What took so long?&amp;rdquo; and I totally understand.
+I had no idea what was wrong before today.
+My scripts had been working for over a year, then just stopped.
+I had removed a bunch of the debug info from the logs, which didn&amp;rsquo;t help the situation at all.&lt;/p&gt;
+&lt;h2 id=&#34;upstream-progress&#34;&gt;
+  Upstream progress
+  &lt;a class=&#34;heading-link&#34; href=&#34;#upstream-progress&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The Paketo team continues to put a high priority on ARM64 and multi-architecture tools/buildpacks.
+I had created several ARM64 workarounds over the years.
+The Paketo team continued improving their tools to support ARM64 as well.
+I was not doing a good job of pulling the tooling changes from upstream.
+So my workarounds were breaking the build.&lt;/p&gt;
+&lt;h2 id=&#34;several-failed-attempts&#34;&gt;
+  Several failed attempts
+  &lt;a class=&#34;heading-link&#34; href=&#34;#several-failed-attempts&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I had made several solid attempts at resolving the issues.
+I just kept getting distracted with other priorities.
+I have had this process working on multiple environments.
+Every version of my pipeline seemed to be broken in a slightly different way.
+They were, because of my workarounds.
+I had different workarounds for different environments.&lt;/p&gt;
+&lt;h2 id=&#34;motivation&#34;&gt;
+  Motivation
+  &lt;a class=&#34;heading-link&#34; href=&#34;#motivation&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;This year, I&amp;rsquo;ve been traveling more than ever.
+In fact, I&amp;rsquo;m on my way to Oracle Cloud World 2023, right now.
+The laptop that I was using for work, wasn&amp;rsquo;t keeping up with what I was needing to deliver, to the community.
+My conference sessions were having issues, my customer sessions were also having issues.
+Watching for over 4-minutes, for a native compile, isn&amp;rsquo;t great for anyone.
+So I requested a new M1 laptop.
+When I got home on Friday, my new laptop had arrived.
+Since I&amp;rsquo;m going to be working on an M1 from now on, I needed to have all the fast builds.
+I needed to make sure all of my demos work on the new hardware.
+I also needed to be ready to use Java 21 when it comes out in 2 days.
+In addition to my new laptop from work, my Ampere Dev Kit server also arrived.
+The server had been stuck in US Customs for a couple of months, after arriving from China.
+It was my first time working with US Customs.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;M1&lt;/li&gt;
+&lt;li&gt;Ampere Dev Kit&lt;/li&gt;
+&lt;li&gt;Java 21&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;the-work&#34;&gt;
+  The work
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-work&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;On my new M1, I simply started adding in debug info to the scripts.
+It felt good to get back into the process and remind myself how it all worked.
+When things work, you don&amp;rsquo;t need to keep the details in your mental cache.
+The upstream builder added a few buildpacks.
+Packaging the newer buildpacks is where the problems were.
+Moments ago, I was getting ready to board when my tests passed.
+The KC Chiefs were playing Jacksonville at the same time.
+When I shouted with excitement, the people around me assumed that I was watching the game.
+I love my job.
+I love what I do.
+I could hear the Chiefs game, but getting this build to work was even more exciting that watching the Chiefs win the Super Bowl, twice.&lt;/p&gt;
+&lt;h2 id=&#34;a-huge-surprise&#34;&gt;
+  A huge surprise
+  &lt;a class=&#34;heading-link&#34; href=&#34;#a-huge-surprise&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I don&amp;rsquo;t remember what the number was, from the last time I looked at the stats on Docker Hub.
+When I went to look today, I was hoping for it to be over 2000.
+Maybe 3000?  Is 5000 possible?
+My goosebumps hit when I saw that it was over 8500!
+I am so excited that people are using it.&lt;/p&gt;
+&lt;h2 id=&#34;next-steps&#34;&gt;
+  Next steps
+  &lt;a class=&#34;heading-link&#34; href=&#34;#next-steps&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I am going to try to move away from my scripts, towards what the Paketo team is doing.
+I want to get my version moved over to the &lt;a href=&#34;https://github.com/paketo-community&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paketo-community&lt;/a&gt; repository.
+Hopefully, from there, it will be even closer to being merged upstream.&lt;/p&gt;
+&lt;p&gt;Stay tuned!&lt;/p&gt;
+&lt;h2 id=&#34;feedback-welcome&#34;&gt;
+  Feedback welcome
+  &lt;a class=&#34;heading-link&#34; href=&#34;#feedback-welcome&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Please let me know how it is working for you, all of &lt;a href=&#34;https://dashaun.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;my socials/contact info can be found here&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;links&#34;&gt;
+  Links
+  &lt;a class=&#34;heading-link&#34; href=&#34;#links&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/dashaun/paketo-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtu.be/BuqNJl4QrUw&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;YouTube.com/@dashaun&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Multi-architecture stacks and buildpacks</title>
+            <link>https://dashaun.com/posts/multi-architecture-stacks-and-buildpacks/</link>
+            <pubDate>Fri, 28 Apr 2023 13:47:28 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/multi-architecture-stacks-and-buildpacks/</guid>
+            <description>&lt;h2 id=&#34;several-failed-attempts&#34;&gt;
+  Several failed attempts
+  &lt;a class=&#34;heading-link&#34; href=&#34;#several-failed-attempts&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The community had been experiencing issues with broken images in recent releases, which led many users to manually switch to older tags that worked. I realize now, that I should have been deleting the broken, publicly available versions. Over the last two weeks, I&amp;rsquo;ve focused on resolving these issues and have successfully deleted all broken versions from my Docker Hub repository.&lt;/p&gt;
+&lt;h2 id=&#34;multi-architecture-stacks&#34;&gt;
+  Multi-architecture stacks
+  &lt;a class=&#34;heading-link&#34; href=&#34;#multi-architecture-stacks&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The latest release of the multi-architecture buildpack is built upon a multi-architecture stack created by Daniel Mikusa. This update is a significant step towards having a multi-architecture buildpack officially supported by the Paketo team.  Hopefully, this multi-architecture stack gets merged into the Paketo project soon.&lt;/p&gt;
+&lt;h2 id=&#34;next-steps&#34;&gt;
+  Next Steps
+  &lt;a class=&#34;heading-link&#34; href=&#34;#next-steps&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The release of the new multi-architecture buildpack marks a crucial milestone in our journey towards an officially supported Paketo buildpack. As development continues, I look forward to sharing more updates and working together to create a more efficient and seamless developer experience on ARM64 and AMD64. Full transparency, I&amp;rsquo;ve already started working on a RISC-V version as well. Feel free to reach out with any questions or suggestions as we move forward.&lt;/p&gt;
+&lt;h2 id=&#34;simplified&#34;&gt;
+  Simplified
+  &lt;a class=&#34;heading-link&#34; href=&#34;#simplified&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I am no longer creating a separate stack, and will continue to use the multi-architecture stack that Daniel Mikusa has created. This will simplify the process of creating and maintaining the buildpack, and will allow me to focus on the buildpack itself. I&amp;rsquo;ve simplified the scripts used for building and releasing the buildpack.  I&amp;rsquo;ve also removed the related GitHub actions.  All of the work is being done via CircleCI.&lt;/p&gt;
+&lt;h2 id=&#34;keep-learning&#34;&gt;
+  Keep Learning
+  &lt;a class=&#34;heading-link&#34; href=&#34;#keep-learning&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dashaun/paketo-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://paketo.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Paketo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://buildpacks.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cloud Native Buildpacks&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/cobol-buildpack&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cobol Buildpack&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>First Impression CircleCI ARM64</title>
+            <link>https://dashaun.com/posts/circleci-arm64-first-impression/</link>
+            <pubDate>Sat, 25 Feb 2023 15:37:47 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/circleci-arm64-first-impression/</guid>
+            <description>&lt;p&gt;For the past two years, I&amp;rsquo;ve been using my own self-hosted ARM64 infrastructure to create a &lt;a href=&#34;https://buildpacks.io/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cloud Native Buildpack&lt;/a&gt; for Java that works on ARM64. I started with a cluster of Raspberry Pi 4 devices.  After ramping up with &amp;ldquo;spring-native&amp;rdquo; I switched to a free-tier ARM64 VM in Oracle Cloud. While this setup worked well, I realized that I could streamline my workflow, and perhaps, get my work moved up to &lt;a href=&#34;https://paketo.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Paketo&lt;/a&gt; if I used a modern, and accessible, CI/CD platform.&lt;/p&gt;
+&lt;p&gt;After some research, I decided to try out CircleCI, since it offered ARM64 workflow support. Although I have been a fan of CircleCI for some time, this was my first impression with authoring workflows on CircleCI.&lt;/p&gt;
+&lt;p&gt;The process of setting up my account and migrating my GitHub actions was surprisingly easy. I provided CircleCI with access to my public GitHub repositories, and started with a &amp;ldquo;hello world&amp;rdquo; template that worked right out of the gate.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;orbs&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;go&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;circleci/go@1.7.2&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Orbs&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;From there, I consulted the CircleCI documentation on using ARM, and made some simple edits to the template. The biggest takeaway for me was that CircleCI &amp;ldquo;orbs&amp;rdquo; map to GitHub &amp;ldquo;actions&amp;rdquo;, which made the transition even smoother.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;machine&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;ubuntu-2004:latest&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;image&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;ubuntu-2004:latest&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;resource_class&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;arm.medium&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;run&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;echo &amp;#34;Hello, Arm!&amp;#34;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://circleci.com/docs/using-arm/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://circleci.com/docs/using-arm/&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;I live-streamed the process of converting my existing workflows to a CircleCI workflows, and encountered a few minor issues along the way. However, these were quickly resolved, and I was able to release everything from my &lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paketo-arm64&lt;/a&gt; repository without using any self-hosted infrastructure!&lt;/p&gt;
+&lt;p&gt;Overall, I&amp;rsquo;m thrilled with my first impression of authoring workflows on CircleCI. If I had made the jump sooner, I could have saved myself a lot of headaches. I highly recommend CircleCI to anyone looking for a modern, streamlined CI/CD platform that supports ARM64 workflows.&lt;/p&gt;
+&lt;p&gt;Watch:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/live/n6esDV0Kpn8&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;First Impression authoring CircleCI workflows&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/live/2_yrpI74_ss&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Migrating from GitHub Actions to CircleCI&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Update 2023-02-27:&lt;/p&gt;
+&lt;p&gt;I have successfully &lt;code&gt;terraform destroyed&lt;/code&gt; the &lt;a href=&#34;https://github.com/dashaun/tf-oci-arm&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Oracle OCI ARM64&lt;/a&gt; infrastructure that was being used as a self-hosted runner.&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Better late than never video</title>
+            <link>https://dashaun.com/posts/better-late-than-never-video/</link>
+            <pubDate>Sat, 04 Feb 2023 02:37:38 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/better-late-than-never-video/</guid>
+            <description>&lt;p&gt;I&amp;rsquo;m trying to expand the type of content that I create.
+I&amp;rsquo;ve been motivated to start creating more video content for YouTube.
+I&amp;rsquo;ve just had a hard time getting started.
+Very similar to getting out the door for a run.&lt;/p&gt;
+&lt;p&gt;It only took me about 4-hours to record, edit and publish the 9-minute video.
+My last attempt at something like this took over 8-hours to deliver a 1-minute video.
+I&amp;rsquo;m trending in the right direction.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=BuqNJl4QrUw&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;img src=&#34;https://img.youtube.com/vi/BuqNJl4QrUw/0.jpg&#34; alt=&#34;Builder Over and Test&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>builder version 20230204</title>
+            <link>https://dashaun.com/posts/builder-20230203/</link>
+            <pubDate>Fri, 03 Feb 2023 22:18:38 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/builder-20230203/</guid>
+            <description>&lt;p&gt;It has been super busy since the last release.
+There was a request from someone on Twitter, for a different approach to versioning.
+I had a hard time trying to figure out the best approach since I wanted to be as close to upstream as possible.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;m happy to share that I have pushed a new version of the multi-architecture builder.
+This release has 2 tags:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;dashaun/builder:20230204&lt;/code&gt; for repeatable builds&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;dashaun/builder:tiny&lt;/code&gt; to align with the upstream&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&#34;https://hub.docker.com/r/dashaun/builder&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://hub.docker.com/r/dashaun/builder&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;m still super excited to see how much support was put behind ARM64 support on the Paketo 2023 roadmap.
+I will be focusing some time on this project for the next couple of weeks.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;ve seen some reports of things not working.
+I&amp;rsquo;m hoping this new release fixes things.&lt;/p&gt;
+&lt;p&gt;As always, feedback is welcome.&lt;/p&gt;
+&lt;h2 id=&#34;tests&#34;&gt;
+  Tests
+  &lt;a class=&#34;heading-link&#34; href=&#34;#tests&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Output from testing the new building on my local M1 is below.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./mvnw -Pnative spring-boot:build-image -DskipTests
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Scanning for projects...
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] --------------------------&amp;lt; com.example:demo &amp;gt;--------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Building demo 0.0.1-SNAPSHOT
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] --------------------------------[ jar ]---------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] &amp;gt;&amp;gt;&amp;gt; spring-boot-maven-plugin:3.0.0:build-image (default-cli) &amp;gt; package @ demo &amp;gt;&amp;gt;&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] --- native-maven-plugin:0.9.18:add-reachability-metadata (add-reachability-metadata) @ demo ---
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] [graalvm reachability metadata repository for ch.qos.logback:logback-classic:1.4.5]: Configuration directory not found. Trying latest version.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] [graalvm reachability metadata repository for ch.qos.logback:logback-classic:1.4.5]: Configuration directory is ch.qos.logback/logback-classic/1.4.1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] [graalvm reachability metadata repository for org.hdrhistogram:HdrHistogram:2.1.12]: Configuration directory is org.hdrhistogram/HdrHistogram/2.1.12
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] [graalvm reachability metadata repository for org.apache.tomcat.embed:tomcat-embed-core:10.1.1]: Configuration directory not found. Trying latest version.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] [graalvm reachability metadata repository for org.apache.tomcat.embed:tomcat-embed-core:10.1.1]: Configuration directory is org.apache.tomcat.embed/tomcat-embed-core/10.0.20
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] --- maven-resources-plugin:3.3.0:resources (default-resources) @ demo ---
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Copying 1 resource
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Copying 0 resource
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] --- maven-compiler-plugin:3.10.1:compile (default-compile) @ demo ---
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Nothing to compile - all classes are up to date
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] --- maven-resources-plugin:3.3.0:testResources (default-testResources) @ demo ---
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] skip non existing resourceDirectory /Users/dashaun/fun/arm64-validate/src/test/resources
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] --- maven-compiler-plugin:3.10.1:testCompile (default-testCompile) @ demo ---
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Nothing to compile - all classes are up to date
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ demo ---
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Tests are skipped.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] --- spring-boot-maven-plugin:3.0.0:process-aot (process-aot) @ demo ---
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  .   ____          _            __ _ _
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; /\\ / ___&amp;#39;_ __ _ _(_)_ __  __ _ \ \ \ \
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;( ( )\___ | &amp;#39;_ | &amp;#39;_| | &amp;#39;_ \/ _` | \ \ \ \
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &amp;#39;  |____| .__|_| |_|_| |_\__, | / / / /
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; =========|_|==============|___/=/_/_/_/
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; :: Spring Boot ::                (v3.0.0)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;2023-02-03T22:52:31.443-06:00  INFO 82408 --- [           main] com.example.demo.DemoApplication         : Starting DemoApplication using Java 17.0.5 with PID 82408 (/Users/dashaun/fun/arm64-validate/target/classes started by dashaun in /Users/dashaun/fun/arm64-validate)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;2023-02-03T22:52:31.446-06:00  INFO 82408 --- [           main] com.example.demo.DemoApplication         : No active profile set, falling back to 1 default profile: &amp;#34;default&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] --- maven-jar-plugin:3.3.0:jar (default-jar) @ demo ---
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Building jar: /Users/dashaun/fun/arm64-validate/target/demo-0.0.1-SNAPSHOT.jar
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] --- spring-boot-maven-plugin:3.0.0:repackage (repackage) @ demo ---
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Replacing main artifact with repackaged archive
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] &amp;lt;&amp;lt;&amp;lt; spring-boot-maven-plugin:3.0.0:build-image (default-cli) &amp;lt; package @ demo &amp;lt;&amp;lt;&amp;lt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] --- spring-boot-maven-plugin:3.0.0:build-image (default-cli) @ demo ---
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Building image &amp;#39;docker.io/library/demo:0.0.1-SNAPSHOT&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]  &amp;gt; Pulling builder image &amp;#39;docker.io/dashaun/builder:20230204&amp;#39; 2%
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]  &amp;gt; Pulling builder image &amp;#39;docker.io/dashaun/builder:20230204&amp;#39; 9%
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]  &amp;gt; Pulling builder image &amp;#39;docker.io/dashaun/builder:20230204&amp;#39; 13%
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]  &amp;gt; Pulling builder image &amp;#39;docker.io/dashaun/builder:20230204&amp;#39; 19%
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]  &amp;gt; Pulling builder image &amp;#39;docker.io/dashaun/builder:20230204&amp;#39; 24%
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]  &amp;gt; Pulling builder image &amp;#39;docker.io/dashaun/builder:20230204&amp;#39; 52%
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]  &amp;gt; Pulling builder image &amp;#39;docker.io/dashaun/builder:20230204&amp;#39; 100%
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]  &amp;gt; Pulled builder image &amp;#39;dashaun/builder@sha256:ca2a857e716b369a77c8c8e7442a7dc6488f2188e0c13c1adc6bf61fe0a61e62&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]  &amp;gt; Pulling run image &amp;#39;docker.io/dashaun/jammy-run:tiny&amp;#39; 100%
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]  &amp;gt; Pulled run image &amp;#39;dashaun/jammy-run@sha256:9cd92927ddd52a742108507fd58140dc1a87a30fdf560e96ebe658ee0873b902&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]  &amp;gt; Executing lifecycle version v0.15.3
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]  &amp;gt; Using build cache volume &amp;#39;pack-cache-5cbe5692dbc4.build&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]  &amp;gt; Running creator
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     ===&amp;gt; ANALYZING
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Previous image with name &amp;#34;docker.io/library/demo:0.0.1-SNAPSHOT&amp;#34; not found
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     ===&amp;gt; DETECTING
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     6 of 14 buildpacks participating
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     paketo-buildpacks/ca-certificates   3.5.1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     paketo-buildpacks/bellsoft-liberica 9.10.3
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     paketo-buildpacks/syft              1.23.0
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     paketo-buildpacks/executable-jar    6.5.0
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     paketo-buildpacks/spring-boot       5.22.1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     paketo-buildpacks/native-image      5.8.0
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     ===&amp;gt; RESTORING
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     ===&amp;gt; BUILDING
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Paketo Buildpack for CA Certificates 3.5.1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       https://github.com/paketo-buildpacks/ca-certificates
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       Launch Helper: Contributing to layer
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         Creating /layers/paketo-buildpacks_ca-certificates/helper/exec.d/ca-certificates-helper
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Paketo Buildpack for BellSoft Liberica 9.10.3
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       https://github.com/paketo-buildpacks/bellsoft-liberica
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       Build Configuration:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BP_JVM_JLINK_ARGS           --no-man-pages --no-header-files --strip-debug --compress=1  configure custom link arguments (--output must be omitted)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BP_JVM_JLINK_ENABLED        false                                                        enables running jlink tool to generate custom JRE
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BP_JVM_TYPE                 JRE                                                          the JVM type - JDK or JRE
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BP_JVM_VERSION              11                                                           the Java version
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       Launch Configuration:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BPL_DEBUG_ENABLED           false                                                        enables Java remote debugging support
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BPL_DEBUG_PORT              8000                                                         configure the remote debugging port
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BPL_DEBUG_SUSPEND           false                                                        configure whether to suspend execution until a debugger has attached
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BPL_HEAP_DUMP_PATH                                                                       write heap dumps on error to this path
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BPL_JAVA_NMT_ENABLED        true                                                         enables Java Native Memory Tracking (NMT)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BPL_JAVA_NMT_LEVEL          summary                                                      configure level of NMT, summary or detail
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BPL_JFR_ARGS                                                                             configure custom Java Flight Recording (JFR) arguments
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BPL_JFR_ENABLED             false                                                        enables Java Flight Recording (JFR)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BPL_JMX_ENABLED             false                                                        enables Java Management Extensions (JMX)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BPL_JMX_PORT                5000                                                         configure the JMX port
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BPL_JVM_HEAD_ROOM           0                                                            the headroom in memory calculation
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BPL_JVM_LOADED_CLASS_COUNT  35% of classes                                               the number of loaded classes in memory calculation
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BPL_JVM_THREAD_COUNT        250                                                          the number of threads in memory calculation
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $JAVA_TOOL_OPTIONS                                                                        the JVM launch flags
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         Using Java version 17 extracted from MANIFEST.MF
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       BellSoft Liberica NIK 17.0.6: Contributing to layer
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         Downloading from https://download.bell-sw.com/vm/22.3.1/bellsoft-liberica-vm-core-openjdk17.0.6+10-22.3.1+1-linux-aarch64.tar.gz
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         Verifying checksum
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         Expanding to /layers/paketo-buildpacks_bellsoft-liberica/native-image-svm
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         Adding 124 container CA certificates to JVM truststore
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         Writing env.build/JAVA_HOME.override
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         Writing env.build/JDK_HOME.override
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Paketo Buildpack for Syft 1.23.0
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       https://github.com/paketo-buildpacks/syft
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         Downloading from https://github.com/anchore/syft/releases/download/v0.62.1/syft_0.62.1_linux_arm64.tar.gz
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         Verifying checksum
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         Writing env.build/SYFT_CHECK_FOR_APP_UPDATE.default
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Paketo Buildpack for Executable JAR 6.5.0
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       https://github.com/paketo-buildpacks/executable-jar
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       Class Path: Contributing to layer
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         Writing env.build/CLASSPATH.delim
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         Writing env.build/CLASSPATH.prepend
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Paketo Buildpack for Spring Boot 5.22.1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       https://github.com/paketo-buildpacks/spring-boot
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       Build Configuration:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BP_SPRING_CLOUD_BINDINGS_DISABLED   false  whether to contribute Spring Boot cloud bindings support
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       Launch Configuration:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BPL_SPRING_CLOUD_BINDINGS_DISABLED  false  whether to auto-configure Spring Boot environment properties from bindings
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BPL_SPRING_CLOUD_BINDINGS_ENABLED   true   Deprecated - whether to auto-configure Spring Boot environment properties from bindings
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       Class Path: Contributing to layer
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         Writing env.build/CLASSPATH.append
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         Writing env.build/CLASSPATH.delim
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       Image labels:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         org.opencontainers.image.title
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         org.opencontainers.image.version
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         org.springframework.boot.version
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Warning: BOM table is deprecated in this buildpack api version, though it remains supported for backwards compatibility. Buildpack authors should write BOM information to &amp;lt;layer&amp;gt;.sbom.&amp;lt;ext&amp;gt;, launch.sbom.&amp;lt;ext&amp;gt;, or build.sbom.&amp;lt;ext&amp;gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Paketo Buildpack for Native Image 5.8.0
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       https://github.com/paketo-buildpacks/native-image
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       Build Configuration:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BP_BINARY_COMPRESSION_METHOD                Compression mechanism used to reduce binary size. Options: `none` (default), `upx` or `gzexe`
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BP_NATIVE_IMAGE                       true  enable native image build
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BP_NATIVE_IMAGE_BUILD_ARGUMENTS             arguments to pass to the native-image command
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BP_NATIVE_IMAGE_BUILD_ARGUMENTS_FILE        a file with arguments to pass to the native-image command
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         $BP_NATIVE_IMAGE_BUILT_ARTIFACT              the built application artifact explicitly, required if building from a JAR
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       Native Image: Contributing to layer
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         Executing native-image -H:+StaticExecutableWithDynamicLibC -H:Name=/layers/paketo-buildpacks_native-image/native-image/com.example.demo.DemoApplication -cp /workspace:/workspace/BOOT-INF/classes:/workspace/BOOT-INF/lib/spring-boot-3.0.0.jar:/workspace/BOOT-INF/lib/spring-boot-autoconfigure-3.0.0.jar:/workspace/BOOT-INF/lib/logback-classic-1.4.5.jar:/workspace/BOOT-INF/lib/logback-core-1.4.5.jar:/workspace/BOOT-INF/lib/log4j-to-slf4j-2.19.0.jar:/workspace/BOOT-INF/lib/log4j-api-2.19.0.jar:/workspace/BOOT-INF/lib/jul-to-slf4j-2.0.4.jar:/workspace/BOOT-INF/lib/jakarta.annotation-api-2.1.1.jar:/workspace/BOOT-INF/lib/snakeyaml-1.33.jar:/workspace/BOOT-INF/lib/spring-boot-actuator-autoconfigure-3.0.0.jar:/workspace/BOOT-INF/lib/spring-boot-actuator-3.0.0.jar:/workspace/BOOT-INF/lib/jackson-databind-2.14.1.jar:/workspace/BOOT-INF/lib/jackson-annotations-2.14.1.jar:/workspace/BOOT-INF/lib/jackson-core-2.14.1.jar:/workspace/BOOT-INF/lib/jackson-datatype-jsr310-2.14.1.jar:/workspace/BOOT-INF/lib/micrometer-observation-1.10.2.jar:/workspace/BOOT-INF/lib/micrometer-commons-1.10.2.jar:/workspace/BOOT-INF/lib/micrometer-core-1.10.2.jar:/workspace/BOOT-INF/lib/HdrHistogram-2.1.12.jar:/workspace/BOOT-INF/lib/LatencyUtils-2.0.3.jar:/workspace/BOOT-INF/lib/jackson-datatype-jdk8-2.14.1.jar:/workspace/BOOT-INF/lib/jackson-module-parameter-names-2.14.1.jar:/workspace/BOOT-INF/lib/tomcat-embed-core-10.1.1.jar:/workspace/BOOT-INF/lib/tomcat-embed-el-10.1.1.jar:/workspace/BOOT-INF/lib/tomcat-embed-websocket-10.1.1.jar:/workspace/BOOT-INF/lib/spring-web-6.0.2.jar:/workspace/BOOT-INF/lib/spring-beans-6.0.2.jar:/workspace/BOOT-INF/lib/spring-webmvc-6.0.2.jar:/workspace/BOOT-INF/lib/spring-aop-6.0.2.jar:/workspace/BOOT-INF/lib/spring-context-6.0.2.jar:/workspace/BOOT-INF/lib/spring-expression-6.0.2.jar:/workspace/BOOT-INF/lib/slf4j-api-2.0.4.jar:/workspace/BOOT-INF/lib/spring-core-6.0.2.jar:/workspace/BOOT-INF/lib/spring-jcl-6.0.2.jar:/workspace/BOOT-INF/lib/spring-boot-jarmode-layertools-3.0.0.jar com.example.demo.DemoApplication
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     ================================================================================
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     GraalVM Native Image: Generating &amp;#39;/layers/paketo-buildpacks_native-image/native-image/com.example.demo.DemoApplication&amp;#39; (static executable)...
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     ================================================================================
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     [1/7] Initializing...                                            (4.7s @ 0.21GB)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]      Version info: &amp;#39;GraalVM 22.3.1 Java 17 CE&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]      Java version info: &amp;#39;17.0.6+10-LTS&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]      C compiler: gcc (linux, aarch64, 11.3.0)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]      Garbage collector: Serial GC
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]      1 user-specific feature(s)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]      - org.springframework.aot.nativex.feature.PreComputeFieldFeature
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     The bundle named: org.apache.el.Messages, has not been found. If the bundle is part of a module, verify the bundle name is a fully qualified class name. Otherwise verify the bundle path is accessible in the classpath.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.apache.commons.logging.LogAdapter#log4jSpiPresent set to true at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.apache.commons.logging.LogAdapter#log4jSlf4jProviderPresent set to true at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.apache.commons.logging.LogAdapter#slf4jSpiPresent set to true at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.apache.commons.logging.LogAdapter#slf4jApiPresent set to true at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.core.NativeDetector#imageCode set to true at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.core.KotlinDetector#kotlinPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.core.KotlinDetector#kotlinReflectPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.format.support.DefaultFormattingConversionService#jsr354Present set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.cglib.core.AbstractClassGenerator#imageCode set to true at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#romePresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#jaxb2Present set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#jackson2Present set to true at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#jackson2XmlPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#jackson2SmilePresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#jackson2CborPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#gsonPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#jsonbPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#kotlinSerializationCborPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#kotlinSerializationJsonPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#kotlinSerializationProtobufPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.boot.logging.logback.LogbackLoggingSystem$Factory#PRESENT set to true at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.boot.logging.log4j2.Log4J2LoggingSystem$Factory#PRESENT set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.boot.logging.java.JavaLoggingSystem$Factory#PRESENT set to true at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.context.support.StandardServletEnvironment#jndiPresent set to true at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.context.support.WebApplicationContextUtils#jsfPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.context.request.RequestContextHolder#jsfPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.servlet.view.InternalResourceViewResolver#jstlPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.boot.logging.logback.LogbackLoggingSystemProperties#JBOSS_LOGGING_PRESENT set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter#jaxb2Present set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter#jackson2Present set to true at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter#jackson2XmlPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter#jackson2SmilePresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter#gsonPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter#jsonbPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter#kotlinSerializationCborPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter#kotlinSerializationJsonPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter#kotlinSerializationProtobufPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.context.event.ApplicationListenerMethodAdapter#reactiveStreamsPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.core.ReactiveAdapterRegistry#reactorPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.core.ReactiveAdapterRegistry#rxjava3Present set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.core.ReactiveAdapterRegistry#kotlinCoroutinesPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.core.ReactiveAdapterRegistry#mutinyPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.boot.actuate.endpoint.web.annotation.DiscoveredWebOperation#REACTIVE_STREAMS_PRESENT set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.boot.actuate.endpoint.invoke.reflect.OperationMethodParameter#jsr305Present set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     SLF4J: No SLF4J providers were found.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     SLF4J: Defaulting to no-operation (NOP) logger implementation
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     SLF4J: See https://www.slf4j.org/codes.html#noProviders for further details.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.servlet.mvc.method.annotation.ReactiveTypeHandler#isContextPropagationPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.boot.autoconfigure.web.format.WebConversionService#JSR_354_PRESENT set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#romePresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#jaxb2Present set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#jackson2Present set to true at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#jackson2XmlPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#jackson2SmilePresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#jackson2CborPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#gsonPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#jsonbPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#kotlinSerializationCborPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#kotlinSerializationJsonPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#kotlinSerializationProtobufPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvoker#IS_REACTOR_PRESENT set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Field org.springframework.web.servlet.support.RequestContext#jstlPresent set to false at build time
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     [2/7] Performing analysis...  [**********]                      (36.2s @ 1.29GB)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       16,489 (92.66%) of 17,796 classes reachable
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       26,202 (67.89%) of 38,595 fields reachable
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       77,345 (62.52%) of 123,718 methods reachable
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]          884 classes,   188 fields, and 3,869 methods registered for reflection
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]           64 classes,    70 fields, and    55 methods registered for JNI access
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]            4 native libraries: dl, pthread, rt, z
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     [3/7] Building universe...                                       (4.1s @ 2.81GB)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     [4/7] Parsing methods...      [**]                               (3.0s @ 2.15GB)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     [5/7] Inlining methods...     [***]                              (1.9s @ 1.89GB)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     [6/7] Compiling methods...    [*****]                           (25.9s @ 2.86GB)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     [7/7] Creating image...                                          (5.4s @ 1.86GB)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       35.49MB (47.58%) for code area:    50,542 compilation units
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       36.29MB (48.64%) for image heap:  374,831 objects and 423 resources
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]        2.82MB ( 3.78%) for other data
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       74.60MB in total
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     --------------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Top 10 packages in code area:           Top 10 object types in image heap:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]        1.65MB sun.security.ssl                 7.53MB byte[] for code metadata
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]        1.10MB java.util                        4.75MB byte[] for embedded resources
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]      844.20KB java.lang.invoke                 3.91MB java.lang.Class
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]      713.52KB com.sun.crypto.provider          3.53MB java.lang.String
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]      569.07KB org.apache.catalina.core         3.14MB byte[] for general heap data
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]      509.20KB org.apache.tomcat.util.net       2.99MB byte[] for java.lang.String
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]      503.81KB java.lang                        1.38MB c.o.s.c.h.DynamicHubCompanion
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]      495.12KB c.s.o.a.x.i.i.xs.traversers    878.04KB byte[] for reflection metadata
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]      465.84KB org.apache.coyote.http2        686.15KB java.lang.String[]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]      464.48KB java.util.concurrent           582.56KB java.util.HashMap$Node
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       28.00MB for 699 more packages            5.86MB for 3326 more object types
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     --------------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         7.4s (8.6% of total time) in 79 GCs | Peak RSS: 4.66GB | CPU load: 3.96
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     --------------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Produced artifacts:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]      /layers/paketo-buildpacks_native-image/native-image/com.example.demo.DemoApplication (executable)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]      /layers/paketo-buildpacks_native-image/native-image/com.example.demo.DemoApplication.build_artifacts.txt (txt)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     ================================================================================
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Finished generating &amp;#39;/layers/paketo-buildpacks_native-image/native-image/com.example.demo.DemoApplication&amp;#39; in 1m 25s.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       Removing bytecode
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]       Process types:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         native-image: /workspace/com.example.demo.DemoApplication (direct)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         task:         /workspace/com.example.demo.DemoApplication (direct)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]         web:          /workspace/com.example.demo.DemoApplication (direct)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     ===&amp;gt; EXPORTING
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Adding layer &amp;#39;paketo-buildpacks/ca-certificates:helper&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Adding layer &amp;#39;launch.sbom&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Adding 1/1 app layer(s)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Adding layer &amp;#39;launcher&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Adding layer &amp;#39;config&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Adding layer &amp;#39;process-types&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Adding label &amp;#39;io.buildpacks.lifecycle.metadata&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Adding label &amp;#39;io.buildpacks.build.metadata&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Adding label &amp;#39;io.buildpacks.project.metadata&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Adding label &amp;#39;org.opencontainers.image.title&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Adding label &amp;#39;org.opencontainers.image.version&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Adding label &amp;#39;org.springframework.boot.version&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Setting default process type &amp;#39;web&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Saving docker.io/library/demo:0.0.1-SNAPSHOT...
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     *** Images (086b5a91c2ec):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]           docker.io/library/demo:0.0.1-SNAPSHOT
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Adding cache layer &amp;#39;paketo-buildpacks/bellsoft-liberica:native-image-svm&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Adding cache layer &amp;#39;paketo-buildpacks/syft:syft&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Adding cache layer &amp;#39;paketo-buildpacks/native-image:native-image&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO]     [creator]     Adding cache layer &amp;#39;cache.sbom&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Successfully built image &amp;#39;docker.io/library/demo:0.0.1-SNAPSHOT&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] ------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] BUILD SUCCESS
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] ------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Total time:  02:09 min
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Finished at: 2023-02-03T22:54:40-06:00
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] ------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Run the image:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run --rm -d -p 8080:8080 demo:0.0.1-SNAPSHOT
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;2b984961cacdb92296914c1297439b2f8ca8b90d7d8f9ce41e99830f456702de
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Test the image:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;http :8080/actuator/health
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;HTTP/1.1 200 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Connection: keep-alive
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Content-Type: application/vnd.spring-boot.actuator.v3+json
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Date: Sat, 04 Feb 2023 05:04:36 GMT
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Keep-Alive: timeout=60
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Transfer-Encoding: chunked
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;#34;status&amp;#34;: &amp;#34;UP&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;momentum&#34;&gt;
+  Momentum
+  &lt;a class=&#34;heading-link&#34; href=&#34;#momentum&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I was so happy to get this release out the door, that I actually recorded a video too.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=BuqNJl4QrUw&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;img src=&#34;https://img.youtube.com/vi/BuqNJl4QrUw/0.jpg&#34; alt=&#34;Builder Over and Test&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

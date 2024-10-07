@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Buildpacks on DaShaun</title>
+        <link>https://dashaun.com/tags/buildpacks/</link>
+        <description>Recent content in Buildpacks on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Sun, 17 Sep 2023 14:42:19 -0500</lastBuildDate><atom:link href="https://dashaun.com/tags/buildpacks/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Five Months in the making, multi-architecture builder</title>
+            <link>https://dashaun.com/posts/five-months-in-the-making-multi-arch-builder/</link>
+            <pubDate>Sun, 17 Sep 2023 14:42:19 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/five-months-in-the-making-multi-arch-builder/</guid>
+            <description>&lt;h2 id=&#34;five-months-in-the-making-multi-architecture-builder&#34;&gt;
+  Five months in the making, multi-architecture builder
+  &lt;a class=&#34;heading-link&#34; href=&#34;#five-months-in-the-making-multi-architecture-builder&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;If you have been following along, you are probably asking &amp;ldquo;What took so long?&amp;rdquo; and I totally understand.
+I had no idea what was wrong before today.
+My scripts had been working for over a year, then just stopped.
+I had removed a bunch of the debug info from the logs, which didn&amp;rsquo;t help the situation at all.&lt;/p&gt;
+&lt;h2 id=&#34;upstream-progress&#34;&gt;
+  Upstream progress
+  &lt;a class=&#34;heading-link&#34; href=&#34;#upstream-progress&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The Paketo team continues to put a high priority on ARM64 and multi-architecture tools/buildpacks.
+I had created several ARM64 workarounds over the years.
+The Paketo team continued improving their tools to support ARM64 as well.
+I was not doing a good job of pulling the tooling changes from upstream.
+So my workarounds were breaking the build.&lt;/p&gt;
+&lt;h2 id=&#34;several-failed-attempts&#34;&gt;
+  Several failed attempts
+  &lt;a class=&#34;heading-link&#34; href=&#34;#several-failed-attempts&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I had made several solid attempts at resolving the issues.
+I just kept getting distracted with other priorities.
+I have had this process working on multiple environments.
+Every version of my pipeline seemed to be broken in a slightly different way.
+They were, because of my workarounds.
+I had different workarounds for different environments.&lt;/p&gt;
+&lt;h2 id=&#34;motivation&#34;&gt;
+  Motivation
+  &lt;a class=&#34;heading-link&#34; href=&#34;#motivation&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;This year, I&amp;rsquo;ve been traveling more than ever.
+In fact, I&amp;rsquo;m on my way to Oracle Cloud World 2023, right now.
+The laptop that I was using for work, wasn&amp;rsquo;t keeping up with what I was needing to deliver, to the community.
+My conference sessions were having issues, my customer sessions were also having issues.
+Watching for over 4-minutes, for a native compile, isn&amp;rsquo;t great for anyone.
+So I requested a new M1 laptop.
+When I got home on Friday, my new laptop had arrived.
+Since I&amp;rsquo;m going to be working on an M1 from now on, I needed to have all the fast builds.
+I needed to make sure all of my demos work on the new hardware.
+I also needed to be ready to use Java 21 when it comes out in 2 days.
+In addition to my new laptop from work, my Ampere Dev Kit server also arrived.
+The server had been stuck in US Customs for a couple of months, after arriving from China.
+It was my first time working with US Customs.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;M1&lt;/li&gt;
+&lt;li&gt;Ampere Dev Kit&lt;/li&gt;
+&lt;li&gt;Java 21&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;the-work&#34;&gt;
+  The work
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-work&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;On my new M1, I simply started adding in debug info to the scripts.
+It felt good to get back into the process and remind myself how it all worked.
+When things work, you don&amp;rsquo;t need to keep the details in your mental cache.
+The upstream builder added a few buildpacks.
+Packaging the newer buildpacks is where the problems were.
+Moments ago, I was getting ready to board when my tests passed.
+The KC Chiefs were playing Jacksonville at the same time.
+When I shouted with excitement, the people around me assumed that I was watching the game.
+I love my job.
+I love what I do.
+I could hear the Chiefs game, but getting this build to work was even more exciting that watching the Chiefs win the Super Bowl, twice.&lt;/p&gt;
+&lt;h2 id=&#34;a-huge-surprise&#34;&gt;
+  A huge surprise
+  &lt;a class=&#34;heading-link&#34; href=&#34;#a-huge-surprise&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I don&amp;rsquo;t remember what the number was, from the last time I looked at the stats on Docker Hub.
+When I went to look today, I was hoping for it to be over 2000.
+Maybe 3000?  Is 5000 possible?
+My goosebumps hit when I saw that it was over 8500!
+I am so excited that people are using it.&lt;/p&gt;
+&lt;h2 id=&#34;next-steps&#34;&gt;
+  Next steps
+  &lt;a class=&#34;heading-link&#34; href=&#34;#next-steps&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I am going to try to move away from my scripts, towards what the Paketo team is doing.
+I want to get my version moved over to the &lt;a href=&#34;https://github.com/paketo-community&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paketo-community&lt;/a&gt; repository.
+Hopefully, from there, it will be even closer to being merged upstream.&lt;/p&gt;
+&lt;p&gt;Stay tuned!&lt;/p&gt;
+&lt;h2 id=&#34;feedback-welcome&#34;&gt;
+  Feedback welcome
+  &lt;a class=&#34;heading-link&#34; href=&#34;#feedback-welcome&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Please let me know how it is working for you, all of &lt;a href=&#34;https://dashaun.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;my socials/contact info can be found here&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;links&#34;&gt;
+  Links
+  &lt;a class=&#34;heading-link&#34; href=&#34;#links&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/dashaun/paketo-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtu.be/BuqNJl4QrUw&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;YouTube.com/@dashaun&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Spring Boot Maven Plugin Azul Buildpack</title>
+            <link>https://dashaun.com/posts/spring-boot-maven-plugin-azul-buildpack/</link>
+            <pubDate>Fri, 30 Jun 2023 18:51:10 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/spring-boot-maven-plugin-azul-buildpack/</guid>
+            <description>&lt;h1 id=&#34;spring-boot-maven-plugin-using-the-azul-buildpack-from-paketo&#34;&gt;
+  Spring Boot Maven Plugin using the Azul Buildpack from Paketo
+  &lt;a class=&#34;heading-link&#34; href=&#34;#spring-boot-maven-plugin-using-the-azul-buildpack-from-paketo&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;It&amp;rsquo;s a great day to be a Spring Developer. This morning, my good friend Frank Delporte from Azul reached out with some questions about the Spring Boot Maven Plugin and the use of Azul Zulu JDK. It felt like a great opportunity to help out an amazing member of the community. At the end of the day, I spent some time creating a demo to help him out. I thought it would be a good idea to share it with you all as well.&lt;/p&gt;
+&lt;h2 id=&#34;initializr-plusplus&#34;&gt;
+  Initializr-plusplus
+  &lt;a class=&#34;heading-link&#34; href=&#34;#initializr-plusplus&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I do believe this is a great candidate for the &lt;a href=&#34;https://github.com/spring-projects-experimental/spring-cli&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring-CLI&lt;/a&gt; project, but for now, I have &lt;a href=&#34;https://github.com/dashaun/initializr-plusplus&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Initializr-plusplus&lt;/a&gt; a much simpler Spring Shell project that I use personally. Since I already had an option for using my &lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;multi-architecture buildpack&lt;/a&gt; it was a simple matter of copying and pasting with a couple of small edits.  The resulting &lt;code&gt;initializer-plusplus zulu-builder&lt;/code&gt; command is available in &lt;a href=&#34;https://github.com/dashaun/initializr-plusplus/releases/tag/v0.0.34&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;v0.0.34&lt;/a&gt; of the project.&lt;/p&gt;
+&lt;h2 id=&#34;the-questions&#34;&gt;
+  The Questions
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-questions&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;How to switch from default &lt;code&gt;paketobuildpacks/builder&lt;/code&gt; to &lt;code&gt;paketobuildpacks/azul-zulu&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;How to add options to the JVM command line like &lt;code&gt;-Xlog:gc:gc.log&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Can it be done &lt;code&gt;simply&lt;/code&gt;?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;the-demo&#34;&gt;
+  The Demo
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-demo&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I can&amp;rsquo;t think of an easier way to switch between buildpacks than using the &lt;code&gt;initializer-plusplus&lt;/code&gt; project. Creating a Spring Shell CLI to manage Maven &lt;code&gt;pom&lt;/code&gt; files or other project features, consistently, feels like a cheat code.&lt;/p&gt;
+&lt;p&gt;In the demo, I switch to the Azul Zulu JDK for the entire demo, even though it isn&amp;rsquo;t required, because the JDK is included in the buildpack. I tried to make things pretty and showed the &lt;code&gt;java -version&lt;/code&gt; output before creating the Spring Boot project.&lt;/p&gt;
+&lt;p&gt;I used &lt;code&gt;curl&lt;/code&gt; to create the Spring Boot project and added dependencies for &lt;code&gt;web&lt;/code&gt; and &lt;code&gt;actuator&lt;/code&gt; in order to get a simple project that is easy to test.  Of course, I also select Java 17 as the JDK version.&lt;/p&gt;
+&lt;p&gt;I run the &lt;code&gt;git init&lt;/code&gt; command to initialize a new git repository. With that, I can easily show the import &lt;code&gt;diff&lt;/code&gt; that I&amp;rsquo;m generating with the &lt;code&gt;initializer-plusplus zulu-builder&lt;/code&gt; command.  I show the new section of the &lt;code&gt;pom.xml&lt;/code&gt; and move on to creating the image with the Spring Boot Maven Plugin.&lt;/p&gt;
+&lt;h2 id=&#34;building-the-image&#34;&gt;
+  Building the Image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#building-the-image&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Our mission is accomplished once the Zulu build pack is incorporated. As long as we put the &lt;code&gt;Azul Zulu&lt;/code&gt; buildpack in front of the Java buildpack, we will get the &lt;code&gt;Azul Zulu&lt;/code&gt; buildpack instead of the default &lt;code&gt;Liberica&lt;/code&gt; version. The image is built successfully, and we pull in all other stuff from the Java build pack.&lt;/p&gt;
+&lt;h2 id=&#34;running-and-validating-the-image&#34;&gt;
+  Running and Validating the Image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#running-and-validating-the-image&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The demo image is run after assigning a unique name to it and exposing Port 8080. I verify the image&amp;rsquo;s status and validate the endpoint&amp;rsquo;s health. A thorough check inside the image confirms the inclusion of the &amp;lsquo;GC log&amp;rsquo; command, one of the options chosen for the demo.&lt;/p&gt;
+&lt;h2 id=&#34;wrapping-up-the-demo&#34;&gt;
+  Wrapping Up the Demo
+  &lt;a class=&#34;heading-link&#34; href=&#34;#wrapping-up-the-demo&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The entire process concludes with a peek into the GC log. And voila! We&amp;rsquo;ve accomplished our mission. The entire process was wrapped up in less than 5 minutes, and all the steps were integrated into a repository for you to experiment and tweak as you please.&lt;/p&gt;
+&lt;h2 id=&#34;afterthoughts-and-tips&#34;&gt;
+  Afterthoughts and Tips
+  &lt;a class=&#34;heading-link&#34; href=&#34;#afterthoughts-and-tips&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;An important concept I wish to emphasize is the flexibility in switching between the buildpacks. It&amp;rsquo;s essential to acknowledge that not all tasks need to follow the same path to production. It is prudent to evaluate as different workloads may have varying requirements, and different JVMs might perform better or worse.&lt;/p&gt;
+&lt;p&gt;So, don&amp;rsquo;t hesitate to put in those 5 minutes to conduct an experiment. Validate your assumptions by testing if an application benefits from using a different JVM or a different garbage collection method. After all, we&amp;rsquo;re dealing with applications that could potentially go into production hundreds or even thousands of times.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/live/6FfP3v40il8&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Watch the demo on YouTube&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/spring-boot-maven-plugin-azul-buildpack-example&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The demo repository&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Multi-architecture stacks and buildpacks</title>
+            <link>https://dashaun.com/posts/multi-architecture-stacks-and-buildpacks/</link>
+            <pubDate>Fri, 28 Apr 2023 13:47:28 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/multi-architecture-stacks-and-buildpacks/</guid>
+            <description>&lt;h2 id=&#34;several-failed-attempts&#34;&gt;
+  Several failed attempts
+  &lt;a class=&#34;heading-link&#34; href=&#34;#several-failed-attempts&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The community had been experiencing issues with broken images in recent releases, which led many users to manually switch to older tags that worked. I realize now, that I should have been deleting the broken, publicly available versions. Over the last two weeks, I&amp;rsquo;ve focused on resolving these issues and have successfully deleted all broken versions from my Docker Hub repository.&lt;/p&gt;
+&lt;h2 id=&#34;multi-architecture-stacks&#34;&gt;
+  Multi-architecture stacks
+  &lt;a class=&#34;heading-link&#34; href=&#34;#multi-architecture-stacks&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The latest release of the multi-architecture buildpack is built upon a multi-architecture stack created by Daniel Mikusa. This update is a significant step towards having a multi-architecture buildpack officially supported by the Paketo team.  Hopefully, this multi-architecture stack gets merged into the Paketo project soon.&lt;/p&gt;
+&lt;h2 id=&#34;next-steps&#34;&gt;
+  Next Steps
+  &lt;a class=&#34;heading-link&#34; href=&#34;#next-steps&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The release of the new multi-architecture buildpack marks a crucial milestone in our journey towards an officially supported Paketo buildpack. As development continues, I look forward to sharing more updates and working together to create a more efficient and seamless developer experience on ARM64 and AMD64. Full transparency, I&amp;rsquo;ve already started working on a RISC-V version as well. Feel free to reach out with any questions or suggestions as we move forward.&lt;/p&gt;
+&lt;h2 id=&#34;simplified&#34;&gt;
+  Simplified
+  &lt;a class=&#34;heading-link&#34; href=&#34;#simplified&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I am no longer creating a separate stack, and will continue to use the multi-architecture stack that Daniel Mikusa has created. This will simplify the process of creating and maintaining the buildpack, and will allow me to focus on the buildpack itself. I&amp;rsquo;ve simplified the scripts used for building and releasing the buildpack.  I&amp;rsquo;ve also removed the related GitHub actions.  All of the work is being done via CircleCI.&lt;/p&gt;
+&lt;h2 id=&#34;keep-learning&#34;&gt;
+  Keep Learning
+  &lt;a class=&#34;heading-link&#34; href=&#34;#keep-learning&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dashaun/paketo-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://paketo.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Paketo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://buildpacks.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cloud Native Buildpacks&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/cobol-buildpack&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cobol Buildpack&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>First Impression CircleCI ARM64</title>
+            <link>https://dashaun.com/posts/circleci-arm64-first-impression/</link>
+            <pubDate>Sat, 25 Feb 2023 15:37:47 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/circleci-arm64-first-impression/</guid>
+            <description>&lt;p&gt;For the past two years, I&amp;rsquo;ve been using my own self-hosted ARM64 infrastructure to create a &lt;a href=&#34;https://buildpacks.io/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cloud Native Buildpack&lt;/a&gt; for Java that works on ARM64. I started with a cluster of Raspberry Pi 4 devices.  After ramping up with &amp;ldquo;spring-native&amp;rdquo; I switched to a free-tier ARM64 VM in Oracle Cloud. While this setup worked well, I realized that I could streamline my workflow, and perhaps, get my work moved up to &lt;a href=&#34;https://paketo.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Paketo&lt;/a&gt; if I used a modern, and accessible, CI/CD platform.&lt;/p&gt;
+&lt;p&gt;After some research, I decided to try out CircleCI, since it offered ARM64 workflow support. Although I have been a fan of CircleCI for some time, this was my first impression with authoring workflows on CircleCI.&lt;/p&gt;
+&lt;p&gt;The process of setting up my account and migrating my GitHub actions was surprisingly easy. I provided CircleCI with access to my public GitHub repositories, and started with a &amp;ldquo;hello world&amp;rdquo; template that worked right out of the gate.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;orbs&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;go&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;circleci/go@1.7.2&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Orbs&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;From there, I consulted the CircleCI documentation on using ARM, and made some simple edits to the template. The biggest takeaway for me was that CircleCI &amp;ldquo;orbs&amp;rdquo; map to GitHub &amp;ldquo;actions&amp;rdquo;, which made the transition even smoother.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;machine&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;ubuntu-2004:latest&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;image&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;ubuntu-2004:latest&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;resource_class&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;arm.medium&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;run&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;echo &amp;#34;Hello, Arm!&amp;#34;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://circleci.com/docs/using-arm/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://circleci.com/docs/using-arm/&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;I live-streamed the process of converting my existing workflows to a CircleCI workflows, and encountered a few minor issues along the way. However, these were quickly resolved, and I was able to release everything from my &lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paketo-arm64&lt;/a&gt; repository without using any self-hosted infrastructure!&lt;/p&gt;
+&lt;p&gt;Overall, I&amp;rsquo;m thrilled with my first impression of authoring workflows on CircleCI. If I had made the jump sooner, I could have saved myself a lot of headaches. I highly recommend CircleCI to anyone looking for a modern, streamlined CI/CD platform that supports ARM64 workflows.&lt;/p&gt;
+&lt;p&gt;Watch:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/live/n6esDV0Kpn8&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;First Impression authoring CircleCI workflows&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/live/2_yrpI74_ss&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Migrating from GitHub Actions to CircleCI&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Update 2023-02-27:&lt;/p&gt;
+&lt;p&gt;I have successfully &lt;code&gt;terraform destroyed&lt;/code&gt; the &lt;a href=&#34;https://github.com/dashaun/tf-oci-arm&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Oracle OCI ARM64&lt;/a&gt; infrastructure that was being used as a self-hosted runner.&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Better late than never video</title>
+            <link>https://dashaun.com/posts/better-late-than-never-video/</link>
+            <pubDate>Sat, 04 Feb 2023 02:37:38 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/better-late-than-never-video/</guid>
+            <description>&lt;p&gt;I&amp;rsquo;m trying to expand the type of content that I create.
+I&amp;rsquo;ve been motivated to start creating more video content for YouTube.
+I&amp;rsquo;ve just had a hard time getting started.
+Very similar to getting out the door for a run.&lt;/p&gt;
+&lt;p&gt;It only took me about 4-hours to record, edit and publish the 9-minute video.
+My last attempt at something like this took over 8-hours to deliver a 1-minute video.
+I&amp;rsquo;m trending in the right direction.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.youtube.com/watch?v=BuqNJl4QrUw&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;img src=&#34;https://img.youtube.com/vi/BuqNJl4QrUw/0.jpg&#34; alt=&#34;Builder Over and Test&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Micrometer on DaShaun</title>
+        <link>https://dashaun.com/tags/micrometer/</link>
+        <description>Recent content in Micrometer on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Mon, 27 Nov 2023 21:12:06 -0600</lastBuildDate><atom:link href="https://dashaun.com/tags/micrometer/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Bootiful Twitch Metrics for Prometheus</title>
+            <link>https://dashaun.com/posts/bootiful-twitch-metrics-for-prometheus/</link>
+            <pubDate>Mon, 27 Nov 2023 21:12:06 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/bootiful-twitch-metrics-for-prometheus/</guid>
+            <description>&lt;p&gt;Prometheus and Grafana have been top of mind lately.
+I&amp;rsquo;ve also been trying to stream more lately.
+Today, I created a Twitch Metrics Exporter.
+I&amp;rsquo;ve used the Twitch4J library before.
+This project just grabs some metrics, and exposes them to an endpoint, that can be scraped by Prometheus.
+Plus, it might just inspire other Java or Spring developers to start streaming.&lt;/p&gt;
+&lt;p&gt;I used Spring Boot 3.2, Twitch4J, Micrometer, and I included Zipkin and TestContainers.&lt;/p&gt;
+&lt;p&gt;Want to see how this all comes together?
+Check out the full &lt;a href=&#34;https://youtu.be/TSmEx8taj2M&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;episode on YouTube&lt;/a&gt;.
+Let&amp;rsquo;s code and have fun together!&lt;/p&gt;
+&lt;p&gt;See Also:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/javagrunt/com.javagrunt.service.twitch&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/javagrunt/com.javagrunt.service.twitch&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

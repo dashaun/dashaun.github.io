@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Posts on DaShaun</title>
+        <link>https://dashaun.com/posts/</link>
+        <description>Recent content in Posts on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Sat, 07 Sep 2024 17:25:36 -0500</lastBuildDate><atom:link href="https://dashaun.com/posts/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Cloud Foundry Day Europe 2024</title>
+            <link>https://dashaun.com/posts/cloud-foundry-day-europe-2024/</link>
+            <pubDate>Sat, 07 Sep 2024 17:25:36 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/cloud-foundry-day-europe-2024/</guid>
+            <description></description>
+        </item>
+        
+        <item>
+            <title>Top 12 Podcasts for Java Developers in 2024</title>
+            <link>https://dashaun.com/posts/top-12-podcasts-for-java-developers-in-2024/</link>
+            <pubDate>Sat, 07 Sep 2024 17:21:36 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/top-12-podcasts-for-java-developers-in-2024/</guid>
+            <description></description>
+        </item>
+        
+        <item>
+            <title>Spring Boot 3.3 (Presentation with Bryan Kelly)</title>
+            <link>https://dashaun.com/posts/docs_spring-boot-3-3/</link>
+            <pubDate>Thu, 20 Jun 2024 14:50:00 -0700</pubDate>
+            
+            <guid>https://dashaun.com/posts/docs_spring-boot-3-3/</guid>
+            <description></description>
+        </item>
+        
+        <item>
+            <title>SpringOne Tour Reston (Presentation)</title>
+            <link>https://dashaun.com/posts/docs_springone-tour-reston-2024/</link>
+            <pubDate>Mon, 03 Jun 2024 14:50:00 -0700</pubDate>
+            
+            <guid>https://dashaun.com/posts/docs_springone-tour-reston-2024/</guid>
+            <description></description>
+        </item>
+        
+        <item>
+            <title>Spring IO 2024</title>
+            <link>https://dashaun.com/posts/spring-io-2024/</link>
+            <pubDate>Sat, 01 Jun 2024 20:36:36 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/spring-io-2024/</guid>
+            <description>&lt;p&gt;I spoke at SpringIO 2024 in Barcelona.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://youtu.be/CsiCKAInWhg?si=4uBReIC5EFrxoNaZ&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring IO 2024 Highlight Reel&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://youtu.be/z-V4MVR0VRY?si=_H6BTGzTwbgBs5rR&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Boot on the Edge&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>
