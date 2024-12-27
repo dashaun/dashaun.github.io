@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Homelab on DaShaun</title>
+        <link>https://dashaun.com/tags/homelab/</link>
+        <description>Recent content in Homelab on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Sat, 27 Feb 2021 14:11:50 -0600</lastBuildDate><atom:link href="https://dashaun.com/tags/homelab/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Homelab BOM February 2021</title>
+            <link>https://dashaun.com/posts/homelab-bom-feb-2021/</link>
+            <pubDate>Sat, 27 Feb 2021 14:11:50 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/homelab-bom-feb-2021/</guid>
+            <description>&lt;h2 id=&#34;homelab-redux&#34;&gt;
+  Homelab Redux
+  &lt;a class=&#34;heading-link&#34; href=&#34;#homelab-redux&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; My homelab is always under construction&lt;span style=&#34;color:#666&#34;&gt;.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; Like the dude that is always working on his car, I&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;m always working on my homelab.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; I&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;m always wiping it clean and building it over.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; I&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;m always trying out different configurations.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; I&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;m swapping out some type of hardware about every 3 months.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;bom&#34;&gt;
+  BOM
+  &lt;a class=&#34;heading-link&#34; href=&#34;#bom&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;(4) CompuLab HDMI Display Emulator (fit-headless) &lt;a href=&#34;https://www.fit-pc.com/web/products/fit-headless/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;1&lt;/a&gt; &lt;a href=&#34;https://www.amazon.com/CompuLab-fit-Headless-Display-Emulator/dp/B00FLZXGJ6&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;(4) SanDisk UltraFit 32GB USB 3.1&lt;/li&gt;
+&lt;li&gt;(4) Anker USB 3.0 Gigabit Ethernet Adapter&lt;/li&gt;
+&lt;li&gt;(8) Samsung 32GB SODIMM DDR4 2666Mhz&lt;/li&gt;
+&lt;li&gt;(3) 128GB NVMe&lt;/li&gt;
+&lt;li&gt;(1) 500GB NVMe&lt;/li&gt;
+&lt;li&gt;(3) Intel NUC7i5BNH&lt;/li&gt;
+&lt;li&gt;(1) Intel NUC8i5BEH&lt;/li&gt;
+&lt;li&gt;(2) 2TB WD RED HDD&lt;/li&gt;
+&lt;li&gt;(1) QNAP TS-231P&lt;/li&gt;
+&lt;li&gt;(10) Raspberry Pi 3B+&lt;/li&gt;
+&lt;li&gt;(2) Raspberry Pi 4 2GB&lt;/li&gt;
+&lt;li&gt;(2) Raspberry Pi 4 4GB&lt;/li&gt;
+&lt;li&gt;(3) Raspberry Pi 4 8GB&lt;/li&gt;
+&lt;li&gt;(4) LoveRPI PoE Hat&lt;/li&gt;
+&lt;li&gt;(3) Padarsey M.2 NVME USB 3.1 Adapter&lt;/li&gt;
+&lt;li&gt;(3) Transcend 128GB NVME M.2 SSD TS128GMTE110S&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Homelab Bill of Materials August 2019</title>
+            <link>https://dashaun.com/posts/homelab-bom-aug-2019/</link>
+            <pubDate>Thu, 29 Aug 2019 22:09:06 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/homelab-bom-aug-2019/</guid>
+            <description>&lt;h2 id=&#34;i-need-to-give-my-homelab-more-power&#34;&gt;
+  I need to give my homelab more power
+  &lt;a class=&#34;heading-link&#34; href=&#34;#i-need-to-give-my-homelab-more-power&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;My homelab is always under construction.
+Like the dude that is always working on his car, I&amp;rsquo;m always working on my homelab.
+I&amp;rsquo;m always wiping it clean and building it over.
+I&amp;rsquo;m always trying out different configurations.
+I&amp;rsquo;m swapping out some type of hardware about every 3 months.
+This week I have been doing a ton of studying.
+I&amp;rsquo;m rebuilding the homelab because of the recent release of 6.7u3.
+This time I would like to use vsan, but I&amp;rsquo;m focused on PKS with NSX-T..
+I&amp;rsquo;m getting lots of help from the web, but I&amp;rsquo;m following Keith Lee&amp;rsquo;s &lt;a href=&#34;http://keithlee.ie/2018/10/30/pks-nsx-t-homelab-part-1-shopping-list/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;example&lt;/a&gt; from last year, and documenting along the way.
+I&amp;rsquo;ll also lean on William Lam at &lt;a href=&#34;https://www.virtuallyghetto.com/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;VirtuallyGhetto&lt;/a&gt;.
+I haven&amp;rsquo;t had NSX-T working completely in the homelab yet, I&amp;rsquo;ve failed multiple times.
+So, this time I do have some new hardware, which also means I can&amp;rsquo;t use a lot of the previous work.
+I&amp;rsquo;ve added an additional NUC and now each host has a second NIC.&lt;/p&gt;
+&lt;h3 id=&#34;bom&#34;&gt;
+  BOM
+  &lt;a class=&#34;heading-link&#34; href=&#34;#bom&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;(4) CompuLab HDMI Display Emulator (fit-headless) &lt;a href=&#34;https://www.fit-pc.com/web/products/fit-headless/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;1&lt;/a&gt; &lt;a href=&#34;https://www.amazon.com/CompuLab-fit-Headless-Display-Emulator/dp/B00FLZXGJ6&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;(4) SanDisk UltraFit 32GB USB 3.1&lt;/li&gt;
+&lt;li&gt;(4) Anker USB 3.0 Gigabit Ethernet Adapter&lt;/li&gt;
+&lt;li&gt;(8) Samsung 32GB SODIMM DDR4 2666Mhz&lt;/li&gt;
+&lt;li&gt;(3) 128GB NVMe&lt;/li&gt;
+&lt;li&gt;(1) 500GB NVMe&lt;/li&gt;
+&lt;li&gt;(3) Intel NUC7i5BNH&lt;/li&gt;
+&lt;li&gt;(1) Intel NUC8i5BEH&lt;/li&gt;
+&lt;li&gt;(2) 2TB WD RED HDD&lt;/li&gt;
+&lt;li&gt;(1) QNAP TS-231P&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;On this day, all of the hardware is installed, and running.
+Tomorrow, I&amp;rsquo;ll try to start over, wipe everything and deploy ESX 6.7u3.&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>
