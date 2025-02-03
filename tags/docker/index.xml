@@ -1,0 +1,895 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Docker on DaShaun</title>
+        <link>https://dashaun.com/tags/docker/</link>
+        <description>Recent content in Docker on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Thu, 12 Dec 2024 10:15:30 -0600</lastBuildDate><atom:link href="https://dashaun.com/tags/docker/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Multi-Architecture Spring OCI from anywhere with Paketo</title>
+            <link>https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/</link>
+            <pubDate>Thu, 12 Dec 2024 10:15:30 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/</guid>
+            <description>&lt;h2 id=&#34;multi-architecture-spring-oci-from-anywhere-with-paketo&#34;&gt;
+  Multi-Architecture Spring OCI from anywhere with Paketo
+  &lt;a class=&#34;heading-link&#34; href=&#34;#multi-architecture-spring-oci-from-anywhere-with-paketo&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;My favorite feature of Spring Boot 3.4.0 is the adoption of multi-architecture buildpacks.
+This feature empowers you to construct native images and traditional JVM-based applications for both AMD64 and ARM64, from a unified build process.
+The fact that OCI images will also be smaller because of the new default buildpack is a bonus.&lt;/p&gt;
+&lt;h3 id=&#34;emotionally-invested&#34;&gt;
+  Emotionally Invested
+  &lt;a class=&#34;heading-link&#34; href=&#34;#emotionally-invested&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;I&amp;rsquo;ve been building native images for ARM64 since 2021, because I&amp;rsquo;m a Raspberry Pi enthusiast and passionate about Spring Boot.
+Since that time, I&amp;rsquo;ve created dozens of solutions, to put production-ready, enterprise-grade, Spring Boot on Raspberry Pi ARM64 devices with only 512MB of RAM.
+I no longer have to support my own solution.&lt;/p&gt;
+&lt;h3 id=&#34;getting-started&#34;&gt;
+  Getting Started
+  &lt;a class=&#34;heading-link&#34; href=&#34;#getting-started&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Prerequisites:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;At least Java 17&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Docker&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;docker-desktop-configuration&#34;&gt;
+  Docker Desktop Configuration
+  &lt;a class=&#34;heading-link&#34; href=&#34;#docker-desktop-configuration&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Docker Desktop comes with built-in QEMU support for multi-architecture builds. However, if you need to install QEMU manually, you have two options:&lt;/p&gt;
+&lt;h4 id=&#34;option-1-using-tonistiigibinfmt&#34;&gt;
+  Option 1: Using tonistiigi/binfmt
+  &lt;a class=&#34;heading-link&#34; href=&#34;#option-1-using-tonistiigibinfmt&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h4&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Install QEMU support for all architectures&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run --privileged --rm tonistiigi/binfmt --install all
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;This command was found here: &lt;a href=&#34;https://docs.docker.com/build/building/multi-platform/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://docs.docker.com/build/building/multi-platform/&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h4 id=&#34;option-2-using-multiarchqemu-user-static&#34;&gt;
+  Option 2: Using multiarch/qemu-user-static
+  &lt;a class=&#34;heading-link&#34; href=&#34;#option-2-using-multiarchqemu-user-static&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h4&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Install and configure QEMU&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run --privileged --rm multiarch/qemu-user-static --reset -p yes
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;More information can be found here: &lt;a href=&#34;https://github.com/multiarch/qemu-user-static&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/multiarch/qemu-user-static&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h3 id=&#34;spring-boot-340-application&#34;&gt;
+  Spring Boot 3.4.0 application
+  &lt;a class=&#34;heading-link&#34; href=&#34;#spring-boot-340-application&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;First, let&amp;rsquo;s create a new Spring Boot application:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mkdir mydemo
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;cd&lt;/span&gt; mydemo
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl https://start.spring.io/starter.tgz -d &lt;span style=&#34;color:#bb60d5&#34;&gt;dependencies&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;web,actuator -d &lt;span style=&#34;color:#bb60d5&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;maven-project | tar -xvzf -
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;You could also use &lt;a href=&#34;https://start.spring.io/#!type=maven-project&amp;amp;language=java&amp;amp;platformVersion=3.4.0&amp;amp;packaging=jar&amp;amp;jvmVersion=23&amp;amp;groupId=com.example&amp;amp;artifactId=demo&amp;amp;name=demo&amp;amp;description=Demo%20project%20for%20Spring%20Boot&amp;amp;packageName=com.example.demo&amp;amp;dependencies=web,actuator&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://start.spring.io&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h3 id=&#34;create-a-multi-architecture-oci-image&#34;&gt;
+  Create a multi-architecture OCI Image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#create-a-multi-architecture-oci-image&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Here&amp;rsquo;s the step-by-step process to build and publish multi-architecture images:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Build ARM64 image&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./mvnw spring-boot:build-image -Dspring-boot.build-image.imagePlatform&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;linux/arm64 -Dspring-boot.build-image.imageName&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;dashaun/blog-3-4-0:arm64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker push dashaun/blog-3-4-0:arm64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Build AMD64 image&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./mvnw spring-boot:build-image -Dspring-boot.build-image.imagePlatform&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;linux/amd64 -Dspring-boot.build-image.imageName&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;dashaun/blog-3-4-0:amd64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker push dashaun/blog-3-4-0:amd64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Create and push multi-architecture manifest&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker manifest create dashaun/blog-3-4-0:multiarch --amend dashaun/blog-3-4-0:arm64 --amend dashaun/blog-3-4-0:amd64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker manifest push dashaun/blog-3-4-0:multiarch
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;inspect&#34;&gt;
+  Inspect
+  &lt;a class=&#34;heading-link&#34; href=&#34;#inspect&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Inspect the multi-architecture manifest:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker manifest inspect dashaun/blog-3-4-0:multiarch
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Inspect the manifest, results below.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;schemaVersion&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#40a070&#34;&gt;2&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;mediaType&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;application/vnd.docker.distribution.manifest.list.v2+json&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;manifests&amp;#34;&lt;/span&gt;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;mediaType&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;application/vnd.docker.distribution.manifest.v2+json&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;size&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#40a070&#34;&gt;2407&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;digest&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;sha256:96d95eed9308f86a8055156913ed8710c25917bdf0389bd6d5cf2ab0a79c77fc&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;platform&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;architecture&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;amd64&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;os&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;linux&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    },
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;mediaType&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;application/vnd.docker.distribution.manifest.v2+json&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;size&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#40a070&#34;&gt;2406&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;digest&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;sha256:4c42eebe412f56a03d840d2660b9defde3820ce1c5e510ffba0067be0ae11c8e&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;platform&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;architecture&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;arm64&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;os&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;linux&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  ]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;The manifest shows both platforms &lt;code&gt;linux/amd64&lt;/code&gt; and &lt;code&gt;linux\arm64&lt;/code&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;Looking at the &lt;a href=&#34;https://hub.docker.com/r/dashaun/blog-3-4-0/tags&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Docker Hub tags&lt;/a&gt; &lt;code&gt;Digest&lt;/code&gt; sections, notice that the &lt;code&gt;sha&lt;/code&gt; values for the &lt;code&gt;arm64&lt;/code&gt; and &lt;code&gt;amd64&lt;/code&gt; tags match the &lt;code&gt;multiarch&lt;/code&gt; tag&amp;rsquo;s values.&lt;/p&gt;
+&lt;p&gt;The new default buildpack, &lt;a href=&#34;https://github.com/paketo-buildpacks/builder-jammy-java-tiny&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;builder-jammy-java-tiny&lt;/a&gt; also results in much smaller images.  Both of the images we created here are under 275mb.
+Switching to Spring Boot 3.3.6 and the previous default buildpack &lt;a href=&#34;https://github.com/paketo-buildpacks/builder-jammy-base&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paketobuildpacks/builder-jammy-base&lt;/a&gt; results in a ~350mb image.&lt;/p&gt;
+&lt;h3 id=&#34;building-native-images&#34;&gt;
+  Building Native Images
+  &lt;a class=&#34;heading-link&#34; href=&#34;#building-native-images&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;The process for building native images is similar, with the addition of GraalVM support:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mkdir my-native-demo
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;cd&lt;/span&gt; my-native-demo
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl https://start.spring.io/starter.tgz -d &lt;span style=&#34;color:#bb60d5&#34;&gt;dependencies&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;web,actuator,native -d &lt;span style=&#34;color:#bb60d5&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;maven-project | tar -xvzf -
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;You could also use &lt;a href=&#34;https://start.spring.io/#!type=maven-project&amp;amp;language=java&amp;amp;platformVersion=3.4.0&amp;amp;packaging=jar&amp;amp;jvmVersion=23&amp;amp;groupId=com.example&amp;amp;artifactId=demo&amp;amp;name=demo&amp;amp;description=Demo%20project%20for%20Spring%20Boot&amp;amp;packageName=com.example.demo&amp;amp;dependencies=web,actuator,native&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://start.spring.io&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h3 id=&#34;building-multi-architecture-native-images&#34;&gt;
+  Building Multi-Architecture Native Images
+  &lt;a class=&#34;heading-link&#34; href=&#34;#building-multi-architecture-native-images&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;When the buildpack see&amp;rsquo;s the &lt;code&gt;native-maven-plugin&lt;/code&gt; in the project, it creates native images with GraalVM. Our steps won&amp;rsquo;t change, we will just use different tags.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Build ARM64 native image&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./mvnw spring-boot:build-image -Dspring-boot.build-image.imagePlatform&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;linux/arm64 -Dspring-boot.build-image.imageName&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;dashaun/blog-3-4-0:native-arm64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker push dashaun/blog-3-4-0:native-arm64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;#Build AMD64 native image&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./mvnw spring-boot:build-image -Dspring-boot.build-image.imagePlatform&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;linux/amd64 -Dspring-boot.build-image.imageName&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;dashaun/blog-3-4-0:native-amd64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker push dashaun/blog-3-4-0:native-amd64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Create and push multi-architecture manifest&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker manifest create dashaun/blog-3-4-0:native-multiarch --amend dashaun/blog-3-4-0:native-arm64 --amend dashaun/blog-3-4-0:native-amd64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker manifest push dashaun/blog-3-4-0:native-multiarch
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;inspect-native&#34;&gt;
+  Inspect Native
+  &lt;a class=&#34;heading-link&#34; href=&#34;#inspect-native&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker manifest inspect dashaun/blog-3-4-0:native-multiarch
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Inspect the manifest, results below.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;schemaVersion&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#40a070&#34;&gt;2&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;mediaType&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;application/vnd.docker.distribution.manifest.list.v2+json&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;manifests&amp;#34;&lt;/span&gt;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;mediaType&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;application/vnd.docker.distribution.manifest.v2+json&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;size&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#40a070&#34;&gt;2407&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;digest&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;sha256:70311015a28ff9ebbaa0ef0552e91bd85d2220716b69a8444ecf18ae542fa3f1&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;platform&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;architecture&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;amd64&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;os&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;linux&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      },
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;mediaType&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;application/vnd.docker.distribution.manifest.v2+json&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;size&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#40a070&#34;&gt;2406&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;digest&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;sha256:4b9243d946a61f5fd8c9762f9e8a5ef107ba5a51a3679faa54b5a3cd96e4147c&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;platform&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;architecture&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;arm64&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;os&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;linux&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   ]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;The manifest shows both platforms &lt;code&gt;linux/amd64&lt;/code&gt; and &lt;code&gt;linux/arm64&lt;/code&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;Take a look at these image sizes!&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dashaun/blog-3-3-6                         latest           0e61fed5cf4a   &lt;span style=&#34;color:#40a070&#34;&gt;44&lt;/span&gt; years ago   348MB
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dashaun/blog-3-4-0                         amd64            6ce61c588eba   &lt;span style=&#34;color:#40a070&#34;&gt;44&lt;/span&gt; years ago   268MB
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dashaun/blog-3-4-0                         native-amd64     9f63e381e26c   &lt;span style=&#34;color:#40a070&#34;&gt;44&lt;/span&gt; years ago   117MB
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dashaun/blog-3-4-0                         native-arm64     7a9b08bf964a   &lt;span style=&#34;color:#40a070&#34;&gt;44&lt;/span&gt; years ago   111MB
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dashaun/blog-3-4-0                         arm64            0d07d6f15c86   &lt;span style=&#34;color:#40a070&#34;&gt;44&lt;/span&gt; years ago   259MB
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I did this experiment on MacOS with ARM64 (M3 chip), but these exact same steps can be used on either ARM64 or AMD64 machines.&lt;/p&gt;
+&lt;h2 id=&#34;conclusion&#34;&gt;
+  Conclusion
+  &lt;a class=&#34;heading-link&#34; href=&#34;#conclusion&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Spring Boot 3.4.0&amp;rsquo;s multi-architecture support with Paketo buildpacks revolutionizes how we build and deploy applications across different architectures. Whether you&amp;rsquo;re targeting cloud platforms or edge devices like Raspberry Pi, you can now build and deploy with confidence.&lt;/p&gt;
+&lt;p&gt;The combination of:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Multi-architecture support&lt;/li&gt;
+&lt;li&gt;Smaller image sizes&lt;/li&gt;
+&lt;li&gt;Native image capabilities&lt;/li&gt;
+&lt;li&gt;Simplified build process&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Makes Spring Boot 3.4.0 a compelling choice for modern cloud-native and edge-native applications.&lt;/p&gt;
+&lt;h2 id=&#34;keep-learning&#34;&gt;
+  Keep Learning
+  &lt;a class=&#34;heading-link&#34; href=&#34;#keep-learning&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.4-Release-Notes&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Boot 3.4 Release Notes&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/live/fdyj_b-Mj4c?si=MA9azUhPg1tw09Kv&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;YouTube with Karanbir Singh&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://neuw.medium.com/multi-architecture-oci-images-spring-boot-3-4-x-d8f2a0f7d6e6&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Karanbir Singh&amp;rsquo;s Blog&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/paketo-buildpacks/builder-jammy-java-tiny&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paketobuildpacks/builder-jammy-java-tiny&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>A new builder for Spring Boot 3 RC1 on ARM64</title>
+            <link>https://dashaun.com/posts/paketo-aarch64-builder-spring-boot-3-rc1/</link>
+            <pubDate>Thu, 10 Nov 2022 06:18:05 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/paketo-aarch64-builder-spring-boot-3-rc1/</guid>
+            <description>&lt;h2 id=&#34;background&#34;&gt;
+  Background
+  &lt;a class=&#34;heading-link&#34; href=&#34;#background&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;m a fan of using buildpacks.
+I&amp;rsquo;ve been &lt;a href=&#34;https://dashaun.com/posts/springboot-arm64-image/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;using&lt;/a&gt; and updating the &lt;a href=&#34;https://github.com/dmikusa/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paketo-arm64 repository started by Daniel Mikusa&lt;/a&gt;.
+With Spring Boot 3 going GA, very soon, more people are wanting to use buildpacks with their M1 machines.
+I feel pressure, in a great way, to get a new version released that includes the latest version of GraalVM.&lt;/p&gt;
+&lt;p&gt;Because I&amp;rsquo;m not doing this regularly, I forget the steps that I take to create a new build.
+So this post, is really a reminder-to-self, but hopefully it helps someone else also.&lt;/p&gt;
+&lt;p&gt;You can follow along with this on &lt;code&gt;M1&lt;/code&gt;,&lt;code&gt;Raspberry Pi&lt;/code&gt;, or a free-tier &lt;code&gt;ARM64&lt;/code&gt; instance from Oracle.&lt;/p&gt;
+&lt;h2 id=&#34;prerequisite&#34;&gt;
+  Prerequisite
+  &lt;a class=&#34;heading-link&#34; href=&#34;#prerequisite&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;ve been setting up a temporary ARM64 machine on Oracle Cloud for ARM64/aarch64 builds.
+The repository I use is &lt;a href=&#34;https://github.com/dashaun/oci-arm64-gha-runner-terraform&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.
+I should probably talk about that in another post, also.&lt;/p&gt;
+&lt;p&gt;My first step was to deploy that machine, so it can be used to build the builder!
+Once I got the machine up and connected to my repository, I was ready to update the code.&lt;/p&gt;
+&lt;h2 id=&#34;make-changes&#34;&gt;
+  Make changes
+  &lt;a class=&#34;heading-link&#34; href=&#34;#make-changes&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;First I just made changes to the versions in &lt;a href=&#34;https://raw.githubusercontent.com/dashaun/paketo-arm64/main/.github/workflows/paketo-arm64.yml&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;my GitHub workflow&lt;/a&gt;.
+That worked and pushed out a new image, but it wasn&amp;rsquo;t enough.&lt;/p&gt;
+&lt;p&gt;I had to re-read the workflow to understand what I was missing.&lt;/p&gt;
+&lt;p&gt;For each of the files in the &lt;code&gt;arm64-toml&lt;/code&gt; of &lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;the repository&lt;/a&gt; I needed to update to the latest versions.
+This is a tedious, and currently manual, process that requires copy, paste, merge and then creating sha256 values.&lt;/p&gt;
+&lt;p&gt;For these versions, it was extra messy, because naming conventions changed since my last release.
+In some places &lt;code&gt;arm64&lt;/code&gt; was replaced with &lt;code&gt;aarch64&lt;/code&gt; as one example.&lt;/p&gt;
+&lt;p&gt;Additionally, some dependencies had even more releases, and I decided to go with the &lt;code&gt;full&lt;/code&gt; option when it was available.&lt;/p&gt;
+&lt;p&gt;The last real time-suck was the &lt;code&gt;sha&lt;/code&gt; values.
+In the GitHub releases, the sha values are provided as &lt;code&gt;sha1sum&lt;/code&gt; values.
+In the builder metadata, it requires &lt;code&gt;sha256&lt;/code&gt; values.
+Since I couldn&amp;rsquo;t find &lt;code&gt;sha256&lt;/code&gt; values published anywhere, I had to download the dependencies and calculate the values manually.
+For each dependency update, &lt;code&gt;curl&lt;/code&gt; then &lt;code&gt;shasum&lt;/code&gt;, which can be error prone.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -L https://github.com/bell-sw/Liberica/releases/download/8u352+8/bellsoft-jdk8u352+8-linux-aarch64.tar.gz -O
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;shasum -a &lt;span style=&#34;color:#40a070&#34;&gt;256&lt;/span&gt; bellsoft-jdk8u352+8-linux-aarch64.tar.gz
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Hopefully, this post and the small updates I made to the &lt;code&gt;README.md&lt;/code&gt; will remind me next time.
+I should probably figure out a way to automate some of that.
+Maybe a CLI?&lt;/p&gt;
+&lt;h2 id=&#34;create-an-application-image&#34;&gt;
+  Create an application image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#create-an-application-image&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Create a Spring Boot 3 application with &lt;code&gt;web&lt;/code&gt; and &lt;code&gt;actuator&lt;/code&gt; which is enough for a simple test.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Create a Spring Boot 3 application&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl https://start.spring.io/starter.tgz -d &lt;span style=&#34;color:#bb60d5&#34;&gt;dependencies&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;web,actuator -d &lt;span style=&#34;color:#bb60d5&#34;&gt;javaVersion&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#40a070&#34;&gt;17&lt;/span&gt; -d &lt;span style=&#34;color:#bb60d5&#34;&gt;bootVersion&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;3.0.0-SNAPSHOT -d &lt;span style=&#34;color:#bb60d5&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;maven-project | tar -xzf -
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In the pom.xml replace this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-xml&#34; data-lang=&#34;xml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;build&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;plugins&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;plugin&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.boot&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-boot-maven-plugin&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/plugin&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/plugins&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/build&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;with this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-xml&#34; data-lang=&#34;xml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;build&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;plugins&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;plugin&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.boot&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-boot-maven-plugin&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;image&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;builder&amp;gt;&lt;/span&gt;dashaun/java-native-builder-arm64:7.37.0&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/builder&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/image&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/plugin&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/plugins&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/build&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Build an image using the image builder that we have created and configured.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./mvnw -Pnative spring-boot:build-image
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;run-and-test-the-image&#34;&gt;
+  Run and test the image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#run-and-test-the-image&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Run the OCI image with &lt;code&gt;docker&lt;/code&gt; to start up the server.
+It should start quickly!&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Forward the prt, run in the background, but see the startup time&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run -p 8080:8080 demo:0.0.1-SNAPSHOT &amp;amp;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Check the endpoint to validate&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;http :8080/actuator/health
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;finally&#34;&gt;
+  Finally
+  &lt;a class=&#34;heading-link&#34; href=&#34;#finally&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Because I&amp;rsquo;m done, and moved &lt;a href=&#34;https://hub.docker.com/r/dashaun/java-native-builder-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;builder version 7.37.0 to prod&lt;/a&gt;, I also cleaned up my &lt;code&gt;terraform&lt;/code&gt; deployment.&lt;/p&gt;
+&lt;p&gt;Another huge &amp;ldquo;Thanks&amp;rdquo; to &lt;a href=&#34;https://twitter.com/dmikusa&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Daniel Mikusa&lt;/a&gt; for all of his help.&lt;/p&gt;
+&lt;h2 id=&#34;links&#34;&gt;
+  Links
+  &lt;a class=&#34;heading-link&#34; href=&#34;#links&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://hub.docker.com/r/dashaun/java-native-builder-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dashaun/java-native-builder-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dashaun/paketo-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/oci-arm64-gha-runner-terraform&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dashaun/oci-arm64-gha-runner-terraform&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://dashaun.com/posts/springboot-arm64-image/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Related Post&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Spring Boot Stackpath Terraform</title>
+            <link>https://dashaun.com/posts/spring-boot-stackpath-terraform/</link>
+            <pubDate>Tue, 25 Oct 2022 11:19:03 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/spring-boot-stackpath-terraform/</guid>
+            <description>&lt;p&gt;This is another article based on recent &lt;a href=&#34;https://bit.ly/spring-office-hours&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Office Hours&lt;/a&gt; sessions.
+Spring Boot provides several effective ways to deliver applications, to production, efficiently.
+There are many situations
+where one of the &lt;code&gt;hyperscale&lt;/code&gt; cloud providers
+is not an option, or the best choice.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://dashaun.com/posts/spring-boot-kamatera-terraform/&#34; &gt;Previously, I looked at Kamatera.&lt;/a&gt;
+This time, I&amp;rsquo;m going to use &lt;a href=&#34;https://stackpath.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;StackPath&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://youtu.be/kWVv0U1Bvq0&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;I did the work during a live stream, so you can see exactly how easy and exciting this was.&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;initial-thoughts&#34;&gt;
+  Initial Thoughts
+  &lt;a class=&#34;heading-link&#34; href=&#34;#initial-thoughts&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I figured that going down this path would get easier with each provider.
+So far that has been true.
+I&amp;rsquo;m learning more about Terraform and getting more comfortable.
+I&amp;rsquo;m able to map the different concepts and building blocks a little easier with each rep.&lt;/p&gt;
+&lt;h2 id=&#34;getting-an-account&#34;&gt;
+  Getting an account
+  &lt;a class=&#34;heading-link&#34; href=&#34;#getting-an-account&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;As you would expect, nothing out of the ordinary when trying to setup an account.
+I couldn&amp;rsquo;t find a free tier or discount code, but I didn&amp;rsquo;t look very hard.
+&lt;a href=&#34;https://dashaun.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Reach out to me&lt;/a&gt; if you know of something that I can share.
+Billing info is required.&lt;/p&gt;
+&lt;h2 id=&#34;stackpath-terraform-provider&#34;&gt;
+  Stackpath Terraform Provider
+  &lt;a class=&#34;heading-link&#34; href=&#34;#stackpath-terraform-provider&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Having a Terraform Provider is what I have set as the bare minimum for this exercise.
+The &lt;a href=&#34;https://registry.terraform.io/providers/stackpath/stackpath/latest/docs&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;StackPath Provider&lt;/a&gt; was surprising.
+I consider myself a slightly above average Terraform user.
+I have never experienced this as the &lt;code&gt;default&lt;/code&gt; behavior for a &lt;code&gt;Provider&lt;/code&gt; and I am impressed.&lt;/p&gt;
+&lt;p&gt;The provider only required three arguments for configuration.
+I decided to use the environment variable approach rather than passing in variables.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;STACKPATH_STACK_ID
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;STACKPATH_CLIENT_ID
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;STACKPATH_CLIENT_SECRET
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;For the &lt;code&gt;STACKPATH_STACK_ID&lt;/code&gt; I used the &lt;code&gt;stack slug&lt;/code&gt; from the &lt;code&gt;DASHBOARD&lt;/code&gt;.
+I created the &lt;code&gt;STACKPATH_CLIENT_ID&lt;/code&gt; and &lt;code&gt;STACKPATH_CLIENT_SECRET&lt;/code&gt; from the &lt;code&gt;API ACCESS&lt;/code&gt; option of the dashboard.&lt;/p&gt;
+&lt;p&gt;When I ran the &lt;code&gt;terraform plan&lt;/code&gt; and &lt;code&gt;terraform apply&lt;/code&gt; they were so fast I thought it was broken.
+I had guessed at the value to use for &lt;code&gt;STACKPATH_STACK_ID&lt;/code&gt; and figured that I must be doing something wrong.
+Nope.
+Their platform API defaults to an &lt;code&gt;async&lt;/code&gt; behavior that doesn&amp;rsquo;t wait for object creation to be completed.
+Instead, your actions complete, and you can run &lt;code&gt;terraform refresh&lt;/code&gt; to get the status of its creation.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;ve used other &lt;code&gt;Providers&lt;/code&gt; that provide this as an option.
+In this case, while I was learning and iterating frequently, it felt amazing.&lt;/p&gt;
+
+
+ &lt;script id=&#34;asciicast-JqexvsUYphyGVpSuEOADpfbnM&#34; src=&#34;https://asciinema.org/a/JqexvsUYphyGVpSuEOADpfbnM.js&#34; async data-autoplay=&#34;true&#34; data-startAt=&#34;03&#34;&gt;&lt;/script&gt;
+
+&lt;p&gt;To check on the status I used &lt;code&gt;terraform refresh&lt;/code&gt; and in this mode, it felt like the right way to do things.&lt;/p&gt;
+
+
+ &lt;script id=&#34;asciicast-jUlDDHoeox4SXBpfFHzPPPD37&#34; src=&#34;https://asciinema.org/a/jUlDDHoeox4SXBpfFHzPPPD37.js&#34; async data-autoplay=&#34;true&#34;&gt;&lt;/script&gt;
+
+&lt;p&gt;Accessing the service felt snappy.&lt;/p&gt;
+
+
+ &lt;script id=&#34;asciicast-LHmJDSfJXSG9WTRDOXoYtDBc9&#34; src=&#34;https://asciinema.org/a/LHmJDSfJXSG9WTRDOXoYtDBc9.js&#34; async data-autoplay=&#34;true&#34; data-startAt=&#34;2&#34;&gt;&lt;/script&gt;
+
+&lt;p&gt;Cleaning up, was just as fast, so iterating through the struggles was relatively painless.&lt;/p&gt;
+
+
+ &lt;script id=&#34;asciicast-dK1ARCkLHZNp2UQaPozfFgNo0&#34; src=&#34;https://asciinema.org/a/dK1ARCkLHZNp2UQaPozfFgNo0.js&#34; async data-autoplay=&#34;true&#34;&gt;&lt;/script&gt;
+
+&lt;h2 id=&#34;struggle&#34;&gt;
+  Struggle
+  &lt;a class=&#34;heading-link&#34; href=&#34;#struggle&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I spent a bunch of time not realizing that I needed the &lt;code&gt;stackpath_compute_network_policy&lt;/code&gt; to allow public traffic.
+On this platform, ports are not exposed to the public by default.
+Even though I struggled, this made me feel a little more secure.
+Simply because I am forced to be specific about what I&amp;rsquo;m allowing.
+Additionally, the container doesn&amp;rsquo;t have remote access enabled by default.&lt;/p&gt;
+&lt;h2 id=&#34;differences&#34;&gt;
+  Differences
+  &lt;a class=&#34;heading-link&#34; href=&#34;#differences&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Deploying a VM that can run Docker is one thing.
+Deploying a &lt;code&gt;container&lt;/code&gt; to a &lt;code&gt;platform&lt;/code&gt; is a different pattern.
+While I was wondering through the documentation, I was very interested.
+There are some very advanced and mature capabilities available.
+This is clearly a platform that is designed to support short-lived and very dynamic workloads.&lt;/p&gt;
+&lt;h2 id=&#34;summary&#34;&gt;
+  Summary
+  &lt;a class=&#34;heading-link&#34; href=&#34;#summary&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I only scratched the service here, but it worked, and it worked quickly.
+There are some very interesting architectures that can be accomplished with &lt;code&gt;StackPath&lt;/code&gt; and I&amp;rsquo;m excited to go further.
+I didn&amp;rsquo;t know what to expect on this journey.
+I can say that &lt;code&gt;StackPath&lt;/code&gt; his raised the bar for my expectations going forward.&lt;/p&gt;
+&lt;h2 id=&#34;your-turn&#34;&gt;
+  Your Turn
+  &lt;a class=&#34;heading-link&#34; href=&#34;#your-turn&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Take the &lt;a href=&#34;https://github.com/dashaun/spring-boot-stackpath-terraform&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;repository&lt;/a&gt; for a spin and try it out for yourself.
+Let me know what you think.&lt;/p&gt;
+&lt;h2 id=&#34;links&#34;&gt;
+  Links
+  &lt;a class=&#34;heading-link&#34; href=&#34;#links&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/spring-boot-stackpath-terraform&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/dashaun/spring-boot-stackpath-terraform&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtu.be/kWVv0U1Bvq0&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;YouTube Video&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://twitch.tv/javagrunt&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Javagrunt on Twitch&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Spring Boot Kamatera Terraform</title>
+            <link>https://dashaun.com/posts/spring-boot-kamatera-terraform/</link>
+            <pubDate>Mon, 24 Oct 2022 11:19:03 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/spring-boot-kamatera-terraform/</guid>
+            <description>&lt;p&gt;Recently, during the &lt;a href=&#34;https://bit.ly/spring-office-hours&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Office Hours&lt;/a&gt;, we have been discussing &lt;code&gt;Spring to Production&lt;/code&gt; as a topic.
+There are so many ways to get Spring Boot application to production.
+If your Spring Boot application is delivered as a container, all you really need is a Docker or Kubernetes dial tone.&lt;/p&gt;
+&lt;p&gt;In this post, I&amp;rsquo;m starting from nothing, and delivering a Spring Boot application to &lt;a href=&#34;https://kamatera.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Kamatera&lt;/a&gt;.
+I&amp;rsquo;ve never used Kamatera before this, so I&amp;rsquo;m going document the entire process, and experience, for you.&lt;/p&gt;
+&lt;h2 id=&#34;getting-an-account&#34;&gt;
+  Getting an account
+  &lt;a class=&#34;heading-link&#34; href=&#34;#getting-an-account&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://kamatera.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Kamatera&lt;/a&gt; provides a &lt;code&gt;30-Day Free Trial&lt;/code&gt; which sounds wonderful!
+After validating my email address, I was required to add a billing profile.
+This makes sense.
+However, before signing up for the free trial, I did verify that there was a &lt;a href=&#34;https://registry.terraform.io/providers/Kamatera/kamatera/latest/docs&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Terraform provider for Kamatera&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;While I was adding my billing profile, I saw more details of the 30-Day free trial.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;30 days Free Usage:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;1 Cloud Server (of up to 100 USD)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;1000 GB Cloud Block Storage
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;1000 GB Outgoing Internet Traffic
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is plenty to work with, so I continued to proceed.
+The only option I had was to use a credit card.
+The process was pretty painless and only took a couple of minutes.&lt;/p&gt;
+&lt;p&gt;The UI is easy to understand and navigate.
+I just don&amp;rsquo;t want to use the UI.
+I want to automate all the things.
+Now that my account is set up, I want to set up my infrastructure as code.&lt;/p&gt;
+&lt;h2 id=&#34;kamatera-terraform-provider&#34;&gt;
+  Kamatera Terraform Provider
+  &lt;a class=&#34;heading-link&#34; href=&#34;#kamatera-terraform-provider&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;A quick glance at the &lt;a href=&#34;https://github.com/Kamatera/terraform-provider-kamatera/blob/master/README.md#usage-guide&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Terraform Provider for Kamatera usage guide&lt;/a&gt;
+and I see that I need:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;KAMATERA_API_CLIENT_ID
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;KAMATERA_API_SECRET
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In the &lt;a href=&#34;https://console.kamatera.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Kamatera console&lt;/a&gt; I easily found where I needed to go &lt;a href=&#34;https://console.kamatera.com/keys&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;to add keys&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;I clicked the &lt;code&gt;+ Create New Key&lt;/code&gt; button.  A &lt;code&gt;description&lt;/code&gt; box is presented.
+I put &lt;code&gt;Spring Boot to Production with Kamatera&lt;/code&gt; in the description and clicked &lt;code&gt;Create Key&lt;/code&gt; to move forward.
+At that point, I am provided with my &lt;code&gt;Client ID&lt;/code&gt; and &lt;code&gt;API Secret&lt;/code&gt; which I then copy to a safe place.&lt;/p&gt;
+&lt;p&gt;The &lt;a href=&#34;https://github.com/Kamatera/terraform-provider-kamatera/blob/master/README.md#usage-guide&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Terraform Provider for Kamatera usage guide&lt;/a&gt; also provided an example Terraform file.
+I copied that and separated their &lt;code&gt;main.tf&lt;/code&gt; into different files, that makes things easier for me to understand later.
+I started a &lt;a href=&#34;https://github.com/dashaun/spring-boot-kamatera-terraform&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;github repository&lt;/a&gt; to capture my changes.&lt;/p&gt;
+&lt;p&gt;At this point, I determined that I couldn&amp;rsquo;t configure Docker as an option via Terraform using one of their images.
+They have a tool that generates Terraform files, but the image ID never worked for me.
+I didn&amp;rsquo;t spend much time investigating, probably user error.&lt;/p&gt;
+&lt;p&gt;That is ok, because I can use an executable JAR and deploy that as a service.
+Or I can just install Docker as part of the startup scripts.&lt;/p&gt;
+&lt;p&gt;I chose to use &lt;code&gt;Ubuntu&lt;/code&gt; and their &lt;code&gt;22.04 64bit_optimized&lt;/code&gt; image.&lt;/p&gt;
+&lt;h2 id=&#34;docker&#34;&gt;
+  Docker
+  &lt;a class=&#34;heading-link&#34; href=&#34;#docker&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I attempted to install Docker using the &lt;code&gt;startup_script&lt;/code&gt; value of the &lt;code&gt;kamatera_server&lt;/code&gt; but I struggled with getting that to work consistently.
+The problem appeared to be timing.
+I&amp;rsquo;m still unsure about when the startup script gets executed.
+I needed to wait for the network, then wait for DNS, and sometimes it would just fail.
+I couldn&amp;rsquo;t figure out a way to access the logs during the build process either.
+At one point, a server appeared to have been built and completed successfully, but the startup script was stuck in a loop, waiting for something.
+I couldn&amp;rsquo;t access the server though, and my Terraform was stuck, for 15+ minutes.&lt;/p&gt;
+&lt;h2 id=&#34;interesting-side-note-regarding-the-stuck-server&#34;&gt;
+  Interesting Side Note Regarding The Stuck Server
+  &lt;a class=&#34;heading-link&#34; href=&#34;#interesting-side-note-regarding-the-stuck-server&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I opened a ticket, asking for the server to be destroyed, for two reasons.
+When I cancelled the stuck Terraform &lt;code&gt;apply&lt;/code&gt; my local state didn&amp;rsquo;t show the server, so I couldn&amp;rsquo;t Terraform &lt;code&gt;destroy&lt;/code&gt; it.
+In the Kamatera console, the task was showing completed, but the server didn&amp;rsquo;t show up in my server list, so I couldn&amp;rsquo;t delete it from there either.&lt;/p&gt;
+&lt;p&gt;The response was quick, less than 30 minutes, but confusing.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Unfortunately, we do not provide support for Terraform.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;a href=&#34;https://github.com/Kamatera/terraform-provider-kamatera&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Terraform Provider&lt;/a&gt; that I&amp;rsquo;m using, appears to be created by &lt;code&gt;Kamatera&lt;/code&gt; and shows up in the &lt;a href=&#34;https://registry.terraform.io/providers/Kamatera/kamatera/latest&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Terraform Registry&lt;/a&gt;.
+Therefore, I can only assume that the 30-day support is not going to troubleshoot Terraform related issues.&lt;/p&gt;
+&lt;p&gt;I later realized that every server creation and destroy sends out an email receipt.
+I did not get a receipt for the server creation, so maybe, hopefully, their system cleaned it up properly, automatically.&lt;/p&gt;
+&lt;h2 id=&#34;docker-via-remote-exec&#34;&gt;
+  Docker via remote-exec
+  &lt;a class=&#34;heading-link&#34; href=&#34;#docker-via-remote-exec&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I don&amp;rsquo;t recommend this approach.
+Nobody recommends this approach.
+The Terraform documentation states &lt;a href=&#34;https://developer.hashicorp.com/terraform/language/resources/provisioners/remote-exec&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Use provisioners as a last resort.&lt;/a&gt;
+It&amp;rsquo;s marked &lt;code&gt;Important&lt;/code&gt; and highlighted at the top of the page.&lt;/p&gt;
+&lt;p&gt;Well, it is my last resort.
+The purpose of this exercise was to show that getting Spring to production is doable, and Spring Boot makes it really easy.
+Different providers are going to have different pain points, but also, different strengths.&lt;/p&gt;
+&lt;p&gt;At this point, I use the &lt;code&gt;remote-exec&lt;/code&gt; provisioner to do a few things:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Download the &lt;code&gt;Docker&lt;/code&gt; install script via &lt;code&gt;curl&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Execute the install script&lt;/li&gt;
+&lt;li&gt;Pull down the &lt;a href=&#34;https://hub.docker.com/r/dashaun/spring-boot-native-pi-default&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;image&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Run the &lt;a href=&#34;https://hub.docker.com/r/dashaun/spring-boot-native-pi-default&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;image&lt;/a&gt; on &lt;code&gt;Docker&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Using &lt;code&gt;remote-exec&lt;/code&gt; required setting up a &lt;code&gt;connection&lt;/code&gt; to the host.
+For this example, I chose to use a public/private key pair for access.&lt;/p&gt;
+&lt;h2 id=&#34;execute&#34;&gt;
+  Execute
+  &lt;a class=&#34;heading-link&#34; href=&#34;#execute&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In order to take this for a spin yourself:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;#clone the repository&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git clone https://github.com/dashaun/spring-to-production-kamatera
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;cd&lt;/span&gt; spring-to-production-kamatera
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# configure Terraform with your credentials&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#bb60d5&#34;&gt;KAMATERA_API_CLIENT&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#bb60d5&#34;&gt;KAMATERA_API_SECRET&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#bb60d5&#34;&gt;TF_VAR_ssh_public_key&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;$(&lt;/span&gt;cat ~/.ssh/id_rsa.pub&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#bb60d5&#34;&gt;TF_VAR_ssh_private_key&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;$(&lt;/span&gt;cat ~/.ssh/id_rsa&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Initialize Terraform to pull down the provider&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;terraform init
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Validate your credentials config by using the plan&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;terraform plan
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Apply the Terraform, ETC &amp;lt; 5min&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;terraform apply -auto-approve
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Access the Spring Boot application using the newly created server&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;$(&lt;/span&gt;terraform output -raw public_ips&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;)&lt;/span&gt;:8080/actuator/health | jq .
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;When you are done, clean up behind yourself:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Destroy the Terraform, ETC &amp;lt; 1min&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;terraform destroy -auto-approve
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;summary&#34;&gt;
+  Summary
+  &lt;a class=&#34;heading-link&#34; href=&#34;#summary&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;While exploring multi-cloud architectures, I really wanted to get outside my comfort zone.
+Things like &lt;code&gt;Terraform&lt;/code&gt; and &lt;code&gt;Spring Boot&lt;/code&gt; make getting applications up and available really simple.
+I am going to continue to explore and experiment with other cloud providers.
+Soon, I will deploy a reference architecture, with different Spring Boot services, each deployed to different cloud providers.
+My theory is that you don&amp;rsquo;t have to be a certified Azure|GCP|AWS cloud architect to be productive with Spring Boot.&lt;/p&gt;
+&lt;h2 id=&#34;feedback&#34;&gt;
+  Feedback
+  &lt;a class=&#34;heading-link&#34; href=&#34;#feedback&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I did not harden this deployment, and I wouldn&amp;rsquo;t call it production ready.
+If you would like to see me expand and harden this example, please let me know, via the &lt;a href=&#34;https://github.com/dashaun/spring-boot-kamatera-terraform&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;GitHub repository&lt;/a&gt;.&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Spring Boot 2.6.3 ARM64 Image</title>
+            <link>https://dashaun.com/posts/springboot-arm64-image/</link>
+            <pubDate>Sun, 30 Jan 2022 20:55:02 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/springboot-arm64-image/</guid>
+            <description>&lt;h1 id=&#34;spring-boot-on-raspberry-pi-4b-8gb&#34;&gt;
+  Spring Boot on Raspberry Pi 4b 8gb
+  &lt;a class=&#34;heading-link&#34; href=&#34;#spring-boot-on-raspberry-pi-4b-8gb&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;The purpose of this article is to create a Spring Boot (2.6.3) native image for arm64.  In my case, the Raspberry Pi Zero 2W.  The Raspberry Pi Zero 2W only has 512mb of SDRAM. Because of the small footprint of the &lt;code&gt;Zero 2W&lt;/code&gt; I want to be as efficient as possible.&lt;/p&gt;
+&lt;p&gt;We will build a very simple Spring Boot app again, but add &lt;code&gt;Spring Native&lt;/code&gt; to compile a native executable.&lt;/p&gt;
+&lt;p&gt;A bunch of this information is repeated from the previous article.  Image creation happens on the Raspberry Pi 4.  The resulting image can be deployed to a Raspberry Pi Zero 2 W.&lt;/p&gt;
+&lt;h1 id=&#34;install-arm64-raspios-bullseye-on-raspberry-pi-4-with-8gb&#34;&gt;
+  Install ARM64, RaspiOS Bullseye, on Raspberry Pi 4 with 8gb
+  &lt;a class=&#34;heading-link&#34; href=&#34;#install-arm64-raspios-bullseye-on-raspberry-pi-4-with-8gb&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;For this example I&amp;rsquo;m using &lt;a href=&#34;https://downloads.raspberrypi.org/raspios_arm64/images/raspios_arm64-2021-11-08/2021-10-30-raspios-bullseye-arm64.zip&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;RaspiOS Bullseye&lt;/a&gt;.  I still recommend using the &lt;a href=&#34;https://www.raspberrypi.com/software/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Raspberry Pi Imager&lt;/a&gt; for the install.&lt;/p&gt;
+&lt;h2 id=&#34;update-upgrade-and-install&#34;&gt;
+  Update, upgrade and install
+  &lt;a class=&#34;heading-link&#34; href=&#34;#update-upgrade-and-install&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt update
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt upgrade -y
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt install zip
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;install-docker&#34;&gt;
+  Install docker
+  &lt;a class=&#34;heading-link&#34; href=&#34;#install-docker&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -fsSL https://get.docker.com -o get-docker.sh
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo sh get-docker.sh
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo usermod -aG docker &lt;span style=&#34;color:#bb60d5&#34;&gt;$USER&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;#you might need to logout and login to get the group assignment&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run hello-world
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;install-sdkman&#34;&gt;
+  Install SDKMAN
+  &lt;a class=&#34;heading-link&#34; href=&#34;#install-sdkman&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -s &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;https://get.sdkman.io&amp;#34;&lt;/span&gt; | bash
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;source&lt;/span&gt; &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bb60d5&#34;&gt;$HOME&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;/.sdkman/bin/sdkman-init.sh&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sdk version
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;install-a-jdk&#34;&gt;
+  Install a JDK
+  &lt;a class=&#34;heading-link&#34; href=&#34;#install-a-jdk&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Install the latest version of the JDK.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sdk list java
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sdk install java 22.0.0.2.r17-grl
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;java -version
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;create-simple-spring-boot-application&#34;&gt;
+  Create simple Spring Boot application
+  &lt;a class=&#34;heading-link&#34; href=&#34;#create-simple-spring-boot-application&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Use the Spring Initializer web API to create a simple example.&lt;/p&gt;
+&lt;p&gt;The parameters below:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;name the artifact&lt;/li&gt;
+&lt;li&gt;choose Java 17&lt;/li&gt;
+&lt;li&gt;include the &amp;ldquo;web&amp;rdquo;,&amp;ldquo;actuator&amp;rdquo; and &amp;ldquo;spring native&amp;rdquo; dependencies&lt;/li&gt;
+&lt;li&gt;use latest version of Spring Boot by default&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mkdir demo
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;cd&lt;/span&gt; demo
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl https://start.spring.io/starter.tgz -d &lt;span style=&#34;color:#bb60d5&#34;&gt;groupId&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;dev.dashaun -d &lt;span style=&#34;color:#bb60d5&#34;&gt;artifactId&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;spring-pi -d &lt;span style=&#34;color:#bb60d5&#34;&gt;name&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;spring-pi -d &lt;span style=&#34;color:#bb60d5&#34;&gt;packageName&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;dev.dashaun.spring-pi -d &lt;span style=&#34;color:#bb60d5&#34;&gt;dependencies&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;web,actuator,native -d &lt;span style=&#34;color:#bb60d5&#34;&gt;javaVersion&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#40a070&#34;&gt;17&lt;/span&gt; | tar -xzf -
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;two-changes&#34;&gt;
+  Two changes
+  &lt;a class=&#34;heading-link&#34; href=&#34;#two-changes&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/#_starters_requiring_special_build_configuration&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Starters requiring special build configuration&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Swap out the tomcat version:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;dependency&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;lt;artifactId&amp;gt;spring-boot-starter-web&amp;lt;/artifactId&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;lt;exclusions&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &amp;lt;exclusion&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &amp;lt;groupId&amp;gt;org.apache.tomcat.embed&amp;lt;/groupId&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &amp;lt;artifactId&amp;gt;tomcat-embed-core&amp;lt;/artifactId&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &amp;lt;/exclusion&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &amp;lt;exclusion&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &amp;lt;groupId&amp;gt;org.apache.tomcat.embed&amp;lt;/groupId&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &amp;lt;artifactId&amp;gt;tomcat-embed-websocket&amp;lt;/artifactId&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &amp;lt;/exclusion&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;lt;/exclusions&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;/dependency&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;dependency&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;lt;groupId&amp;gt;org.apache.tomcat.experimental&amp;lt;/groupId&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;lt;artifactId&amp;gt;tomcat-embed-programmatic&amp;lt;/artifactId&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;lt;version&amp;gt;${tomcat.version}&amp;lt;/version&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;/dependency&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Exclude io.micrometer:micrometer-core when metrics are not used for optimized footprint.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;dependency&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;lt;artifactId&amp;gt;spring-boot-starter-actuator&amp;lt;/artifactId&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;lt;exclusions&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &amp;lt;exclusion&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &amp;lt;groupId&amp;gt;io.micrometer&amp;lt;/groupId&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &amp;lt;artifactId&amp;gt;micrometer-core&amp;lt;/artifactId&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &amp;lt;/exclusion&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;lt;/exclusions&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;lt;/dependency&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;milestone-reached&#34;&gt;
+  Milestone reached
+  &lt;a class=&#34;heading-link&#34; href=&#34;#milestone-reached&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;At this point I can generate an ARM64 &lt;code&gt;native&lt;/code&gt; executable using the native build tools.&lt;/p&gt;
+&lt;p&gt;Install the native-image extensions for the JDK:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;gu install native-image
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Build the application with Maven&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./mvnw -Pnative -DskipTests package
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I didn&amp;rsquo;t panic when I saw the warnings during compilation, because I had read the documenation.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;From the Spring Native Documentation&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;During the native compilation, you will see a lot of WARNING: Could not register reflection metadata messages. They are expected and will be removed in a future version, see #502 for more details.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;There will be a &lt;code&gt;target/spring-pi&lt;/code&gt; executable, 63mb in my example.&lt;/p&gt;
+&lt;p&gt;Copy that to your &lt;code&gt;Raspberry Pi Zero 2 W&lt;/code&gt; and it works as expected!&lt;/p&gt;
+&lt;h2 id=&#34;keep-going&#34;&gt;
+  Keep going
+  &lt;a class=&#34;heading-link&#34; href=&#34;#keep-going&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;How am I supposed to handle that native executable?  Where do I put it?  Do I make it a Github release package?  Do people use Github releases in their CI/CD?&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &amp;#34;The container image is the new artifact.&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      - Cora Iberkleid
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;getting-unexpected-help&#34;&gt;
+  Getting Unexpected Help
+  &lt;a class=&#34;heading-link&#34; href=&#34;#getting-unexpected-help&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I was on a path to create my own buildpack for ARM64, but I was going the long way.&lt;/p&gt;
+&lt;p&gt;Daniel Mikusa created a better way.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/dmikusa-pivotal/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dmikusa-pivotal/paketo-arm64&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I followed his repository and created my own versions of the cloud native buildpacks.  I pushed those images to my public docker repo.&lt;/p&gt;
+&lt;h2 id=&#34;building-an-image&#34;&gt;
+  Building an Image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#building-an-image&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The default builder &lt;code&gt;&amp;lt;builder&amp;gt;paketobuildpacks/builder:tiny&amp;lt;/builder&amp;gt;&lt;/code&gt; doesn&amp;rsquo;t have arm64 images yet.
+So edit &lt;code&gt;pom.xml&lt;/code&gt; to use &lt;code&gt;&amp;lt;builder&amp;gt;dashaun/native-builder:focal-arm64&amp;lt;/builder&amp;gt;&lt;/code&gt; instead.&lt;/p&gt;
+&lt;p&gt;Now you can create a native arm64 image using the spring boot plugin:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./mvnw -Pnative spring-boot:build-image -DskipTests
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;When that is complete, you can run the image:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run -p 8080:8080 spring-pi:0.0.1-SNAPSHOT
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Our applicaiton is now running on port 8080&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h2 id=&#34;summary&#34;&gt;
+  Summary
+  &lt;a class=&#34;heading-link&#34; href=&#34;#summary&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Building arm64 images on a Raspberry Pi 4 is not fast.  Being able to run arm64 native images on a Raspberry Pi Zero 2 W has me super excited.  I&amp;rsquo;ve made the cloud native buildpack images available via Docker Hub.  I&amp;rsquo;ve also created an example repository on Github.&lt;/p&gt;
+&lt;p&gt;For me, this opens the door for a software supply chain, that creates native arm64 images for my Spring Boot projects.  This also makes kubernetes on arm64 devices, as small as the Raspberry Pi Zero 2 W, much more interesting!&lt;/p&gt;
+&lt;h2 id=&#34;links&#34;&gt;
+  Links
+  &lt;a class=&#34;heading-link&#34; href=&#34;#links&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dmikusa-pivotal/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/dmikusa-pivotal/paketo-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/spring-boot-native-pi&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/dashaun/spring-boot-native-pi&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://hub.docker.com/r/dashaun/native-builder&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://hub.docker.com/r/dashaun/native-builder&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://hub.docker.com/r/dashaun/stack-build&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://hub.docker.com/r/dashaun/stack-build&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://hub.docker.com/r/dashaun/stack-run&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://hub.docker.com/r/dashaun/stack-run&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://hub.docker.com/r/dashaun/spring-pi-native&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://hub.docker.com/r/dashaun/spring-pi-native&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

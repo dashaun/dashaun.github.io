@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Categories on DaShaun</title>
+        <link>https://dashaun.com/categories/</link>
+        <description>Recent content in Categories on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Sun, 02 Feb 2025 18:47:07 -0600</lastBuildDate><atom:link href="https://dashaun.com/categories/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Learn</title>
+            <link>https://dashaun.com/categories/learn/</link>
+            <pubDate>Sun, 02 Feb 2025 18:47:07 -0600</pubDate>
+            
+            <guid>https://dashaun.com/categories/learn/</guid>
+            <description></description>
+        </item>
+        
+        <item>
+            <title>YouTube</title>
+            <link>https://dashaun.com/categories/youtube/</link>
+            <pubDate>Wed, 07 Feb 2024 19:47:40 -0600</pubDate>
+            
+            <guid>https://dashaun.com/categories/youtube/</guid>
+            <description></description>
+        </item>
+        
+        <item>
+            <title>Stream</title>
+            <link>https://dashaun.com/categories/stream/</link>
+            <pubDate>Mon, 27 Nov 2023 21:12:06 -0600</pubDate>
+            
+            <guid>https://dashaun.com/categories/stream/</guid>
+            <description></description>
+        </item>
+        
+        <item>
+            <title>Announce</title>
+            <link>https://dashaun.com/categories/announce/</link>
+            <pubDate>Sun, 17 Sep 2023 14:42:19 -0500</pubDate>
+            
+            <guid>https://dashaun.com/categories/announce/</guid>
+            <description></description>
+        </item>
+        
+        <item>
+            <title>About</title>
+            <link>https://dashaun.com/categories/about/</link>
+            <pubDate>Wed, 15 Jun 2022 14:32:36 -0600</pubDate>
+            
+            <guid>https://dashaun.com/categories/about/</guid>
+            <description></description>
+        </item>
+        
+    </channel>
+</rss>

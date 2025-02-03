@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Sdk on DaShaun</title>
+        <link>https://dashaun.com/tags/sdk/</link>
+        <description>Recent content in Sdk on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Sun, 02 Feb 2025 18:47:07 -0600</lastBuildDate><atom:link href="https://dashaun.com/tags/sdk/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>My jgitver replacement</title>
+            <link>https://dashaun.com/posts/my-jgitver-replacement/</link>
+            <pubDate>Sun, 02 Feb 2025 18:47:07 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/my-jgitver-replacement/</guid>
+            <description>&lt;p&gt;I&amp;rsquo;ve been using &lt;code&gt;jgitver&lt;/code&gt; for a long time.  It has been embarrassing on multiple occasions because it&amp;rsquo;s unmaintained and hasn&amp;rsquo;t had a release in a very long time.  I like to use the latest and greatest as part of my &amp;ldquo;N-0&amp;rdquo; lifestyle.&lt;/p&gt;
+&lt;p&gt;Today, I found my replacement.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/qoomon/maven-git-versioning-extension&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Maven Git Versioning Extension&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Here is the config I&amp;rsquo;m using.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-xml&#34; data-lang=&#34;xml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;configuration&lt;/span&gt; &lt;span style=&#34;color:#4070a0&#34;&gt;xmlns=&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;https://github.com/qoomon/maven-git-versioning-extension&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;               &lt;span style=&#34;color:#4070a0&#34;&gt;xmlns:xsi=&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;http://www.w3.org/2001/XMLSchema-instance&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;               &lt;span style=&#34;color:#4070a0&#34;&gt;xsi:schemaLocation=&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;https://github.com/qoomon/maven-git-versioning-extension https://qoomon.github.io/maven-git-versioning-extension/configuration-9.4.0.xsd&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;refs&lt;/span&gt; &lt;span style=&#34;color:#4070a0&#34;&gt;considerTagsOnBranches=&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;true&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;ref&lt;/span&gt; &lt;span style=&#34;color:#4070a0&#34;&gt;type=&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;tag&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;pattern&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;&amp;lt;![CDATA[v(?&amp;lt;version&amp;gt;.*)]]&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/pattern&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;${ref.version}&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/ref&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;ref&lt;/span&gt; &lt;span style=&#34;color:#4070a0&#34;&gt;type=&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;branch&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;pattern&amp;gt;&lt;/span&gt;(main|release.*)&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/pattern&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;${describe.tag.version.major}.${describe.tag.version.minor}.${describe.tag.version.patch.next}-SNAPSHOT&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/ref&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;ref&lt;/span&gt; &lt;span style=&#34;color:#4070a0&#34;&gt;type=&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;branch&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;pattern&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;&amp;lt;![CDATA[feature/(?&amp;lt;feature&amp;gt;.+)]]&amp;gt;&lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/pattern&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;${describe.tag.version}-${ref.feature}-SNAPSHOT&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/ref&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/refs&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;rev&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;${commit}&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/rev&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I use another Maven extension as well:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-xml&#34; data-lang=&#34;xml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;extensions&lt;/span&gt; &lt;span style=&#34;color:#4070a0&#34;&gt;xmlns=&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;http://maven.apache.org/EXTENSIONS/1.0.0&amp;#34;&lt;/span&gt; &lt;span style=&#34;color:#4070a0&#34;&gt;xmlns:xsi=&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;http://www.w3.org/2001/XMLSchema-instance&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#4070a0&#34;&gt;xsi:schemaLocation=&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;http://maven.apache.org/EXTENSIONS/1.0.0 http://maven.apache.org/xsd/core-extensions-1.0.0.xsd&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;extension&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;me.qoomon&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;maven-git-versioning-extension&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;9.8.1&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/extension&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;extension&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;kr.motd.maven&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;os-maven-plugin&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;1.7.0&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/extension&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/extensions&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;The &lt;code&gt;os-maven-plugin&lt;/code&gt; gives me operating system and architecture info&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;That combination is a nice way to generate versions from tags that includes additional meta data.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-txt&#34; data-lang=&#34;txt&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Successfully built image &amp;#39;docker.io/dashaun/dev.dashaun.service.gateway:v0.0.24-aarch_64&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] ------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] BUILD SUCCESS
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] ------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Total time:  20.028 s
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Finished at: 2025-02-02T20:06:02-06:00
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] ------------------------------------------------------------------------
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Example output from ./mvnw spring-boot:build-image&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;Additionally, I like to use the &lt;a href=&#34;https://maven.apache.org/wrapper/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Maven Wrapper&lt;/a&gt; and a [SDKman])(&lt;a href=&#34;https://sdkman.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://sdkman.io&lt;/a&gt;) &lt;code&gt;.sdkmanrc&lt;/code&gt; file in my repositories.  I find that a good balanced developer experience with some declarative CICD.&lt;/p&gt;
+&lt;p&gt;I realize that I could replace the Maven Wrapper with another line in the .sdkmanrc file.  I choose to leave it this way for two primary reasons.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;I generate most of my projects at &lt;a href=&#34;ttps://start.spring.io&#34; &gt;start.spring.io&lt;/a&gt; which provides the Maven Wrapper for me.&lt;/li&gt;
+&lt;li&gt;Because I&amp;rsquo;m using Maven Extensions, above, I need the .mvn directory anyway.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;What other things do you like to see in your repositories?&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

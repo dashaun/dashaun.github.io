@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Homelab on DaShaun</title>
+        <link>https://dashaun.com/categories/homelab/</link>
+        <description>Recent content in Homelab on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Sat, 27 Feb 2021 14:11:50 -0600</lastBuildDate><atom:link href="https://dashaun.com/categories/homelab/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Homelab BOM February 2021</title>
+            <link>https://dashaun.com/posts/homelab-bom-feb-2021/</link>
+            <pubDate>Sat, 27 Feb 2021 14:11:50 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/homelab-bom-feb-2021/</guid>
+            <description>&lt;h2 id=&#34;homelab-redux&#34;&gt;
+  Homelab Redux
+  &lt;a class=&#34;heading-link&#34; href=&#34;#homelab-redux&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; My homelab is always under construction&lt;span style=&#34;color:#666&#34;&gt;.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; Like the dude that is always working on his car, I&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;m always working on my homelab.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; I&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;m always wiping it clean and building it over.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; I&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;m always trying out different configurations.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; I&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;m swapping out some type of hardware about every 3 months.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;bom&#34;&gt;
+  BOM
+  &lt;a class=&#34;heading-link&#34; href=&#34;#bom&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;(4) CompuLab HDMI Display Emulator (fit-headless) &lt;a href=&#34;https://www.fit-pc.com/web/products/fit-headless/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;1&lt;/a&gt; &lt;a href=&#34;https://www.amazon.com/CompuLab-fit-Headless-Display-Emulator/dp/B00FLZXGJ6&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;(4) SanDisk UltraFit 32GB USB 3.1&lt;/li&gt;
+&lt;li&gt;(4) Anker USB 3.0 Gigabit Ethernet Adapter&lt;/li&gt;
+&lt;li&gt;(8) Samsung 32GB SODIMM DDR4 2666Mhz&lt;/li&gt;
+&lt;li&gt;(3) 128GB NVMe&lt;/li&gt;
+&lt;li&gt;(1) 500GB NVMe&lt;/li&gt;
+&lt;li&gt;(3) Intel NUC7i5BNH&lt;/li&gt;
+&lt;li&gt;(1) Intel NUC8i5BEH&lt;/li&gt;
+&lt;li&gt;(2) 2TB WD RED HDD&lt;/li&gt;
+&lt;li&gt;(1) QNAP TS-231P&lt;/li&gt;
+&lt;li&gt;(10) Raspberry Pi 3B+&lt;/li&gt;
+&lt;li&gt;(2) Raspberry Pi 4 2GB&lt;/li&gt;
+&lt;li&gt;(2) Raspberry Pi 4 4GB&lt;/li&gt;
+&lt;li&gt;(3) Raspberry Pi 4 8GB&lt;/li&gt;
+&lt;li&gt;(4) LoveRPI PoE Hat&lt;/li&gt;
+&lt;li&gt;(3) Padarsey M.2 NVME USB 3.1 Adapter&lt;/li&gt;
+&lt;li&gt;(3) Transcend 128GB NVME M.2 SSD TS128GMTE110S&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Homelab - The Big Rack</title>
+            <link>https://dashaun.com/posts/homelab-big-rack/</link>
+            <pubDate>Sat, 07 Mar 2020 18:47:02 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/homelab-big-rack/</guid>
+            <description>&lt;h1 id=&#34;homelab-updates&#34;&gt;
+  Homelab Updates
+  &lt;a class=&#34;heading-link&#34; href=&#34;#homelab-updates&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;This morning I had 3 separate DCs and 3 separate VCSA instances.
+Right now I have 4 &amp;ldquo;servers&amp;rdquo; ready for action with another 4 NUCs on deck.&lt;/p&gt;
+&lt;h2 id=&#34;wipe-em&#34;&gt;
+  Wipe em
+  &lt;a class=&#34;heading-link&#34; href=&#34;#wipe-em&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;With ESXi, my current approach has been to make a bootable USB from an ISO.
+So that&amp;rsquo;s what I&amp;rsquo;ve done with the first 4.
+I think this part is pretty trivial, but I have done it at least a 100 times.
+For the next 4, I&amp;rsquo;m going to try go back to PXE boot.
+Time will definitely be the deciding factor.&lt;/p&gt;
+&lt;h2 id=&#34;network&#34;&gt;
+  Network
+  &lt;a class=&#34;heading-link&#34; href=&#34;#network&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;lsquo;The internet is broken!&amp;rsquo;&lt;/p&gt;
+&lt;p&gt;Fifth place on the list of things I hate hearing from my wife&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;One of my favorite features of the homelab is that I have two network connections, setup for failover.
+I have fiber connection from one provider on one side of the house.
+On the opposite side, I have a 70mbit connection from another provider.
+Additionally, I can still load balance inbound traffic across the two providers.
+I&amp;rsquo;m using a &lt;a href=&#34;https://www.netgate.com/solutions/pfsense/sg-1100.html&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Netgate SG-1100&lt;/a&gt; for that.&lt;/p&gt;
+&lt;p&gt;Behind the Netgate, I have a Cisco Catalyst 2960-X.
+This one serves network to the rooms of the house and the homelab.
+The PiHole running on a Raspberry Pi 3B+ is also part of this tier.&lt;/p&gt;
+&lt;p&gt;Next in this line is a &lt;a href=&#34;https://www.netgear.com/support/product/FS728TLP.aspx&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Netgear FS728TLP &lt;/a&gt; which handles the big rack and the shared storage.&lt;/p&gt;
+&lt;h2 id=&#34;the-big-rack&#34;&gt;
+  The &amp;lsquo;big&amp;rsquo; rack
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-big-rack&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;https://dashaun.com/images/blog/the_big_rack_2.png&#34; alt=&#34;The Big Rack&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Behind the Netgear are four Dell R710s and a &lt;a href=&#34;https://www.qnap.com/en-us/product/ts-231p&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;QNAP TS-321P&lt;/a&gt;.
+The R710s are a unique blend of hand-me-downs from an really good &lt;a href=&#34;https://twitter.com/aegershman_&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;friend&lt;/a&gt; with a kind soul (and no more room for a rack).
+The rack runs 1000W at idle.
+Three of the R710s can run ESXI 6.7u3, the other is too old, but can still run ESXI 6.5.
+They do their fair share of keeping the basement warm in the winter.&lt;/p&gt;
+&lt;p&gt;At this point, they each have ESXI installed on the USB key.
+I&amp;rsquo;ve also gone in an cleared out most of the orphaned disk partitions.
+There is still one partition that I can&amp;rsquo;t figure out how to delete.
+I have not yet reverted to booting from a USB running Linux.
+I&amp;rsquo;m being stubborn and trying to use the tools provided by ESXI.&lt;/p&gt;
+&lt;p&gt;The QNAP is very affordable.
+It&amp;rsquo;s got 2 bays with WD Red 2TB drives.
+It has dual 1GB NICs also.
+I&amp;rsquo;ve done a factory reset, upgraded the firmware, and set it up to capture syslog.
+I gave the syslog share 5GB of disk.&lt;/p&gt;
+&lt;p&gt;At this point, its just the Netgate shipping syslogs.&lt;/p&gt;
+&lt;h2 id=&#34;the-plan&#34;&gt;
+  The plan
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-plan&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;One of the R710s will be the management node.
+It will run VCSA and a jumpbox to start.
+The other 3 will be a DC and each host will be configured &amp;rsquo;like&amp;rsquo; an AZ via resource pools.&lt;/p&gt;
+&lt;p&gt;I will use terraform and various CLI to create:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Data Center&lt;/li&gt;
+&lt;li&gt;Data Stores&lt;/li&gt;
+&lt;li&gt;Resource Pools&lt;/li&gt;
+&lt;li&gt;Clusters&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;the-goals&#34;&gt;
+  The goals
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-goals&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;PKS&lt;/li&gt;
+&lt;li&gt;Harbor&lt;/li&gt;
+&lt;li&gt;Concourse&lt;/li&gt;
+&lt;li&gt;Spinnaker&lt;/li&gt;
+&lt;li&gt;TASonK8s&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;the-catalyst-1&#34;&gt;
+  The catalyst #1
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-catalyst-1&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;https://dashaun.com/images/blog/the_big_rack_1.png&#34; alt=&#34;David&amp;rsquo;s Tweet&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;the-catalyst-2&#34;&gt;
+  The catalyst #2
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-catalyst-2&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I was there when &lt;a href=&#34;https://twitter.com/madhav_sathe&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Madhav Sathe&lt;/a&gt; coined the phrase:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;cf push cf&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;So I need to hurry up and get some of that.
+&lt;a href=&#34;https://twitter.com/emalminator&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Eric&lt;/a&gt; literally ruined the rest of the week and my weekend with that demo.
+But in a good way.&lt;/p&gt;
+&lt;h2 id=&#34;share-and-learn&#34;&gt;
+  Share and Learn
+  &lt;a class=&#34;heading-link&#34; href=&#34;#share-and-learn&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;ll be providing access to my friends.
+I will also be treating the homelab like its production so that I can learn.
+Repaving is great, but I have never been on the clock.
+Opening it up to others will be one part of the process.
+I will also try to make the metrics relevant and public.&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Homelab Bill of Materials August 2019</title>
+            <link>https://dashaun.com/posts/homelab-bom-aug-2019/</link>
+            <pubDate>Thu, 29 Aug 2019 22:09:06 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/homelab-bom-aug-2019/</guid>
+            <description>&lt;h2 id=&#34;i-need-to-give-my-homelab-more-power&#34;&gt;
+  I need to give my homelab more power
+  &lt;a class=&#34;heading-link&#34; href=&#34;#i-need-to-give-my-homelab-more-power&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;My homelab is always under construction.
+Like the dude that is always working on his car, I&amp;rsquo;m always working on my homelab.
+I&amp;rsquo;m always wiping it clean and building it over.
+I&amp;rsquo;m always trying out different configurations.
+I&amp;rsquo;m swapping out some type of hardware about every 3 months.
+This week I have been doing a ton of studying.
+I&amp;rsquo;m rebuilding the homelab because of the recent release of 6.7u3.
+This time I would like to use vsan, but I&amp;rsquo;m focused on PKS with NSX-T..
+I&amp;rsquo;m getting lots of help from the web, but I&amp;rsquo;m following Keith Lee&amp;rsquo;s &lt;a href=&#34;http://keithlee.ie/2018/10/30/pks-nsx-t-homelab-part-1-shopping-list/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;example&lt;/a&gt; from last year, and documenting along the way.
+I&amp;rsquo;ll also lean on William Lam at &lt;a href=&#34;https://www.virtuallyghetto.com/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;VirtuallyGhetto&lt;/a&gt;.
+I haven&amp;rsquo;t had NSX-T working completely in the homelab yet, I&amp;rsquo;ve failed multiple times.
+So, this time I do have some new hardware, which also means I can&amp;rsquo;t use a lot of the previous work.
+I&amp;rsquo;ve added an additional NUC and now each host has a second NIC.&lt;/p&gt;
+&lt;h3 id=&#34;bom&#34;&gt;
+  BOM
+  &lt;a class=&#34;heading-link&#34; href=&#34;#bom&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;(4) CompuLab HDMI Display Emulator (fit-headless) &lt;a href=&#34;https://www.fit-pc.com/web/products/fit-headless/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;1&lt;/a&gt; &lt;a href=&#34;https://www.amazon.com/CompuLab-fit-Headless-Display-Emulator/dp/B00FLZXGJ6&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;(4) SanDisk UltraFit 32GB USB 3.1&lt;/li&gt;
+&lt;li&gt;(4) Anker USB 3.0 Gigabit Ethernet Adapter&lt;/li&gt;
+&lt;li&gt;(8) Samsung 32GB SODIMM DDR4 2666Mhz&lt;/li&gt;
+&lt;li&gt;(3) 128GB NVMe&lt;/li&gt;
+&lt;li&gt;(1) 500GB NVMe&lt;/li&gt;
+&lt;li&gt;(3) Intel NUC7i5BNH&lt;/li&gt;
+&lt;li&gt;(1) Intel NUC8i5BEH&lt;/li&gt;
+&lt;li&gt;(2) 2TB WD RED HDD&lt;/li&gt;
+&lt;li&gt;(1) QNAP TS-231P&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;On this day, all of the hardware is installed, and running.
+Tomorrow, I&amp;rsquo;ll try to start over, wipe everything and deploy ESX 6.7u3.&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

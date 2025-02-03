@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Knative on DaShaun</title>
+        <link>https://dashaun.com/tags/knative/</link>
+        <description>Recent content in Knative on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Wed, 21 Jun 2023 01:19:22 -0500</lastBuildDate><atom:link href="https://dashaun.com/tags/knative/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>KNative on Docker Desktop</title>
+            <link>https://dashaun.com/posts/knative-docker-desktop/</link>
+            <pubDate>Wed, 21 Jun 2023 01:19:22 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/knative-docker-desktop/</guid>
+            <description>&lt;h1 id=&#34;knative-on-docker-desktop&#34;&gt;
+  KNative on Docker Desktop
+  &lt;a class=&#34;heading-link&#34; href=&#34;#knative-on-docker-desktop&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;If you&amp;rsquo;ve been following my blog or videos, you&amp;rsquo;re likely aware of my affinity for deploying Spring Boot workloads to Raspberry Pi devices. You&amp;rsquo;ve probably also deduced that I have a certain fondness for Kubernetes and a strong penchant for keeping my resource usage very minimal. My love for minimalism isn&amp;rsquo;t just limited to my Raspberry Pi devices; it also extends to cleaning up cloud resources early and often, and scaling to zero with KNative Serving.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;ve run KNative on K3s, a lightweight Kubernetes distribution, and Raspberry Pi for over a year now. This setup served as a reliable backbone for my homelab, without major issues. However, until recently, I hadn&amp;rsquo;t experimented with deploying KNative Serving to the Docker Desktop configured Kubernetes. I finally decided to take the leap, inspired by an outdated &lt;a href=&#34;https://github.com/csantanapr/knative-docker-desktop&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;GitHub repository by Carlos Santana&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The whole process was incredibly straightforward, and I&amp;rsquo;m kicking myself for not doing it sooner. In the past, I bounced between different versions of Kubernetes on my daily driver, my laptop, and my new streaming server. Now, I think I&amp;rsquo;ve finally found a Kubernetes experience that I am content with, and one that conveniently scales my unused workloads to zero.&lt;/p&gt;
+&lt;p&gt;Here&amp;rsquo;s an outline of the process I followed to deploy KNative Serving on Kubernetes using Docker Desktop:&lt;/p&gt;
+&lt;p&gt;Install Docker Desktop: Docker Desktop provides a comprehensive Docker environment for your machine, simplifying management of Docker resources. You can download it directly from the official Docker website.&lt;/p&gt;
+&lt;p&gt;Enable Kubernetes cluster: After installing Docker Desktop, head over to the settings and enable the Kubernetes cluster. This single click initiates the Kubernetes functionality within Docker Desktop.&lt;/p&gt;
+&lt;p&gt;Install Knative with YAML: Finally, visit the official Knative website (knative.dev) and follow their instructions for installing Knative with YAML.  I have been having the most success using &lt;code&gt;Kourier&lt;/code&gt; for the network layer and the &lt;code&gt;magic&lt;/code&gt; sslip.io DNS config. This is a quick and easy process, that is great for local development, so far.&lt;/p&gt;
+&lt;p&gt;This method is flexible and can be adjusted to fit your specific requirements. I&amp;rsquo;m running on an Intel based Mac Book Pro with only 16GB of memory, as well as a M1 Mac Studio with 32GB of memory.  I&amp;rsquo;m still adjusting how I allocate system resources to Docker Desktop, for the different purposes.&lt;/p&gt;
+&lt;p&gt;I get a recent version of Kubernetes, configurable resource usage, and the ability to scale my workloads to zero.  I&amp;rsquo;m very happy with this setup, so far.&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>K3s Knative Ubuntu Raspberry Pi</title>
+            <link>https://dashaun.com/posts/k3s-knative-ubuntu-raspberry-pi/</link>
+            <pubDate>Sat, 03 Dec 2022 10:26:52 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/k3s-knative-ubuntu-raspberry-pi/</guid>
+            <description>&lt;h1 id=&#34;k3s-knative-ubuntu-raspberry-pi&#34;&gt;
+  K3s Knative Ubuntu Raspberry Pi
+  &lt;a class=&#34;heading-link&#34; href=&#34;#k3s-knative-ubuntu-raspberry-pi&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Knative is a super exciting solution for serverless and event driven applications.
+Personally, I have been using it as a part of my &lt;code&gt;inner loop&lt;/code&gt; development.
+I can deploy dozens of workloads.
+All scaled down to zero when they aren&amp;rsquo;t being used.
+All responding and starting up quickly when they are needed.&lt;/p&gt;
+&lt;p&gt;I ran into a couple of problems with Envoy on Raspberry Pi OS.
+After investigating, it is a known issue in the Raspberry Pi OS kernel.
+In order to keep going forward with my project I had to choose between fixing the kernel or trying Ubuntu.&lt;/p&gt;
+&lt;p&gt;This is an overview of how to get Knative Serving working on a Raspberry Pi device with K3s and Ubuntu.&lt;/p&gt;
+&lt;h2 id=&#34;install-ubuntu-server&#34;&gt;
+  Install Ubuntu Server
+  &lt;a class=&#34;heading-link&#34; href=&#34;#install-ubuntu-server&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Use RPI Imager.
+Select &lt;code&gt;Ubuntu Server 22.10 64-bit&lt;/code&gt; from the list of other distributions.
+Boot the new image.&lt;/p&gt;
+&lt;p&gt;I was happy to see that SSH and the default user were configured as expected by using the advanced settings options.&lt;/p&gt;
+&lt;h2 id=&#34;upgrade-the-stuff&#34;&gt;
+  Upgrade the stuff
+  &lt;a class=&#34;heading-link&#34; href=&#34;#upgrade-the-stuff&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Grab the latest repository info&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt update 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Install one prerequisite package that isn&amp;#39;t installed by default&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt install linux-modules-extra-raspi -y
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Upgrade everything that can be upgraded&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt dist-upgrade -y
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;fix-cgroup&#34;&gt;
+  Fix cgroup
+  &lt;a class=&#34;heading-link&#34; href=&#34;#fix-cgroup&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Add this to the beginning of /boot/firmware/cmdline.txt&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo nano -w /boot/firmware/cmdline.txt
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Reboot after making this change.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo shutdown -r now
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;install-k3s-via-k3sup&#34;&gt;
+  Install k3s via k3sup
+  &lt;a class=&#34;heading-link&#34; href=&#34;#install-k3s-via-k3sup&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;From my laptop, not one of the Raspberry Pi nodes, run &lt;a href=&#34;https://github.com/alexellis/k3sup&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;k3sup&lt;/a&gt;, it&amp;rsquo;s super easy.
+If you haven&amp;rsquo;t figured it out by now, I&amp;rsquo;m a big fan of &lt;a href=&#34;https://github.com/alexellis/k3sup&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;k3sup&lt;/a&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#bb60d5&#34;&gt;CONTROL_NODE_IP&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;10.0.0.10
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Disable Traefik because we will use kourier for knative&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;k3sup install --ip &lt;span style=&#34;color:#bb60d5&#34;&gt;$CONTROL_NODE_IP&lt;/span&gt; --user pi --k3s-extra-args &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;--disable traefik&amp;#39;&lt;/span&gt; --merge --local-path ~/.kube/config --context cluster00
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Knative-Serving with Kourier works on a single Raspberry Pi 4 with 8GB&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Optionally add other nodes&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;k3sup join --ip 10.0.0.11 --server-ip &lt;span style=&#34;color:#bb60d5&#34;&gt;$CONTROL_NODE_IP&lt;/span&gt; --user pi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;k3sup join --ip 10.0.0.12 --server-ip &lt;span style=&#34;color:#bb60d5&#34;&gt;$CONTROL_NODE_IP&lt;/span&gt; --user pi
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;deep-breath&#34;&gt;
+  Deep breath
+  &lt;a class=&#34;heading-link&#34; href=&#34;#deep-breath&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;This is where I struggled with how to deliver this example.
+The &lt;a href=&#34;https://knative.dev/docs/install/yaml-install/serving/install-serving-with-yaml/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Knative install documentation&lt;/a&gt; is awesome.
+I&amp;rsquo;ve been through it dozens of times!&lt;/p&gt;
+&lt;p&gt;I tried to simplify this for you.
+I want to give you the &amp;rsquo;easy button&amp;rsquo; experience.
+I created a &lt;a href=&#34;https://github.com/dashaun/knative-serving-raspberry-pi&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;repository&lt;/a&gt; with all the YAML you need to deploy Knative Serving to this K3s cluster.&lt;/p&gt;
+&lt;h2 id=&#34;knative-serving-with-kourier&#34;&gt;
+  Knative Serving with Kourier
+  &lt;a class=&#34;heading-link&#34; href=&#34;#knative-serving-with-kourier&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git clone https://github.com/dashaun/knative-serving-raspberry-pi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;cd&lt;/span&gt; knative-serving-raspberry-pi/operator-serving-kourier
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Use the `default` namespace in the Kubernetes cluster&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl config set-context --current --namespace&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;default
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Deploy the Knative operator&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl apply -f operator.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Check the deployment status&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl get deployment knative-operator
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Continue when &lt;code&gt;Ready&lt;/code&gt; status is &lt;code&gt;1/1&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;knative-operator   1/1     1            1           19h
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Install Knative Serving custom resource and Kourier&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl apply -f knative-serving.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Check the custom resource status&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl get KnativeServing knative-serving -n knative-serving
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Continue when &lt;code&gt;READY&lt;/code&gt; is &lt;code&gt;True&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;NAME              VERSION   READY   REASON
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;knative-serving   1.8.0     True
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Check the deployment status&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl get deployment -n knative-serving
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Continue when &lt;code&gt;READY&lt;/code&gt; are all &lt;code&gt;1/1&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;NAME                     READY   UP-TO-DATE   AVAILABLE   AGE
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;activator                1/1     1            1           23m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;autoscaler               1/1     1            1           23m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;controller               1/1     1            1           23m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;domain-mapping           1/1     1            1           23m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;domainmapping-webhook    1/1     1            1           23m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;autoscaler-hpa           1/1     1            1           23m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;3scale-kourier-gateway   1/1     1            1           23m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;webhook                  1/1     1            1           23m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;net-kourier-controller   1/1     1            1           23m
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/blockquote&gt;
+&lt;h2 id=&#34;sslipio-and-a-spring-boot-3-native-application&#34;&gt;
+  SSLIP.IO and a Spring Boot 3 &lt;code&gt;native&lt;/code&gt; application
+  &lt;a class=&#34;heading-link&#34; href=&#34;#sslipio-and-a-spring-boot-3-native-application&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Install default domain&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl apply -f serving-default-domain.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Deploy a Spring Boot 3 `native` application&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl apply -f spring-boot-native-pi-service.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Get the address&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl get ksvc spring-boot-native-pi --output&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;custom-columns&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;NAME:.metadata.name,URL:.status.url
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;NAME                    URL
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;spring-boot-native-pi   http://spring-boot-native-pi.default.10.0.0.10.sslip.io
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Curl the address provided by knative with `/actuator/health` at the end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl http://spring-boot-native-pi.default.default.10.0.0.10.sslip.io/actuator/health
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Expected output:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{&amp;#34;status&amp;#34;:&amp;#34;UP&amp;#34;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/blockquote&gt;
+&lt;h2 id=&#34;summary&#34;&gt;
+  Summary
+  &lt;a class=&#34;heading-link&#34; href=&#34;#summary&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;With the recent release of Spring Boot 3.0.0, my Raspberry Pi collection has become significantly more interesting.
+Knative Serving allows me to deploy dozens of Spring Boot / Spring Cloud workloads to a tiny, low power device, with very exciting capabilities.&lt;/p&gt;
+&lt;h2 id=&#34;keep-learning&#34;&gt;
+  Keep Learning
+  &lt;a class=&#34;heading-link&#34; href=&#34;#keep-learning&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://knative.dev&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Knative&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.spring.io/spring-boot/docs/current/reference/html/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Boot&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/knative-serving-raspberry-pi&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Knative Serving Raspberry Pi&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Cff on DaShaun</title>
+        <link>https://dashaun.com/tags/cff/</link>
+        <description>Recent content in Cff on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Sat, 29 Apr 2023 01:05:13 -0500</lastBuildDate><atom:link href="https://dashaun.com/tags/cff/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Paketo Steering Committee Candidacy</title>
+            <link>https://dashaun.com/posts/paketo-steering-committee-candidacy/</link>
+            <pubDate>Sat, 29 Apr 2023 01:05:13 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/paketo-steering-committee-candidacy/</guid>
+            <description>&lt;h2 id=&#34;the-news&#34;&gt;
+  The news
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-news&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I first heard about the upcoming election on the Paketo Slack.&lt;/p&gt;
+&lt;p&gt;It wasn&amp;rsquo;t clear to me, how I was supposed to throw my name in the hat, after reading about &lt;a href=&#34;https://github.com/paketo-buildpacks/rfcs/blob/main/text/0054-steering-committee-elections.md&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;the election process&lt;/a&gt;.  So, I had some fun with it.&lt;/p&gt;
+&lt;h2 id=&#34;the-announcement&#34;&gt;
+  The announcement
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-announcement&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;First on the Paketo Slack, then LinkedIn, Twitter and Mastodon, I made an announcement like this:&lt;/p&gt;
+&lt;p&gt;Steering Committee Electors and Paketo community!&lt;/p&gt;
+&lt;p&gt;My name is DaShaun Carter and I would appreciate your consideration for membership in the steering committee, in the upcoming election!&lt;/p&gt;
+&lt;p&gt;You might have heard me say &amp;ldquo;Friends don&amp;rsquo;t let friends use Dockerfiles, use buildpacks&amp;rdquo; during &lt;a href=&#34;https://springofficehours.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Office Hours&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Perhaps you have seen my work with &lt;a href=&#34;https://cloudnativecobol.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cloud Native Cobol&lt;/a&gt; and the &lt;a href=&#34;https://cloudnativecobol.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cobol Buildpack&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Maybe you have seen or used the &lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;multi-architecture buildpack&lt;/a&gt;, that I have been &lt;a href=&#34;https://hub.docker.com/r/dashaun/builder&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;delivering&lt;/a&gt; for the ARM64 community, with Daniel Mikusa.&lt;/p&gt;
+&lt;p&gt;You can get to know me by visiting &lt;a href=&#34;https://dashaun.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://dashaun.com&lt;/a&gt; where you will find my blog posts, links to all of my socials, and an &amp;ldquo;About&amp;rdquo; page with links to videos that I am proud of.&lt;/p&gt;
+&lt;p&gt;Thank you for your consideration.&lt;/p&gt;
+&lt;h2 id=&#34;what-happens-next&#34;&gt;
+  What happens next
+  &lt;a class=&#34;heading-link&#34; href=&#34;#what-happens-next&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;m not sure if anyone else even wants the role, but I&amp;rsquo;m excited to see what happens next.  I&amp;rsquo;ve been passionate about buildpacks for a long time, and I will continue to be, regardless of the outcome of this election.  I&amp;rsquo;m going to do my best to make sure that the people that are voting, know who I am and what I stand for.  The things that I have been working on and the feedback I have received, have been very encouraging.  I&amp;rsquo;m looking forward to the next few weeks.  Stay tuned for more updates on my &lt;code&gt;campaign&lt;/code&gt; and don&amp;rsquo;t hesitate to reach out with any questions or suggestions.&lt;/p&gt;
+&lt;h2 id=&#34;campaign-slogan&#34;&gt;
+  Campaign Slogan?
+  &lt;a class=&#34;heading-link&#34; href=&#34;#campaign-slogan&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;#34;Embracing Multi-Architecture Buildpacks for a Brighter, Inclusive Future&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+        </item>
+        
+    </channel>
+</rss>
