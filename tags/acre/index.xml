@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Acre on DaShaun</title>
+        <link>https://dashaun.com/tags/acre/</link>
+        <description>Recent content in Acre on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Fri, 05 Mar 2021 21:57:24 -0600</lastBuildDate><atom:link href="https://dashaun.com/tags/acre/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Active Geo-Replication in Azure Cache for Redis</title>
+            <link>https://dashaun.com/posts/azure-cache-for-redis-active-geo-terraform-ga-preview/</link>
+            <pubDate>Fri, 05 Mar 2021 21:57:24 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/azure-cache-for-redis-active-geo-terraform-ga-preview/</guid>
+            <description>&lt;h1 id=&#34;azure-cache-for-redis-enterprise-is-ga&#34;&gt;
+  Azure Cache for Redis Enterprise is GA
+  &lt;a class=&#34;heading-link&#34; href=&#34;#azure-cache-for-redis-enterprise-is-ga&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Last week was a super high energy week for me.
+I was exhausted most of the weekend.
+This week, was more of the same.
+Azure Cache for Redis Enterprise (ACRE) became generally available (GA) on Tuesday.
+Microsoft made the big announcement during Microsoft Ignite 2021.
+For me, it was a big relief, followed by dozens and dozens of tests and validation.&lt;/p&gt;
+&lt;p&gt;It&amp;rsquo;s real.
+It&amp;rsquo;s finally here.
+You can see it and touch it and its GA!&lt;/p&gt;
+&lt;h2 id=&#34;the-announcements&#34;&gt;
+  The announcements
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-announcements&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://redislabs.com/blog/azure-cache-for-redis-enterprise-tiers-general-availability/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Redis Labs Blog&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://aka.ms/EnterpriseGABlog&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Microsoft Blog&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I don&amp;rsquo;t think magnitude of this event has fully registered yet.
+This &lt;a href=&#34;https://redislabs.com/press/general-availability-of-azure-cache-for-redis-enterprise-tiers/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;press release&lt;/a&gt;
+with a quote from Aaron Phillips, hit me right in my feelings.&lt;/p&gt;
+&lt;h2 id=&#34;multi-region-and-active-active-in-about-15-minutes&#34;&gt;
+  Multi-region and active-active in about 15 minutes
+  &lt;a class=&#34;heading-link&#34; href=&#34;#multi-region-and-active-active-in-about-15-minutes&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I have never before had the ability, to deploy multi-region with active-active with this much consistency and ease.
+From nothing, using Terraform and ARM templates, I can stand up 2 regions in active-active configuration.
+It takes about 15 minutes, but depends on where you are located, and the target regions.&lt;/p&gt;
+&lt;p&gt;It&amp;rsquo;s Friday night, the weekend is here, and I am still freaking out about this.
+It couldn&amp;rsquo;t wait until Monday.
+I had to share this, right now.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;m in Kansas City, Missouri.
+Using this repository, I deployed to East US 2 and West US 2, in under 15 minutes.
+That&amp;rsquo;s not even the craziest part.
+The craziest part is that I&amp;rsquo;m still getting &amp;lt; 1ms latency on my writes!&lt;/p&gt;
+&lt;p&gt;The Terraform provider for Azurerm v2.50.0, doesn&amp;rsquo;t have the active geo-replication feature included yet.
+This feature is still in public preview.
+So this repository uses ARM templates for configuring the geo-replication.&lt;/p&gt;
+&lt;p&gt;The product roadmap for ACRE is even more exciting and updates are coming soon.&lt;/p&gt;
+&lt;p&gt;Until then, have fun deploying Redis Enterprise, to the cloud with the most regions, in active-active configuration.&lt;/p&gt;
+&lt;p&gt;Enjoy!&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/redisgeek/acre-terraform-geo-replication&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/redisgeek/acre-terraform-geo-replication&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Azurerm Terraform provider version 2.49.0</title>
+            <link>https://dashaun.com/posts/azurerm-terraform-provider-2-49-0/</link>
+            <pubDate>Sat, 27 Feb 2021 13:32:01 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/azurerm-terraform-provider-2-49-0/</guid>
+            <description>&lt;h2 id=&#34;that-new-terraform-smell&#34;&gt;
+  That new Terraform smell
+  &lt;a class=&#34;heading-link&#34; href=&#34;#that-new-terraform-smell&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;m a fan of &lt;a href=&#34;https://terraform.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Terraform&lt;/a&gt;.
+I like to stand things up from scratch, before I use them.
+I like to tear things down when I&amp;rsquo;m done.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;m also a fan of Redis Enterprise.
+(Yes, I am biased, because I work for Redis Labs.)
+Yesterday, version 2.49.0 of the &amp;lsquo;&lt;a href=&#34;https://registry.terraform.io/providers/hashicorp/azurerm/latest&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;azurerm&lt;/a&gt;&amp;rsquo; provider was released.
+Before yesterday, I needed to use an ARM template to deploy Azure Cache for Redis Enterprise (ACRE) clusters.
+I took it for a spin and created a repository, so you can try it out too.&lt;/p&gt;
+&lt;p&gt;Enjoy!&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/redisgeek/acre-terraform&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/redisgeek/acre-terraform&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

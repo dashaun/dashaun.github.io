@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  My jgitver replacement · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="Using qoomon/maven-git-versioning-extension">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://dashaun.com/posts/my-jgitver-replacement/images/feature.png">
+  <meta name="twitter:title" content="My jgitver replacement">
+  <meta name="twitter:description" content="Using qoomon/maven-git-versioning-extension">
+
+<meta property="og:url" content="https://dashaun.com/posts/my-jgitver-replacement/">
+  <meta property="og:site_name" content="DaShaun">
+  <meta property="og:title" content="My jgitver replacement">
+  <meta property="og:description" content="Using qoomon/maven-git-versioning-extension">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-02-02T18:47:07-06:00">
+    <meta property="article:modified_time" content="2025-02-24T16:16:50-06:00">
+    <meta property="article:tag" content="Git">
+    <meta property="article:tag" content="Maven">
+    <meta property="article:tag" content="Sdkman">
+    <meta property="article:tag" content="Sdk">
+    <meta property="og:image" content="https://dashaun.com/posts/my-jgitver-replacement/images/feature.png">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/my-jgitver-replacement/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Follow me on Twitch</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/my-jgitver-replacement/">
+              My jgitver replacement
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2025-02-02T18:47:07-06:00'>
+                February 2, 2025
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2025-02-02T18:47:07-06:00'>
+                February 24, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              2-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='images/feature.png' alt="Featured image"/>
+        
+        <p>I&rsquo;ve been using <code>jgitver</code> for a long time.  It has been embarrassing on multiple occasions because it&rsquo;s unmaintained and hasn&rsquo;t had a release in a very long time.  I like to use the latest and greatest as part of my &ldquo;N-0&rdquo; lifestyle.</p>
+<p>Today, I found my replacement.</p>
+<p><a href="https://github.com/qoomon/maven-git-versioning-extension"  class="external-link" target="_blank" rel="noopener">Maven Git Versioning Extension</a></p>
+<p>Here is the config I&rsquo;m using.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">&lt;configuration</span> <span style="color:#4070a0">xmlns=</span><span style="color:#4070a0">&#34;https://github.com/qoomon/maven-git-versioning-extension&#34;</span>
+</span></span><span style="display:flex;"><span>               <span style="color:#4070a0">xmlns:xsi=</span><span style="color:#4070a0">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span>
+</span></span><span style="display:flex;"><span>               <span style="color:#4070a0">xsi:schemaLocation=</span><span style="color:#4070a0">&#34;https://github.com/qoomon/maven-git-versioning-extension https://qoomon.github.io/maven-git-versioning-extension/configuration-9.4.0.xsd&#34;</span><span style="color:#062873;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#062873;font-weight:bold">&lt;refs</span> <span style="color:#4070a0">considerTagsOnBranches=</span><span style="color:#4070a0">&#34;true&#34;</span><span style="color:#062873;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&lt;ref</span> <span style="color:#4070a0">type=</span><span style="color:#4070a0">&#34;tag&#34;</span><span style="color:#062873;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#062873;font-weight:bold">&lt;pattern&gt;</span><span style="color:#007020">&lt;![CDATA[v(?&lt;version&gt;.*)]]&gt;</span><span style="color:#062873;font-weight:bold">&lt;/pattern&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#062873;font-weight:bold">&lt;version&gt;</span>${ref.version}<span style="color:#062873;font-weight:bold">&lt;/version&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&lt;/ref&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&lt;ref</span> <span style="color:#4070a0">type=</span><span style="color:#4070a0">&#34;branch&#34;</span><span style="color:#062873;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#062873;font-weight:bold">&lt;pattern&gt;</span>(main|release.*)<span style="color:#062873;font-weight:bold">&lt;/pattern&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#062873;font-weight:bold">&lt;version&gt;</span>${describe.tag.version.major}.${describe.tag.version.minor}.${describe.tag.version.patch.next}-SNAPSHOT<span style="color:#062873;font-weight:bold">&lt;/version&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&lt;/ref&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&lt;ref</span> <span style="color:#4070a0">type=</span><span style="color:#4070a0">&#34;branch&#34;</span><span style="color:#062873;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#062873;font-weight:bold">&lt;pattern&gt;</span><span style="color:#007020">&lt;![CDATA[feature/(?&lt;feature&gt;.+)]]&gt;</span><span style="color:#062873;font-weight:bold">&lt;/pattern&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#062873;font-weight:bold">&lt;version&gt;</span>${describe.tag.version}-${ref.feature}-SNAPSHOT<span style="color:#062873;font-weight:bold">&lt;/version&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&lt;/ref&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#062873;font-weight:bold">&lt;/refs&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#062873;font-weight:bold">&lt;rev&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&lt;version&gt;</span>${commit}<span style="color:#062873;font-weight:bold">&lt;/version&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#062873;font-weight:bold">&lt;/rev&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">&lt;/configuration&gt;</span>
+</span></span></code></pre></div><p>I use another Maven extension as well:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">&lt;extensions</span> <span style="color:#4070a0">xmlns=</span><span style="color:#4070a0">&#34;http://maven.apache.org/EXTENSIONS/1.0.0&#34;</span> <span style="color:#4070a0">xmlns:xsi=</span><span style="color:#4070a0">&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#4070a0">xsi:schemaLocation=</span><span style="color:#4070a0">&#34;http://maven.apache.org/EXTENSIONS/1.0.0 http://maven.apache.org/xsd/core-extensions-1.0.0.xsd&#34;</span><span style="color:#062873;font-weight:bold">&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#062873;font-weight:bold">&lt;extension&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&lt;groupId&gt;</span>me.qoomon<span style="color:#062873;font-weight:bold">&lt;/groupId&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&lt;artifactId&gt;</span>maven-git-versioning-extension<span style="color:#062873;font-weight:bold">&lt;/artifactId&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&lt;version&gt;</span>9.8.1<span style="color:#062873;font-weight:bold">&lt;/version&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#062873;font-weight:bold">&lt;/extension&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#062873;font-weight:bold">&lt;extension&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&lt;groupId&gt;</span>kr.motd.maven<span style="color:#062873;font-weight:bold">&lt;/groupId&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&lt;artifactId&gt;</span>os-maven-plugin<span style="color:#062873;font-weight:bold">&lt;/artifactId&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&lt;version&gt;</span>1.7.0<span style="color:#062873;font-weight:bold">&lt;/version&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#062873;font-weight:bold">&lt;/extension&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">&lt;/extensions&gt;</span>
+</span></span></code></pre></div><blockquote>
+<p>The <code>os-maven-plugin</code> gives me operating system and architecture info</p></blockquote>
+<p>That combination is a nice way to generate versions from tags that includes additional meta data.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>[INFO] Successfully built image &#39;docker.io/dashaun/dev.dashaun.service.gateway:v0.0.24-aarch_64&#39;
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO] ------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>[INFO] BUILD SUCCESS
+</span></span><span style="display:flex;"><span>[INFO] ------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>[INFO] Total time:  20.028 s
+</span></span><span style="display:flex;"><span>[INFO] Finished at: 2025-02-02T20:06:02-06:00
+</span></span><span style="display:flex;"><span>[INFO] ------------------------------------------------------------------------
+</span></span></code></pre></div><blockquote>
+<p>Example output from ./mvnw spring-boot:build-image</p></blockquote>
+<p>Additionally, I like to use the <a href="https://maven.apache.org/wrapper/"  class="external-link" target="_blank" rel="noopener">Maven Wrapper</a> and a [SDKman])(<a href="https://sdkman.io"  class="external-link" target="_blank" rel="noopener">https://sdkman.io</a>) <code>.sdkmanrc</code> file in my repositories.  I find that a good balanced developer experience with some declarative CICD.</p>
+<p>I realize that I could replace the Maven Wrapper with another line in the .sdkmanrc file.  I choose to leave it this way for two primary reasons.</p>
+<ol>
+<li>I generate most of my projects at <a href="ttps://start.spring.io" >start.spring.io</a> which provides the Maven Wrapper for me.</li>
+<li>Because I&rsquo;m using Maven Extensions, above, I need the .mvn directory anyway.</li>
+</ol>
+<p>What other things do you like to see in your repositories?</p>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

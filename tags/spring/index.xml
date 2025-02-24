@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Spring on DaShaun</title>
+        <link>https://dashaun.com/tags/spring/</link>
+        <description>Recent content in Spring on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Fri, 16 Feb 2024 19:48:20 -0600</lastBuildDate><atom:link href="https://dashaun.com/tags/spring/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Spring Health Assessment Report</title>
+            <link>https://dashaun.com/posts/spring-health-assessment-report/</link>
+            <pubDate>Fri, 16 Feb 2024 19:48:20 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/spring-health-assessment-report/</guid>
+            <description>&lt;p&gt;Spring Boot 3.0.0 was released 450 days ago. Helping people upgrade, and enjoy all the amazing benefits, has been one of my passions for about 450 days.  I&amp;rsquo;m a Spring Developer Advocate and I love my job.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/tschuehly/status/1723106405756846117&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;img src=&#34;images/normalconversation.png&#34; alt=&#34;Thomas Schuehly has thoughts&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;It&amp;rsquo;s a passion really. Thomas Schuehly gets it.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;At SpringOne 2023 in Las Vegas, my friend, Joachim Pasquali, over at Fiserv, shared a story that I&amp;rsquo;ll not soon forget.  The process of upgrading and patching, doesn&amp;rsquo;t have to be a painful process.  On that day, his flagship product, was on the latest and greatest version of Spring Boot.  &lt;a href=&#34;https://youtube.com/clip/UgkxKNJxAWtsIWDzsFJM8tDB8VvG1E66EMVk?si=0e7-mUIHfjIHl9Qp&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Watch the clip that gave me all the feels here.&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I want you to know about some tools and techniques that can help you upgrade your Spring Boot projects with more joy, frequently, and safely.&lt;/p&gt;
+&lt;p&gt;First things first, let&amp;rsquo;s talk about the challenges. Outdated Spring Boot versions can expose your projects to security risks, leave you without access to the latest features and performance improvements, and can be costing you more money. Have you ever been working, on an outdated JVM perhaps, or an older Spring Boot version, and secretly wished you were using the latest release? I get it, I&amp;rsquo;ve been there too, and I&amp;rsquo;m here to help.&lt;/p&gt;
+&lt;p&gt;I want you to check out the &lt;a href=&#34;https://tanzu.vmware.com/spring-health-assessment&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Health Assessment Report&lt;/a&gt;.  This tool is very similar to something you probably have running already, it tells you about known vulnerabilities. However, this tool is also unique in a few very special ways.  First of all, it&amp;rsquo;s free for you to use.  It also has the support timeline information built in. It provides a measure of how hard it will be to upgrade. Finally, it only reports on the Spring and Micrometer dependencies that you are using. It&amp;rsquo;s very focused and actionable.&lt;/p&gt;
+&lt;p&gt;I like to call &lt;a href=&#34;https://docs.openrewrite.org&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;OpenRewrite&lt;/a&gt; my favorite &lt;code&gt;cheat code&lt;/code&gt;. When I say that I demonstrate &lt;code&gt;OpenRewrite&lt;/code&gt; twenty times per week, I&amp;rsquo;m not exaggerating.  It&amp;rsquo;s a powerful tool, and I&amp;rsquo;m still surprised by how many developers still don&amp;rsquo;t know about it.  &lt;a href=&#34;https://github.com/dashaun/openrewrite-spring-boot-upgrade-example&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;This repository includes one of those demos, that I deliver multiple times every week&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Software is soft for a reason.  It&amp;rsquo;s meant to be changed.  It&amp;rsquo;s meant to be upgraded.  It&amp;rsquo;s meant to be improved.  Java comes out with a new JVM, every 6-months.  The Spring team releases a new Spring Boot version every 6-months.  It&amp;rsquo;s time to start upgrading more frequently.  In 2023, there were only 4-weeks, of the entire year, that the Spring team didn&amp;rsquo;t release something new.  You can see for yourself over at &lt;a href=&#34;https://calendar.spring.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;calendar-dot-spring-dot-io&lt;/a&gt;.  It&amp;rsquo;s time to start upgrading more frequently.&lt;/p&gt;
+&lt;p&gt;I believe that the way software is going to be measured, going forward, is by how easy it is to maintain. I&amp;rsquo;m convinced that continuous upgrading, and continuous patching, is going to be a key differentiator for software projects.  I want you to get started, today.&lt;/p&gt;
+&lt;p&gt;By upgrading your Spring Boot projects, you can benefit from improved security, performance, and access to the latest features. You&amp;rsquo;ll also be able to take advantage of the ongoing support and updates provided by the Spring team and the Java team!&lt;/p&gt;
+&lt;p&gt;So why wait? &lt;a href=&#34;https://youtu.be/XI_7mpEiPjI&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Watch this video I made last week&lt;/a&gt;. Check out the Spring Health Assessment Report. You will see a few reasons why you should upgrade.  You will also see how easy it can be. Spring Boot 3.2.3 comes out next Thursday, how long will it take you to upgrade?&lt;/p&gt;
+&lt;h2 id=&#34;links&#34;&gt;
+  Links
+  &lt;a class=&#34;heading-link&#34; href=&#34;#links&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtu.be/XI_7mpEiPjI&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring into Action: Boost Your Java Projects with Essential Upgrade Tools!&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://tanzu.vmware.com/spring-health-assessment&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Health Assessment Report&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://twitter.com/tschuehly/status/1723106405756846117&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Thomas Schuehly gets it&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/openrewrite-spring-boot-upgrade-example&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;OpenRewrite Spring Boot Upgrade Example&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtube.com/clip/UgkxKNJxAWtsIWDzsFJM8tDB8VvG1E66EMVk?si=bF6GiJRZgWbH78JX&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Joachim Pasquali at SpringOne 2023&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Bootiful Twitch Metrics for Prometheus</title>
+            <link>https://dashaun.com/posts/bootiful-twitch-metrics-for-prometheus/</link>
+            <pubDate>Mon, 27 Nov 2023 21:12:06 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/bootiful-twitch-metrics-for-prometheus/</guid>
+            <description>&lt;p&gt;Prometheus and Grafana have been top of mind lately.
+I&amp;rsquo;ve also been trying to stream more lately.
+Today, I created a Twitch Metrics Exporter.
+I&amp;rsquo;ve used the Twitch4J library before.
+This project just grabs some metrics, and exposes them to an endpoint, that can be scraped by Prometheus.
+Plus, it might just inspire other Java or Spring developers to start streaming.&lt;/p&gt;
+&lt;p&gt;I used Spring Boot 3.2, Twitch4J, Micrometer, and I included Zipkin and TestContainers.&lt;/p&gt;
+&lt;p&gt;Want to see how this all comes together?
+Check out the full &lt;a href=&#34;https://youtu.be/TSmEx8taj2M&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;episode on YouTube&lt;/a&gt;.
+Let&amp;rsquo;s code and have fun together!&lt;/p&gt;
+&lt;p&gt;See Also:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/javagrunt/com.javagrunt.service.twitch&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/javagrunt/com.javagrunt.service.twitch&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Five Months in the making, multi-architecture builder</title>
+            <link>https://dashaun.com/posts/five-months-in-the-making-multi-arch-builder/</link>
+            <pubDate>Sun, 17 Sep 2023 14:42:19 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/five-months-in-the-making-multi-arch-builder/</guid>
+            <description>&lt;h2 id=&#34;five-months-in-the-making-multi-architecture-builder&#34;&gt;
+  Five months in the making, multi-architecture builder
+  &lt;a class=&#34;heading-link&#34; href=&#34;#five-months-in-the-making-multi-architecture-builder&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;If you have been following along, you are probably asking &amp;ldquo;What took so long?&amp;rdquo; and I totally understand.
+I had no idea what was wrong before today.
+My scripts had been working for over a year, then just stopped.
+I had removed a bunch of the debug info from the logs, which didn&amp;rsquo;t help the situation at all.&lt;/p&gt;
+&lt;h2 id=&#34;upstream-progress&#34;&gt;
+  Upstream progress
+  &lt;a class=&#34;heading-link&#34; href=&#34;#upstream-progress&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The Paketo team continues to put a high priority on ARM64 and multi-architecture tools/buildpacks.
+I had created several ARM64 workarounds over the years.
+The Paketo team continued improving their tools to support ARM64 as well.
+I was not doing a good job of pulling the tooling changes from upstream.
+So my workarounds were breaking the build.&lt;/p&gt;
+&lt;h2 id=&#34;several-failed-attempts&#34;&gt;
+  Several failed attempts
+  &lt;a class=&#34;heading-link&#34; href=&#34;#several-failed-attempts&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I had made several solid attempts at resolving the issues.
+I just kept getting distracted with other priorities.
+I have had this process working on multiple environments.
+Every version of my pipeline seemed to be broken in a slightly different way.
+They were, because of my workarounds.
+I had different workarounds for different environments.&lt;/p&gt;
+&lt;h2 id=&#34;motivation&#34;&gt;
+  Motivation
+  &lt;a class=&#34;heading-link&#34; href=&#34;#motivation&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;This year, I&amp;rsquo;ve been traveling more than ever.
+In fact, I&amp;rsquo;m on my way to Oracle Cloud World 2023, right now.
+The laptop that I was using for work, wasn&amp;rsquo;t keeping up with what I was needing to deliver, to the community.
+My conference sessions were having issues, my customer sessions were also having issues.
+Watching for over 4-minutes, for a native compile, isn&amp;rsquo;t great for anyone.
+So I requested a new M1 laptop.
+When I got home on Friday, my new laptop had arrived.
+Since I&amp;rsquo;m going to be working on an M1 from now on, I needed to have all the fast builds.
+I needed to make sure all of my demos work on the new hardware.
+I also needed to be ready to use Java 21 when it comes out in 2 days.
+In addition to my new laptop from work, my Ampere Dev Kit server also arrived.
+The server had been stuck in US Customs for a couple of months, after arriving from China.
+It was my first time working with US Customs.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;M1&lt;/li&gt;
+&lt;li&gt;Ampere Dev Kit&lt;/li&gt;
+&lt;li&gt;Java 21&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;the-work&#34;&gt;
+  The work
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-work&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;On my new M1, I simply started adding in debug info to the scripts.
+It felt good to get back into the process and remind myself how it all worked.
+When things work, you don&amp;rsquo;t need to keep the details in your mental cache.
+The upstream builder added a few buildpacks.
+Packaging the newer buildpacks is where the problems were.
+Moments ago, I was getting ready to board when my tests passed.
+The KC Chiefs were playing Jacksonville at the same time.
+When I shouted with excitement, the people around me assumed that I was watching the game.
+I love my job.
+I love what I do.
+I could hear the Chiefs game, but getting this build to work was even more exciting that watching the Chiefs win the Super Bowl, twice.&lt;/p&gt;
+&lt;h2 id=&#34;a-huge-surprise&#34;&gt;
+  A huge surprise
+  &lt;a class=&#34;heading-link&#34; href=&#34;#a-huge-surprise&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I don&amp;rsquo;t remember what the number was, from the last time I looked at the stats on Docker Hub.
+When I went to look today, I was hoping for it to be over 2000.
+Maybe 3000?  Is 5000 possible?
+My goosebumps hit when I saw that it was over 8500!
+I am so excited that people are using it.&lt;/p&gt;
+&lt;h2 id=&#34;next-steps&#34;&gt;
+  Next steps
+  &lt;a class=&#34;heading-link&#34; href=&#34;#next-steps&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I am going to try to move away from my scripts, towards what the Paketo team is doing.
+I want to get my version moved over to the &lt;a href=&#34;https://github.com/paketo-community&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paketo-community&lt;/a&gt; repository.
+Hopefully, from there, it will be even closer to being merged upstream.&lt;/p&gt;
+&lt;p&gt;Stay tuned!&lt;/p&gt;
+&lt;h2 id=&#34;feedback-welcome&#34;&gt;
+  Feedback welcome
+  &lt;a class=&#34;heading-link&#34; href=&#34;#feedback-welcome&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Please let me know how it is working for you, all of &lt;a href=&#34;https://dashaun.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;my socials/contact info can be found here&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;links&#34;&gt;
+  Links
+  &lt;a class=&#34;heading-link&#34; href=&#34;#links&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/dashaun/paketo-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtu.be/BuqNJl4QrUw&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;YouTube.com/@dashaun&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Multi-architecture stacks and buildpacks</title>
+            <link>https://dashaun.com/posts/multi-architecture-stacks-and-buildpacks/</link>
+            <pubDate>Fri, 28 Apr 2023 13:47:28 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/multi-architecture-stacks-and-buildpacks/</guid>
+            <description>&lt;h2 id=&#34;several-failed-attempts&#34;&gt;
+  Several failed attempts
+  &lt;a class=&#34;heading-link&#34; href=&#34;#several-failed-attempts&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The community had been experiencing issues with broken images in recent releases, which led many users to manually switch to older tags that worked. I realize now, that I should have been deleting the broken, publicly available versions. Over the last two weeks, I&amp;rsquo;ve focused on resolving these issues and have successfully deleted all broken versions from my Docker Hub repository.&lt;/p&gt;
+&lt;h2 id=&#34;multi-architecture-stacks&#34;&gt;
+  Multi-architecture stacks
+  &lt;a class=&#34;heading-link&#34; href=&#34;#multi-architecture-stacks&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The latest release of the multi-architecture buildpack is built upon a multi-architecture stack created by Daniel Mikusa. This update is a significant step towards having a multi-architecture buildpack officially supported by the Paketo team.  Hopefully, this multi-architecture stack gets merged into the Paketo project soon.&lt;/p&gt;
+&lt;h2 id=&#34;next-steps&#34;&gt;
+  Next Steps
+  &lt;a class=&#34;heading-link&#34; href=&#34;#next-steps&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The release of the new multi-architecture buildpack marks a crucial milestone in our journey towards an officially supported Paketo buildpack. As development continues, I look forward to sharing more updates and working together to create a more efficient and seamless developer experience on ARM64 and AMD64. Full transparency, I&amp;rsquo;ve already started working on a RISC-V version as well. Feel free to reach out with any questions or suggestions as we move forward.&lt;/p&gt;
+&lt;h2 id=&#34;simplified&#34;&gt;
+  Simplified
+  &lt;a class=&#34;heading-link&#34; href=&#34;#simplified&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I am no longer creating a separate stack, and will continue to use the multi-architecture stack that Daniel Mikusa has created. This will simplify the process of creating and maintaining the buildpack, and will allow me to focus on the buildpack itself. I&amp;rsquo;ve simplified the scripts used for building and releasing the buildpack.  I&amp;rsquo;ve also removed the related GitHub actions.  All of the work is being done via CircleCI.&lt;/p&gt;
+&lt;h2 id=&#34;keep-learning&#34;&gt;
+  Keep Learning
+  &lt;a class=&#34;heading-link&#34; href=&#34;#keep-learning&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dashaun/paketo-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://paketo.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Paketo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://buildpacks.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cloud Native Buildpacks&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/cobol-buildpack&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cobol Buildpack&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>First Impression CircleCI ARM64</title>
+            <link>https://dashaun.com/posts/circleci-arm64-first-impression/</link>
+            <pubDate>Sat, 25 Feb 2023 15:37:47 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/circleci-arm64-first-impression/</guid>
+            <description>&lt;p&gt;For the past two years, I&amp;rsquo;ve been using my own self-hosted ARM64 infrastructure to create a &lt;a href=&#34;https://buildpacks.io/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cloud Native Buildpack&lt;/a&gt; for Java that works on ARM64. I started with a cluster of Raspberry Pi 4 devices.  After ramping up with &amp;ldquo;spring-native&amp;rdquo; I switched to a free-tier ARM64 VM in Oracle Cloud. While this setup worked well, I realized that I could streamline my workflow, and perhaps, get my work moved up to &lt;a href=&#34;https://paketo.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Paketo&lt;/a&gt; if I used a modern, and accessible, CI/CD platform.&lt;/p&gt;
+&lt;p&gt;After some research, I decided to try out CircleCI, since it offered ARM64 workflow support. Although I have been a fan of CircleCI for some time, this was my first impression with authoring workflows on CircleCI.&lt;/p&gt;
+&lt;p&gt;The process of setting up my account and migrating my GitHub actions was surprisingly easy. I provided CircleCI with access to my public GitHub repositories, and started with a &amp;ldquo;hello world&amp;rdquo; template that worked right out of the gate.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;orbs&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;go&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;circleci/go@1.7.2&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Orbs&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;From there, I consulted the CircleCI documentation on using ARM, and made some simple edits to the template. The biggest takeaway for me was that CircleCI &amp;ldquo;orbs&amp;rdquo; map to GitHub &amp;ldquo;actions&amp;rdquo;, which made the transition even smoother.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;machine&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;ubuntu-2004:latest&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;image&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;ubuntu-2004:latest&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;resource_class&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;arm.medium&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;run&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;echo &amp;#34;Hello, Arm!&amp;#34;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://circleci.com/docs/using-arm/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://circleci.com/docs/using-arm/&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;I live-streamed the process of converting my existing workflows to a CircleCI workflows, and encountered a few minor issues along the way. However, these were quickly resolved, and I was able to release everything from my &lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paketo-arm64&lt;/a&gt; repository without using any self-hosted infrastructure!&lt;/p&gt;
+&lt;p&gt;Overall, I&amp;rsquo;m thrilled with my first impression of authoring workflows on CircleCI. If I had made the jump sooner, I could have saved myself a lot of headaches. I highly recommend CircleCI to anyone looking for a modern, streamlined CI/CD platform that supports ARM64 workflows.&lt;/p&gt;
+&lt;p&gt;Watch:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/live/n6esDV0Kpn8&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;First Impression authoring CircleCI workflows&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/live/2_yrpI74_ss&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Migrating from GitHub Actions to CircleCI&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Update 2023-02-27:&lt;/p&gt;
+&lt;p&gt;I have successfully &lt;code&gt;terraform destroyed&lt;/code&gt; the &lt;a href=&#34;https://github.com/dashaun/tf-oci-arm&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Oracle OCI ARM64&lt;/a&gt; infrastructure that was being used as a self-hosted runner.&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

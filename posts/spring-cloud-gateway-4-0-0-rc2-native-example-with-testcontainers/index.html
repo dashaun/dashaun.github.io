@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Spring Cloud Gateway 4.0.0-RC2 native example with Testcontainers · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="Build and test Spring Cloud Gateway native images">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://dashaun.com/posts/spring-cloud-gateway-4-0-0-rc2-native-example-with-testcontainers/images/scg-startup-rpi.png">
+  <meta name="twitter:title" content="Spring Cloud Gateway 4.0.0-RC2 native example with Testcontainers">
+  <meta name="twitter:description" content="Build and test Spring Cloud Gateway native images">
+
+<meta property="og:url" content="https://dashaun.com/posts/spring-cloud-gateway-4-0-0-rc2-native-example-with-testcontainers/">
+  <meta property="og:site_name" content="DaShaun">
+  <meta property="og:title" content="Spring Cloud Gateway 4.0.0-RC2 native example with Testcontainers">
+  <meta property="og:description" content="Build and test Spring Cloud Gateway native images">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-12-08T11:20:02-06:00">
+    <meta property="article:modified_time" content="2025-02-24T16:16:50-06:00">
+    <meta property="article:tag" content="Springcloud">
+    <meta property="article:tag" content="Testcontainers">
+    <meta property="article:tag" content="Buildpack">
+    <meta property="article:tag" content="Springboot">
+    <meta property="og:image" content="https://dashaun.com/posts/spring-cloud-gateway-4-0-0-rc2-native-example-with-testcontainers/images/scg-startup-rpi.png">
+      <meta property="og:see_also" content="https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/spring-boot-3-buildpacks-with-testcontainers-cloud/">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/spring-cloud-gateway-4-0-0-rc2-native-example-with-testcontainers/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Follow me on Twitch</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/spring-cloud-gateway-4-0-0-rc2-native-example-with-testcontainers/">
+              Spring Cloud Gateway 4.0.0-RC2 native example with Testcontainers
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2022-12-08T11:20:02-06:00'>
+                December 8, 2022
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2022-12-08T11:20:02-06:00'>
+                February 24, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              4-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='images/feature.png' alt="Featured image"/>
+        
+        <h1 id="spring-cloud-gateway-400-rc2-native-example-with-testcontainers">
+  Spring Cloud Gateway 4.0.0-RC2 native example with Testcontainers
+  <a class="heading-link" href="#spring-cloud-gateway-400-rc2-native-example-with-testcontainers">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<p><a href="https://github.com/dashaun/dev.dashaun.service.gateway"  class="external-link" target="_blank" rel="noopener">This example repository is on GitHub</a></p>
+<p>There are 3 goals I have for this example:</p>
+<ul>
+<li>Deliver Spring Cloud Gateway as a graalvm-native-image with Spring Boot 3</li>
+<li>Get feedback on the multi-architecture buildpack that includes ARM64 support</li>
+<li>Demonstrate a pattern for building and testing buildpack images using Testcontainers</li>
+</ul>
+<h2 id="spring-cloud-gateway">
+  <a href="https://spring.io/projects/spring-cloud-gateway"  class="external-link" target="_blank" rel="noopener">Spring Cloud Gateway</a>
+  <a class="heading-link" href="#spring-cloud-gateway">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>From the <a href="https://spring.io/projects/spring-cloud-gateway"  class="external-link" target="_blank" rel="noopener">Spring.io</a> website:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Spring Cloud Gateway aims to provide a simple,
+</span></span><span style="display:flex;"><span>yet effective way to route to APIs and provide
+</span></span><span style="display:flex;"><span>cross cutting concerns to them such as:
+</span></span><span style="display:flex;"><span>security, monitoring/metrics, and resiliency.
+</span></span></code></pre></div><p>It is very popular, and even more valuable than it is popular!</p>
+<p>Spring Framework 6 and Spring Boot 3.0.0 have recently gone GA. My favorite feature of these new releases is hands down the AOT processing. The AOT processing, provided by <a href="https://graalvm.org"  class="external-link" target="_blank" rel="noopener">GraalVM</a>, creates statically linked binary images. These images are optimized, ahead of time, for the operating system and architecture. For many modern workloads they can provide smaller image sizes, smaller memory footprint, and a much faster startup time.</p>
+<p><a href="https://dashaun.com/posts/k3s-knative-ubuntu-raspberry-pi/"  class="external-link" target="_blank" rel="noopener">In a recent experiment</a>, I was able to expose Spring Cloud Gateway to the public, and have it route to other Spring Boot 3 native image workloads.</p>
+<p>In that experiment Spring Cloud Gateway provided:</p>
+<ul>
+<li>Single service for SSL and ingress integration</li>
+<li>YAML configured routing</li>
+<li>Circuit Breaker capabilities with Resilience4j</li>
+<li>Request Rate Limiting with Redis</li>
+</ul>
+<p>In the experiment, I left the Spring Cloud Gateway running, by setting the <code>min-scale</code> value to 1.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">metadata</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>spring-cloud-gateway<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">namespace</span>:<span style="color:#bbb"> </span>default<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">spec</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">template</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">metadata</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span><span style="color:#062873;font-weight:bold">annotations</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#062873;font-weight:bold">autoscaling.knative.dev/initial-scale</span>:<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;1&#34;</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#062873;font-weight:bold">autoscaling.knative.dev/min-scale</span>:<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;1&#34;</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#062873;font-weight:bold">autoscaling.knative.dev/max-scale</span>:<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;2&#34;</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">spec</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span><span style="color:#062873;font-weight:bold">containers</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>- <span style="color:#062873;font-weight:bold">image</span>:<span style="color:#bbb"> </span>dashaun/dev.dashaun.service.gateway:latest<span style="color:#bbb">
+</span></span></span></code></pre></div><p>The other Spring Boot applications, being routed to by the gateway, were allowed to scale-to-zero when they weren&rsquo;t used.</p>
+<p><a href="https://dashaun.com/posts/k3s-knative-ubuntu-raspberry-pi/"  class="external-link" target="_blank" rel="noopener">The experiment was on a cluster of Raspberry Pi</a> devices which are ARM64 cpus.</p>
+<p>The Spring Cloud Gateway, native image, typically starts up between 0.600s and 0.650s, on a Raspberry Pi.</p>
+<p><a href="images/scg-startup-rpi.png" ><img src="images/scg-startup-rpi.png" alt="SCG native image Raspberry Pi startup"></a></p>
+<p>Today, the buildpack delivered by <a href="https://start.spring.io"  class="external-link" target="_blank" rel="noopener">Spring Initializr at start.spring.io</a>, is unable to create native images on ARM64.</p>
+<h2 id="multi-architecture-buildpack">
+  Multi-architecture buildpack
+  <a class="heading-link" href="#multi-architecture-buildpack">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Earlier this year, I started working on a buildpack to use with the experimental project, <code>Spring Native</code>, and ARM64, for my Raspberry Pi devices. Later the M1/M2 Apple Silicon community, also ARM64, began showing interest in using this buildpack. <a href="https://hub.docker.com/r/dashaun/java-native-builder-arm64"  class="external-link" target="_blank" rel="noopener">I have delivered a few versions to date</a>. I&rsquo;ve also created some automation to improve my process for creating these buildpacks.</p>
+<p>Recently, I created a <a href="https://hub.docker.com/r/dashaun/java-native-builder-multiarch"  class="external-link" target="_blank" rel="noopener">multi-architecture buildpack</a> that can be used with Spring Boot 3, to create native images on both Intel/AMD64 and ARM64 architectures. This example repository is configured with this multi-architecture buildpack.</p>
+<p>I&rsquo;m still working to improve this builder, in an effort to get ARM64 support upstream to <a href="https://paketo.io"  class="external-link" target="_blank" rel="noopener">Paketo</a>. I have a long way to go, but with your help, I can discover gaps and continue this effort. One of the known, and frustrating gaps today, is that UPX compression does not work on ARM64, it does work with AMD64.  I really want to get this figured out, and it is a high priority for me.</p>
+<h2 id="building-and-testing-native-images">
+  Building and testing native images
+  <a class="heading-link" href="#building-and-testing-native-images">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>One of the most common concerns I have heard from the community this year has been around validating that the native image artifacts are delivering the same results as the JIT/JVM based artifacts. This is a very valid concern.  This is also why I feel, that organizations with mature testing capabilities today, will be able to move forward with native images faster.</p>
+<p>This repository provides a <code>BuildImageTest</code> that uses the buildpack to create a native image.  It then tests the native image, using <a href="https://testcontainers.org"  class="external-link" target="_blank" rel="noopener">Testcontainers</a> and <a href="https://junit.org"  class="external-link" target="_blank" rel="noopener">JUnit</a>. Building the native image with AOT processing, as part of a test, takes minutes not seconds, and should not be part of normal &ldquo;inner loop&rdquo; development.  So the <code>BuildImageTest</code> is in a separate <code>sourceSet</code> and can be executed independently. This is a very powerful pattern, that I&rsquo;m just getting started with. I would love to hear your thoughts on this pattern or other alternatives to it.</p>
+<p>To build and validate the native image:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>./gradlew integrationTest
+</span></span></code></pre></div><blockquote>
+<p>You can also execute the <code>BuildImageTest</code> directly in your IDE.</p></blockquote>
+<h2 id="thanks">
+  Thanks
+  <a class="heading-link" href="#thanks">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I am having so much fun with all of these new capabilities and challenges. I want to thank the Spring team, for all of their amazing work bring Spring Framework 6 and Spring Boot 3 to GA. I also want to thank Daniel Mikusa and the Paketo community for being amazing to work with. I want to thank Sergei Egorov for <a href="https://bsideup.github.io/posts/spring_boot_in_container/"  class="external-link" target="_blank" rel="noopener">sharing the testing pattern</a> and supporting my Testcontainers journey. Finally, I would like to thank <a href="https://danvega.dev"  class="external-link" target="_blank" rel="noopener">Dan Vega</a>, my <a href="http://bit.ly/spring-office-hours"  class="external-link" target="_blank" rel="noopener">Spring Office Hours</a> cohost, for being an amazing teammate, and having the JUICE.</p>
+<h2 id="keep-learning">
+  Keep Learning
+  <a class="heading-link" href="#keep-learning">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><a href="https://spring.io/projects/spring-cloud-gateway"  class="external-link" target="_blank" rel="noopener">Spring Boot Gateway</a></li>
+<li><a href="https://spring.io/projects/spring-cloud"  class="external-link" target="_blank" rel="noopener">Spring Cloud 2022.0.0-RC2</a></li>
+<li><a href="https://spring.io/projects/spring-boot"  class="external-link" target="_blank" rel="noopener">Spring Boot 3.0.0</a></li>
+<li><a href="https://testcontainers.org"  class="external-link" target="_blank" rel="noopener">Testcontainers</a></li>
+<li><a href="https://dashaun.com/posts/spring-boot-3-buildpacks-with-testcontainers-cloud/"  class="external-link" target="_blank" rel="noopener">Spring Boot 3 buildpacks with Testcontainers Cloud</a></li>
+<li><a href="https://dashaun.com/posts/java-native-builder-multiarch-7-41-0/"  class="external-link" target="_blank" rel="noopener">Cloud Native Buildpack for ARM64 and AMD64</a></li>
+<li><a href="https://dashaun.com/posts/multiarch-builder-poc/"  class="external-link" target="_blank" rel="noopener">First attempt at a multi-architecture buildpack</a></li>
+<li><a href="https://dashaun.com/posts/k3s-knative-ubuntu-raspberry-pi/"  class="external-link" target="_blank" rel="noopener">K3s Knative Ubuntu Raspberry Pi</a></li>
+</ul>
+
+      </div>
+
+
+      <footer>
+        
+
+<section class="see-also">
+  
+    
+    
+    
+  
+</section>
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

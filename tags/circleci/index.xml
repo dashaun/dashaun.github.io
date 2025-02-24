@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Circleci on DaShaun</title>
+        <link>https://dashaun.com/tags/circleci/</link>
+        <description>Recent content in Circleci on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Sat, 25 Feb 2023 15:37:47 -0600</lastBuildDate><atom:link href="https://dashaun.com/tags/circleci/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>First Impression CircleCI ARM64</title>
+            <link>https://dashaun.com/posts/circleci-arm64-first-impression/</link>
+            <pubDate>Sat, 25 Feb 2023 15:37:47 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/circleci-arm64-first-impression/</guid>
+            <description>&lt;p&gt;For the past two years, I&amp;rsquo;ve been using my own self-hosted ARM64 infrastructure to create a &lt;a href=&#34;https://buildpacks.io/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cloud Native Buildpack&lt;/a&gt; for Java that works on ARM64. I started with a cluster of Raspberry Pi 4 devices.  After ramping up with &amp;ldquo;spring-native&amp;rdquo; I switched to a free-tier ARM64 VM in Oracle Cloud. While this setup worked well, I realized that I could streamline my workflow, and perhaps, get my work moved up to &lt;a href=&#34;https://paketo.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Paketo&lt;/a&gt; if I used a modern, and accessible, CI/CD platform.&lt;/p&gt;
+&lt;p&gt;After some research, I decided to try out CircleCI, since it offered ARM64 workflow support. Although I have been a fan of CircleCI for some time, this was my first impression with authoring workflows on CircleCI.&lt;/p&gt;
+&lt;p&gt;The process of setting up my account and migrating my GitHub actions was surprisingly easy. I provided CircleCI with access to my public GitHub repositories, and started with a &amp;ldquo;hello world&amp;rdquo; template that worked right out of the gate.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;orbs&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;go&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;circleci/go@1.7.2&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Orbs&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;From there, I consulted the CircleCI documentation on using ARM, and made some simple edits to the template. The biggest takeaway for me was that CircleCI &amp;ldquo;orbs&amp;rdquo; map to GitHub &amp;ldquo;actions&amp;rdquo;, which made the transition even smoother.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;machine&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;ubuntu-2004:latest&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;image&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;ubuntu-2004:latest&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;resource_class&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;arm.medium&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;run&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;echo &amp;#34;Hello, Arm!&amp;#34;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://circleci.com/docs/using-arm/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://circleci.com/docs/using-arm/&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;I live-streamed the process of converting my existing workflows to a CircleCI workflows, and encountered a few minor issues along the way. However, these were quickly resolved, and I was able to release everything from my &lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paketo-arm64&lt;/a&gt; repository without using any self-hosted infrastructure!&lt;/p&gt;
+&lt;p&gt;Overall, I&amp;rsquo;m thrilled with my first impression of authoring workflows on CircleCI. If I had made the jump sooner, I could have saved myself a lot of headaches. I highly recommend CircleCI to anyone looking for a modern, streamlined CI/CD platform that supports ARM64 workflows.&lt;/p&gt;
+&lt;p&gt;Watch:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/live/n6esDV0Kpn8&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;First Impression authoring CircleCI workflows&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/live/2_yrpI74_ss&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Migrating from GitHub Actions to CircleCI&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Update 2023-02-27:&lt;/p&gt;
+&lt;p&gt;I have successfully &lt;code&gt;terraform destroyed&lt;/code&gt; the &lt;a href=&#34;https://github.com/dashaun/tf-oci-arm&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Oracle OCI ARM64&lt;/a&gt; infrastructure that was being used as a self-hosted runner.&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

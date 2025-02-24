@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Terraform on DaShaun</title>
+        <link>https://dashaun.com/tags/terraform/</link>
+        <description>Recent content in Terraform on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Tue, 25 Oct 2022 11:19:03 -0500</lastBuildDate><atom:link href="https://dashaun.com/tags/terraform/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Spring Boot Stackpath Terraform</title>
+            <link>https://dashaun.com/posts/spring-boot-stackpath-terraform/</link>
+            <pubDate>Tue, 25 Oct 2022 11:19:03 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/spring-boot-stackpath-terraform/</guid>
+            <description>&lt;p&gt;This is another article based on recent &lt;a href=&#34;https://bit.ly/spring-office-hours&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Office Hours&lt;/a&gt; sessions.
+Spring Boot provides several effective ways to deliver applications, to production, efficiently.
+There are many situations
+where one of the &lt;code&gt;hyperscale&lt;/code&gt; cloud providers
+is not an option, or the best choice.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://dashaun.com/posts/spring-boot-kamatera-terraform/&#34; &gt;Previously, I looked at Kamatera.&lt;/a&gt;
+This time, I&amp;rsquo;m going to use &lt;a href=&#34;https://stackpath.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;StackPath&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://youtu.be/kWVv0U1Bvq0&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;I did the work during a live stream, so you can see exactly how easy and exciting this was.&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;initial-thoughts&#34;&gt;
+  Initial Thoughts
+  &lt;a class=&#34;heading-link&#34; href=&#34;#initial-thoughts&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I figured that going down this path would get easier with each provider.
+So far that has been true.
+I&amp;rsquo;m learning more about Terraform and getting more comfortable.
+I&amp;rsquo;m able to map the different concepts and building blocks a little easier with each rep.&lt;/p&gt;
+&lt;h2 id=&#34;getting-an-account&#34;&gt;
+  Getting an account
+  &lt;a class=&#34;heading-link&#34; href=&#34;#getting-an-account&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;As you would expect, nothing out of the ordinary when trying to setup an account.
+I couldn&amp;rsquo;t find a free tier or discount code, but I didn&amp;rsquo;t look very hard.
+&lt;a href=&#34;https://dashaun.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Reach out to me&lt;/a&gt; if you know of something that I can share.
+Billing info is required.&lt;/p&gt;
+&lt;h2 id=&#34;stackpath-terraform-provider&#34;&gt;
+  Stackpath Terraform Provider
+  &lt;a class=&#34;heading-link&#34; href=&#34;#stackpath-terraform-provider&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Having a Terraform Provider is what I have set as the bare minimum for this exercise.
+The &lt;a href=&#34;https://registry.terraform.io/providers/stackpath/stackpath/latest/docs&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;StackPath Provider&lt;/a&gt; was surprising.
+I consider myself a slightly above average Terraform user.
+I have never experienced this as the &lt;code&gt;default&lt;/code&gt; behavior for a &lt;code&gt;Provider&lt;/code&gt; and I am impressed.&lt;/p&gt;
+&lt;p&gt;The provider only required three arguments for configuration.
+I decided to use the environment variable approach rather than passing in variables.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;STACKPATH_STACK_ID
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;STACKPATH_CLIENT_ID
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;STACKPATH_CLIENT_SECRET
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;For the &lt;code&gt;STACKPATH_STACK_ID&lt;/code&gt; I used the &lt;code&gt;stack slug&lt;/code&gt; from the &lt;code&gt;DASHBOARD&lt;/code&gt;.
+I created the &lt;code&gt;STACKPATH_CLIENT_ID&lt;/code&gt; and &lt;code&gt;STACKPATH_CLIENT_SECRET&lt;/code&gt; from the &lt;code&gt;API ACCESS&lt;/code&gt; option of the dashboard.&lt;/p&gt;
+&lt;p&gt;When I ran the &lt;code&gt;terraform plan&lt;/code&gt; and &lt;code&gt;terraform apply&lt;/code&gt; they were so fast I thought it was broken.
+I had guessed at the value to use for &lt;code&gt;STACKPATH_STACK_ID&lt;/code&gt; and figured that I must be doing something wrong.
+Nope.
+Their platform API defaults to an &lt;code&gt;async&lt;/code&gt; behavior that doesn&amp;rsquo;t wait for object creation to be completed.
+Instead, your actions complete, and you can run &lt;code&gt;terraform refresh&lt;/code&gt; to get the status of its creation.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;ve used other &lt;code&gt;Providers&lt;/code&gt; that provide this as an option.
+In this case, while I was learning and iterating frequently, it felt amazing.&lt;/p&gt;
+
+
+ &lt;script id=&#34;asciicast-JqexvsUYphyGVpSuEOADpfbnM&#34; src=&#34;https://asciinema.org/a/JqexvsUYphyGVpSuEOADpfbnM.js&#34; async data-autoplay=&#34;true&#34; data-startAt=&#34;03&#34;&gt;&lt;/script&gt;
+
+&lt;p&gt;To check on the status I used &lt;code&gt;terraform refresh&lt;/code&gt; and in this mode, it felt like the right way to do things.&lt;/p&gt;
+
+
+ &lt;script id=&#34;asciicast-jUlDDHoeox4SXBpfFHzPPPD37&#34; src=&#34;https://asciinema.org/a/jUlDDHoeox4SXBpfFHzPPPD37.js&#34; async data-autoplay=&#34;true&#34;&gt;&lt;/script&gt;
+
+&lt;p&gt;Accessing the service felt snappy.&lt;/p&gt;
+
+
+ &lt;script id=&#34;asciicast-LHmJDSfJXSG9WTRDOXoYtDBc9&#34; src=&#34;https://asciinema.org/a/LHmJDSfJXSG9WTRDOXoYtDBc9.js&#34; async data-autoplay=&#34;true&#34; data-startAt=&#34;2&#34;&gt;&lt;/script&gt;
+
+&lt;p&gt;Cleaning up, was just as fast, so iterating through the struggles was relatively painless.&lt;/p&gt;
+
+
+ &lt;script id=&#34;asciicast-dK1ARCkLHZNp2UQaPozfFgNo0&#34; src=&#34;https://asciinema.org/a/dK1ARCkLHZNp2UQaPozfFgNo0.js&#34; async data-autoplay=&#34;true&#34;&gt;&lt;/script&gt;
+
+&lt;h2 id=&#34;struggle&#34;&gt;
+  Struggle
+  &lt;a class=&#34;heading-link&#34; href=&#34;#struggle&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I spent a bunch of time not realizing that I needed the &lt;code&gt;stackpath_compute_network_policy&lt;/code&gt; to allow public traffic.
+On this platform, ports are not exposed to the public by default.
+Even though I struggled, this made me feel a little more secure.
+Simply because I am forced to be specific about what I&amp;rsquo;m allowing.
+Additionally, the container doesn&amp;rsquo;t have remote access enabled by default.&lt;/p&gt;
+&lt;h2 id=&#34;differences&#34;&gt;
+  Differences
+  &lt;a class=&#34;heading-link&#34; href=&#34;#differences&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Deploying a VM that can run Docker is one thing.
+Deploying a &lt;code&gt;container&lt;/code&gt; to a &lt;code&gt;platform&lt;/code&gt; is a different pattern.
+While I was wondering through the documentation, I was very interested.
+There are some very advanced and mature capabilities available.
+This is clearly a platform that is designed to support short-lived and very dynamic workloads.&lt;/p&gt;
+&lt;h2 id=&#34;summary&#34;&gt;
+  Summary
+  &lt;a class=&#34;heading-link&#34; href=&#34;#summary&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I only scratched the service here, but it worked, and it worked quickly.
+There are some very interesting architectures that can be accomplished with &lt;code&gt;StackPath&lt;/code&gt; and I&amp;rsquo;m excited to go further.
+I didn&amp;rsquo;t know what to expect on this journey.
+I can say that &lt;code&gt;StackPath&lt;/code&gt; his raised the bar for my expectations going forward.&lt;/p&gt;
+&lt;h2 id=&#34;your-turn&#34;&gt;
+  Your Turn
+  &lt;a class=&#34;heading-link&#34; href=&#34;#your-turn&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Take the &lt;a href=&#34;https://github.com/dashaun/spring-boot-stackpath-terraform&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;repository&lt;/a&gt; for a spin and try it out for yourself.
+Let me know what you think.&lt;/p&gt;
+&lt;h2 id=&#34;links&#34;&gt;
+  Links
+  &lt;a class=&#34;heading-link&#34; href=&#34;#links&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/spring-boot-stackpath-terraform&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/dashaun/spring-boot-stackpath-terraform&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtu.be/kWVv0U1Bvq0&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;YouTube Video&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://twitch.tv/javagrunt&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Javagrunt on Twitch&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Spring Boot Kamatera Terraform</title>
+            <link>https://dashaun.com/posts/spring-boot-kamatera-terraform/</link>
+            <pubDate>Mon, 24 Oct 2022 11:19:03 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/spring-boot-kamatera-terraform/</guid>
+            <description>&lt;p&gt;Recently, during the &lt;a href=&#34;https://bit.ly/spring-office-hours&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Office Hours&lt;/a&gt;, we have been discussing &lt;code&gt;Spring to Production&lt;/code&gt; as a topic.
+There are so many ways to get Spring Boot application to production.
+If your Spring Boot application is delivered as a container, all you really need is a Docker or Kubernetes dial tone.&lt;/p&gt;
+&lt;p&gt;In this post, I&amp;rsquo;m starting from nothing, and delivering a Spring Boot application to &lt;a href=&#34;https://kamatera.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Kamatera&lt;/a&gt;.
+I&amp;rsquo;ve never used Kamatera before this, so I&amp;rsquo;m going document the entire process, and experience, for you.&lt;/p&gt;
+&lt;h2 id=&#34;getting-an-account&#34;&gt;
+  Getting an account
+  &lt;a class=&#34;heading-link&#34; href=&#34;#getting-an-account&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://kamatera.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Kamatera&lt;/a&gt; provides a &lt;code&gt;30-Day Free Trial&lt;/code&gt; which sounds wonderful!
+After validating my email address, I was required to add a billing profile.
+This makes sense.
+However, before signing up for the free trial, I did verify that there was a &lt;a href=&#34;https://registry.terraform.io/providers/Kamatera/kamatera/latest/docs&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Terraform provider for Kamatera&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;While I was adding my billing profile, I saw more details of the 30-Day free trial.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;30 days Free Usage:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;1 Cloud Server (of up to 100 USD)
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;1000 GB Cloud Block Storage
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;1000 GB Outgoing Internet Traffic
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is plenty to work with, so I continued to proceed.
+The only option I had was to use a credit card.
+The process was pretty painless and only took a couple of minutes.&lt;/p&gt;
+&lt;p&gt;The UI is easy to understand and navigate.
+I just don&amp;rsquo;t want to use the UI.
+I want to automate all the things.
+Now that my account is set up, I want to set up my infrastructure as code.&lt;/p&gt;
+&lt;h2 id=&#34;kamatera-terraform-provider&#34;&gt;
+  Kamatera Terraform Provider
+  &lt;a class=&#34;heading-link&#34; href=&#34;#kamatera-terraform-provider&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;A quick glance at the &lt;a href=&#34;https://github.com/Kamatera/terraform-provider-kamatera/blob/master/README.md#usage-guide&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Terraform Provider for Kamatera usage guide&lt;/a&gt;
+and I see that I need:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;KAMATERA_API_CLIENT_ID
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;KAMATERA_API_SECRET
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In the &lt;a href=&#34;https://console.kamatera.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Kamatera console&lt;/a&gt; I easily found where I needed to go &lt;a href=&#34;https://console.kamatera.com/keys&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;to add keys&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;I clicked the &lt;code&gt;+ Create New Key&lt;/code&gt; button.  A &lt;code&gt;description&lt;/code&gt; box is presented.
+I put &lt;code&gt;Spring Boot to Production with Kamatera&lt;/code&gt; in the description and clicked &lt;code&gt;Create Key&lt;/code&gt; to move forward.
+At that point, I am provided with my &lt;code&gt;Client ID&lt;/code&gt; and &lt;code&gt;API Secret&lt;/code&gt; which I then copy to a safe place.&lt;/p&gt;
+&lt;p&gt;The &lt;a href=&#34;https://github.com/Kamatera/terraform-provider-kamatera/blob/master/README.md#usage-guide&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Terraform Provider for Kamatera usage guide&lt;/a&gt; also provided an example Terraform file.
+I copied that and separated their &lt;code&gt;main.tf&lt;/code&gt; into different files, that makes things easier for me to understand later.
+I started a &lt;a href=&#34;https://github.com/dashaun/spring-boot-kamatera-terraform&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;github repository&lt;/a&gt; to capture my changes.&lt;/p&gt;
+&lt;p&gt;At this point, I determined that I couldn&amp;rsquo;t configure Docker as an option via Terraform using one of their images.
+They have a tool that generates Terraform files, but the image ID never worked for me.
+I didn&amp;rsquo;t spend much time investigating, probably user error.&lt;/p&gt;
+&lt;p&gt;That is ok, because I can use an executable JAR and deploy that as a service.
+Or I can just install Docker as part of the startup scripts.&lt;/p&gt;
+&lt;p&gt;I chose to use &lt;code&gt;Ubuntu&lt;/code&gt; and their &lt;code&gt;22.04 64bit_optimized&lt;/code&gt; image.&lt;/p&gt;
+&lt;h2 id=&#34;docker&#34;&gt;
+  Docker
+  &lt;a class=&#34;heading-link&#34; href=&#34;#docker&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I attempted to install Docker using the &lt;code&gt;startup_script&lt;/code&gt; value of the &lt;code&gt;kamatera_server&lt;/code&gt; but I struggled with getting that to work consistently.
+The problem appeared to be timing.
+I&amp;rsquo;m still unsure about when the startup script gets executed.
+I needed to wait for the network, then wait for DNS, and sometimes it would just fail.
+I couldn&amp;rsquo;t figure out a way to access the logs during the build process either.
+At one point, a server appeared to have been built and completed successfully, but the startup script was stuck in a loop, waiting for something.
+I couldn&amp;rsquo;t access the server though, and my Terraform was stuck, for 15+ minutes.&lt;/p&gt;
+&lt;h2 id=&#34;interesting-side-note-regarding-the-stuck-server&#34;&gt;
+  Interesting Side Note Regarding The Stuck Server
+  &lt;a class=&#34;heading-link&#34; href=&#34;#interesting-side-note-regarding-the-stuck-server&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I opened a ticket, asking for the server to be destroyed, for two reasons.
+When I cancelled the stuck Terraform &lt;code&gt;apply&lt;/code&gt; my local state didn&amp;rsquo;t show the server, so I couldn&amp;rsquo;t Terraform &lt;code&gt;destroy&lt;/code&gt; it.
+In the Kamatera console, the task was showing completed, but the server didn&amp;rsquo;t show up in my server list, so I couldn&amp;rsquo;t delete it from there either.&lt;/p&gt;
+&lt;p&gt;The response was quick, less than 30 minutes, but confusing.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Unfortunately, we do not provide support for Terraform.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The &lt;a href=&#34;https://github.com/Kamatera/terraform-provider-kamatera&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Terraform Provider&lt;/a&gt; that I&amp;rsquo;m using, appears to be created by &lt;code&gt;Kamatera&lt;/code&gt; and shows up in the &lt;a href=&#34;https://registry.terraform.io/providers/Kamatera/kamatera/latest&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Terraform Registry&lt;/a&gt;.
+Therefore, I can only assume that the 30-day support is not going to troubleshoot Terraform related issues.&lt;/p&gt;
+&lt;p&gt;I later realized that every server creation and destroy sends out an email receipt.
+I did not get a receipt for the server creation, so maybe, hopefully, their system cleaned it up properly, automatically.&lt;/p&gt;
+&lt;h2 id=&#34;docker-via-remote-exec&#34;&gt;
+  Docker via remote-exec
+  &lt;a class=&#34;heading-link&#34; href=&#34;#docker-via-remote-exec&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I don&amp;rsquo;t recommend this approach.
+Nobody recommends this approach.
+The Terraform documentation states &lt;a href=&#34;https://developer.hashicorp.com/terraform/language/resources/provisioners/remote-exec&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Use provisioners as a last resort.&lt;/a&gt;
+It&amp;rsquo;s marked &lt;code&gt;Important&lt;/code&gt; and highlighted at the top of the page.&lt;/p&gt;
+&lt;p&gt;Well, it is my last resort.
+The purpose of this exercise was to show that getting Spring to production is doable, and Spring Boot makes it really easy.
+Different providers are going to have different pain points, but also, different strengths.&lt;/p&gt;
+&lt;p&gt;At this point, I use the &lt;code&gt;remote-exec&lt;/code&gt; provisioner to do a few things:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Download the &lt;code&gt;Docker&lt;/code&gt; install script via &lt;code&gt;curl&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Execute the install script&lt;/li&gt;
+&lt;li&gt;Pull down the &lt;a href=&#34;https://hub.docker.com/r/dashaun/spring-boot-native-pi-default&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;image&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Run the &lt;a href=&#34;https://hub.docker.com/r/dashaun/spring-boot-native-pi-default&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;image&lt;/a&gt; on &lt;code&gt;Docker&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Using &lt;code&gt;remote-exec&lt;/code&gt; required setting up a &lt;code&gt;connection&lt;/code&gt; to the host.
+For this example, I chose to use a public/private key pair for access.&lt;/p&gt;
+&lt;h2 id=&#34;execute&#34;&gt;
+  Execute
+  &lt;a class=&#34;heading-link&#34; href=&#34;#execute&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;In order to take this for a spin yourself:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;#clone the repository&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git clone https://github.com/dashaun/spring-to-production-kamatera
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;cd&lt;/span&gt; spring-to-production-kamatera
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# configure Terraform with your credentials&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#bb60d5&#34;&gt;KAMATERA_API_CLIENT&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#bb60d5&#34;&gt;KAMATERA_API_SECRET&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#bb60d5&#34;&gt;TF_VAR_ssh_public_key&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;$(&lt;/span&gt;cat ~/.ssh/id_rsa.pub&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#bb60d5&#34;&gt;TF_VAR_ssh_private_key&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;$(&lt;/span&gt;cat ~/.ssh/id_rsa&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;)&lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Initialize Terraform to pull down the provider&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;terraform init
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Validate your credentials config by using the plan&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;terraform plan
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Apply the Terraform, ETC &amp;lt; 5min&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;terraform apply -auto-approve
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Access the Spring Boot application using the newly created server&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;$(&lt;/span&gt;terraform output -raw public_ips&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;)&lt;/span&gt;:8080/actuator/health | jq .
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;When you are done, clean up behind yourself:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Destroy the Terraform, ETC &amp;lt; 1min&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;terraform destroy -auto-approve
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;summary&#34;&gt;
+  Summary
+  &lt;a class=&#34;heading-link&#34; href=&#34;#summary&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;While exploring multi-cloud architectures, I really wanted to get outside my comfort zone.
+Things like &lt;code&gt;Terraform&lt;/code&gt; and &lt;code&gt;Spring Boot&lt;/code&gt; make getting applications up and available really simple.
+I am going to continue to explore and experiment with other cloud providers.
+Soon, I will deploy a reference architecture, with different Spring Boot services, each deployed to different cloud providers.
+My theory is that you don&amp;rsquo;t have to be a certified Azure|GCP|AWS cloud architect to be productive with Spring Boot.&lt;/p&gt;
+&lt;h2 id=&#34;feedback&#34;&gt;
+  Feedback
+  &lt;a class=&#34;heading-link&#34; href=&#34;#feedback&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I did not harden this deployment, and I wouldn&amp;rsquo;t call it production ready.
+If you would like to see me expand and harden this example, please let me know, via the &lt;a href=&#34;https://github.com/dashaun/spring-boot-kamatera-terraform&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;GitHub repository&lt;/a&gt;.&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Active Geo-Replication in Azure Cache for Redis</title>
+            <link>https://dashaun.com/posts/azure-cache-for-redis-active-geo-terraform-ga-preview/</link>
+            <pubDate>Fri, 05 Mar 2021 21:57:24 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/azure-cache-for-redis-active-geo-terraform-ga-preview/</guid>
+            <description>&lt;h1 id=&#34;azure-cache-for-redis-enterprise-is-ga&#34;&gt;
+  Azure Cache for Redis Enterprise is GA
+  &lt;a class=&#34;heading-link&#34; href=&#34;#azure-cache-for-redis-enterprise-is-ga&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Last week was a super high energy week for me.
+I was exhausted most of the weekend.
+This week, was more of the same.
+Azure Cache for Redis Enterprise (ACRE) became generally available (GA) on Tuesday.
+Microsoft made the big announcement during Microsoft Ignite 2021.
+For me, it was a big relief, followed by dozens and dozens of tests and validation.&lt;/p&gt;
+&lt;p&gt;It&amp;rsquo;s real.
+It&amp;rsquo;s finally here.
+You can see it and touch it and its GA!&lt;/p&gt;
+&lt;h2 id=&#34;the-announcements&#34;&gt;
+  The announcements
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-announcements&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://redislabs.com/blog/azure-cache-for-redis-enterprise-tiers-general-availability/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Redis Labs Blog&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://aka.ms/EnterpriseGABlog&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Microsoft Blog&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I don&amp;rsquo;t think magnitude of this event has fully registered yet.
+This &lt;a href=&#34;https://redislabs.com/press/general-availability-of-azure-cache-for-redis-enterprise-tiers/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;press release&lt;/a&gt;
+with a quote from Aaron Phillips, hit me right in my feelings.&lt;/p&gt;
+&lt;h2 id=&#34;multi-region-and-active-active-in-about-15-minutes&#34;&gt;
+  Multi-region and active-active in about 15 minutes
+  &lt;a class=&#34;heading-link&#34; href=&#34;#multi-region-and-active-active-in-about-15-minutes&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I have never before had the ability, to deploy multi-region with active-active with this much consistency and ease.
+From nothing, using Terraform and ARM templates, I can stand up 2 regions in active-active configuration.
+It takes about 15 minutes, but depends on where you are located, and the target regions.&lt;/p&gt;
+&lt;p&gt;It&amp;rsquo;s Friday night, the weekend is here, and I am still freaking out about this.
+It couldn&amp;rsquo;t wait until Monday.
+I had to share this, right now.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;m in Kansas City, Missouri.
+Using this repository, I deployed to East US 2 and West US 2, in under 15 minutes.
+That&amp;rsquo;s not even the craziest part.
+The craziest part is that I&amp;rsquo;m still getting &amp;lt; 1ms latency on my writes!&lt;/p&gt;
+&lt;p&gt;The Terraform provider for Azurerm v2.50.0, doesn&amp;rsquo;t have the active geo-replication feature included yet.
+This feature is still in public preview.
+So this repository uses ARM templates for configuring the geo-replication.&lt;/p&gt;
+&lt;p&gt;The product roadmap for ACRE is even more exciting and updates are coming soon.&lt;/p&gt;
+&lt;p&gt;Until then, have fun deploying Redis Enterprise, to the cloud with the most regions, in active-active configuration.&lt;/p&gt;
+&lt;p&gt;Enjoy!&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/redisgeek/acre-terraform-geo-replication&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/redisgeek/acre-terraform-geo-replication&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Azurerm Terraform provider version 2.49.0</title>
+            <link>https://dashaun.com/posts/azurerm-terraform-provider-2-49-0/</link>
+            <pubDate>Sat, 27 Feb 2021 13:32:01 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/azurerm-terraform-provider-2-49-0/</guid>
+            <description>&lt;h2 id=&#34;that-new-terraform-smell&#34;&gt;
+  That new Terraform smell
+  &lt;a class=&#34;heading-link&#34; href=&#34;#that-new-terraform-smell&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;m a fan of &lt;a href=&#34;https://terraform.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Terraform&lt;/a&gt;.
+I like to stand things up from scratch, before I use them.
+I like to tear things down when I&amp;rsquo;m done.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;m also a fan of Redis Enterprise.
+(Yes, I am biased, because I work for Redis Labs.)
+Yesterday, version 2.49.0 of the &amp;lsquo;&lt;a href=&#34;https://registry.terraform.io/providers/hashicorp/azurerm/latest&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;azurerm&lt;/a&gt;&amp;rsquo; provider was released.
+Before yesterday, I needed to use an ARM template to deploy Azure Cache for Redis Enterprise (ACRE) clusters.
+I took it for a spin and created a repository, so you can try it out too.&lt;/p&gt;
+&lt;p&gt;Enjoy!&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/redisgeek/acre-terraform&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/redisgeek/acre-terraform&lt;/a&gt;&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

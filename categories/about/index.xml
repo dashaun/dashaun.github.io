@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>About on DaShaun</title>
+        <link>https://dashaun.com/categories/about/</link>
+        <description>Recent content in About on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Wed, 15 Jun 2022 14:32:36 -0600</lastBuildDate><atom:link href="https://dashaun.com/categories/about/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Let me introduce myself</title>
+            <link>https://dashaun.com/posts/let-me-introduce-myself/</link>
+            <pubDate>Wed, 15 Jun 2022 14:32:36 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/let-me-introduce-myself/</guid>
+            <description>&lt;h2 id=&#34;videos&#34;&gt;
+  Videos
+  &lt;a class=&#34;heading-link&#34; href=&#34;#videos&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Several conferences have asked for example presentations, from their potential speakers, like me.&lt;/p&gt;
+&lt;p&gt;Here are some of the videos that I have included when submitting:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtu.be/H6HwoWZtngs&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Introducing Spring Boot 3 - SpringOne Tour Tel Aviv 2022&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtu.be/WqV9ylYVKlg&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;General Session - VMware Explore 2022 EU&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtu.be/3rn53oM2Afk&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;General Session - VMware Explore 2022 US&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtu.be/yDpRDh9Lt_A&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;General Session - VMware Explore 2022 US&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtu.be/Vkd7g9BCNLs&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Introducing Javagrunt and my new role at Redis in 2021&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtu.be/mJGYeBSkS_c&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Leap Ahead with Redis 6.2 - SpringOne 2021&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtu.be/zGiBpUlg9mk&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Boot Observability - SpringOne 2020&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://vimeo.com/459492570&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cloud Native Spring for Relational Databases - Distributed SQL Summit 2020&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I am also co-hosting, with &lt;a href=&#34;https://danvega.dev&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Dan Vega&lt;/a&gt;, a regular live stream called &lt;a href=&#34;https://springofficehours.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Office Hours&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;what-do-i-do&#34;&gt;
+  What do I do
+  &lt;a class=&#34;heading-link&#34; href=&#34;#what-do-i-do&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;It&amp;rsquo;s super hard explaining what I do these days.  I am a &amp;ldquo;Spring Developer Advocate&amp;rdquo; for Broadcom.&lt;/p&gt;
+&lt;p&gt;My job is to unblock developers, and help them get their hard work into production, with more joy and less pain.&lt;/p&gt;
+&lt;p&gt;These videos are very similar to the types of conversations that I have regularly, with customers, partners, and Spring developers.&lt;/p&gt;
+&lt;p&gt;I love my job.&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Spring Boot 3 Buildpacks with Testcontainers Cloud · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="Spring Boot 3 buildpacks with Testcontainers Cloud">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://dashaun.com/images/avatar.png">
+  <meta name="twitter:title" content="Spring Boot 3 Buildpacks with Testcontainers Cloud">
+  <meta name="twitter:description" content="Spring Boot 3 buildpacks with Testcontainers Cloud">
+
+<meta property="og:url" content="https://dashaun.com/posts/spring-boot-3-buildpacks-with-testcontainers-cloud/">
+  <meta property="og:site_name" content="DaShaun">
+  <meta property="og:title" content="Spring Boot 3 Buildpacks with Testcontainers Cloud">
+  <meta property="og:description" content="Spring Boot 3 buildpacks with Testcontainers Cloud">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-11-22T00:55:59-05:00">
+    <meta property="article:modified_time" content="2025-02-24T16:16:50-06:00">
+    <meta property="article:tag" content="Springboot">
+    <meta property="article:tag" content="Buildpacks">
+    <meta property="article:tag" content="Testcontainers">
+    <meta property="article:tag" content="TestcontainersCloud">
+    <meta property="og:image" content="https://dashaun.com/images/avatar.png">
+      <meta property="og:see_also" content="https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/spring-cloud-gateway-4-0-0-rc2-native-example-with-testcontainers/">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/spring-boot-3-buildpacks-with-testcontainers-cloud/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Follow me on Twitch</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/spring-boot-3-buildpacks-with-testcontainers-cloud/">
+              Spring Boot 3 Buildpacks with Testcontainers Cloud
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2022-11-22T00:55:59-05:00'>
+                November 22, 2022
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2022-11-22T00:55:59-05:00'>
+                February 24, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              4-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='images/spring-boot-3-tcc_1280x640.png' alt="Featured image"/>
+        
+        <h2 id="background">
+  Background
+  <a class="heading-link" href="#background">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I have a modest laptop.
+It checks the boxes, for just about everything I need to do for work.
+Just about.
+AOT processing, with GraalVM, is not a great experience on this machine.</p>
+<h2 id="the-origin-story">
+  The origin story
+  <a class="heading-link" href="#the-origin-story">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Back in June 2022, I was presenting at SpringOne Tour NYC.
+As part of the demo, I built a <code>native</code> image using Spring Boot 2.7 with the <code>spring-native</code> experimental dependency.
+The session went well, except for the building the native image part of it.
+During my 50-minute session, my laptop was busy building the native image for over 8-minutes, using the buildpack.
+It was a humbling experience.
+After the session, I hung out with Sergei Egorov, and we worked on something very special.
+With help from <a href="https://bsideup.github.io/posts/spring_boot_in_container/"  class="external-link" target="_blank" rel="noopener">one of his previous blog posts</a>, we created a proof of concept.
+We used <a href="https://www.testcontainers.cloud/"  class="external-link" target="_blank" rel="noopener">Testcontainers Cloud</a> to build the native OCI image, in the cloud, in a little over 3-minutes.
+Pairing with Sergei is amazing, if you get the chance, I highly recommend it.</p>
+<p><a href="https://twitter.com/dashaun/status/1541812027286495235"  class="external-link" target="_blank" rel="noopener"><img src="images/origin-tweet.png" alt="Origin Story"></a></p>
+<h2 id="it-sat-on-the-back-burner-and-fire-is-hot">
+  It sat on the back-burner and fire is hot
+  <a class="heading-link" href="#it-sat-on-the-back-burner-and-fire-is-hot">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I had this code sitting in my repository, waiting to be used.
+When it was time for SpringOne Tour Tel Aviv, Nov 2022, I was ready to show it off.
+Unfortunately for me, my session was shortened, so I pulled it out of the presentation.
+I shouldn&rsquo;t have pulled it out, I made the exact same mistake that I made in NYC.
+When I built the native image using buildpacks, it took way too long on my laptop.</p>
+<h2 id="momentum">
+  Momentum
+  <a class="heading-link" href="#momentum">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>My adventures with buildpacks have been top of mind for a couple of weeks now.
+Oleg Šelajev and Cora Iberklied also presented about testcontainers in Tel Aviv.
+The stage was set for me to take this use case further.</p>
+<h2 id="the-goal">
+  The Goal
+  <a class="heading-link" href="#the-goal">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<h4 id="build-spring-boot-3-native-oci-images-with-buildpacks-during-demos-faster-with-testcontainers-cloud">
+  Build Spring Boot 3, native OCI images, with buildpacks, during demos, faster, with Testcontainers Cloud
+  <a class="heading-link" href="#build-spring-boot-3-native-oci-images-with-buildpacks-during-demos-faster-with-testcontainers-cloud">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<h2 id="prerequisites">
+  Prerequisites
+  <a class="heading-link" href="#prerequisites">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>You need to have an account at <a href="https://testcontainers.cloud"  class="external-link" target="_blank" rel="noopener">https://testcontainers.cloud</a>.</p>
+<h2 id="login-to-your-account">
+  Login to your account
+  <a class="heading-link" href="#login-to-your-account">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I&rsquo;m logging in with <code>v1.3.11</code> of the cloud desktop app for Mac, this is still in private beta at the time of this writing.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker context list
+</span></span></code></pre></div><blockquote>
+<p>You should see at least one context named &rsquo;tcc'</p></blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker context use tcc
+</span></span></code></pre></div><h2 id="create-an-application-example">
+  Create an application example
+  <a class="heading-link" href="#create-an-application-example">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Create a Spring Boot 3 application with <code>web</code>, <code>actuator</code>, and <code>testcontainers</code> for a simple test.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl https://start.spring.io/starter.tgz -d <span style="color:#bb60d5">dependencies</span><span style="color:#666">=</span>web,actuator,testcontainers -d <span style="color:#bb60d5">javaVersion</span><span style="color:#666">=</span><span style="color:#40a070">17</span> -d <span style="color:#bb60d5">bootVersion</span><span style="color:#666">=</span>3.0.0-RC2 -d <span style="color:#bb60d5">type</span><span style="color:#666">=</span>maven-project | tar -xzf -
+</span></span></code></pre></div><blockquote>
+<p>Spring Boot 3 goes GA later this week, but I can&rsquo;t wait that long</p></blockquote>
+<p>In the pom.xml add this dependency:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">&lt;dependency&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#062873;font-weight:bold">&lt;groupId&gt;</span>org.apache.maven.shared<span style="color:#062873;font-weight:bold">&lt;/groupId&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#062873;font-weight:bold">&lt;artifactId&gt;</span>maven-invoker<span style="color:#062873;font-weight:bold">&lt;/artifactId&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#062873;font-weight:bold">&lt;version&gt;</span>3.2.0<span style="color:#062873;font-weight:bold">&lt;/version&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#062873;font-weight:bold">&lt;scope&gt;</span>test<span style="color:#062873;font-weight:bold">&lt;/scope&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">&lt;/dependency&gt;</span>
+</span></span></code></pre></div><p>Add this property:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">&lt;testcontainers.version&gt;</span>1.17.6<span style="color:#062873;font-weight:bold">&lt;/testcontainers.version&gt;</span>
+</span></span></code></pre></div><p>Add this dependency management section:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">&lt;dependencyManagement&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#062873;font-weight:bold">&lt;dependencies&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&lt;dependency&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#062873;font-weight:bold">&lt;groupId&gt;</span>org.testcontainers<span style="color:#062873;font-weight:bold">&lt;/groupId&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#062873;font-weight:bold">&lt;artifactId&gt;</span>testcontainers-bom<span style="color:#062873;font-weight:bold">&lt;/artifactId&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#062873;font-weight:bold">&lt;version&gt;</span>${testcontainers.version}<span style="color:#062873;font-weight:bold">&lt;/version&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#062873;font-weight:bold">&lt;type&gt;</span>pom<span style="color:#062873;font-weight:bold">&lt;/type&gt;</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#062873;font-weight:bold">&lt;scope&gt;</span>import<span style="color:#062873;font-weight:bold">&lt;/scope&gt;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&lt;/dependency&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#062873;font-weight:bold">&lt;/dependencies&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">&lt;/dependencyManagement&gt;</span>
+</span></span></code></pre></div><p>Those pieces will allow you to write a test, that creates an OCI image, using buildpacks, with Testcontainers Cloud.</p>
+<h2 id="write-the-test-class">
+  Write the test class
+  <a class="heading-link" href="#write-the-test-class">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Here is the test class that I&rsquo;ve been reusing since June.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">package</span><span style="color:#bbb"> </span><span style="color:#0e84b5;font-weight:bold">com.example.demo</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#007020;font-weight:bold">import</span><span style="color:#bbb"> </span><span style="color:#0e84b5;font-weight:bold">org.apache.maven.shared.invoker.DefaultInvocationRequest</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#007020;font-weight:bold">import</span><span style="color:#bbb"> </span><span style="color:#0e84b5;font-weight:bold">org.apache.maven.shared.invoker.DefaultInvoker</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#007020;font-weight:bold">import</span><span style="color:#bbb"> </span><span style="color:#0e84b5;font-weight:bold">org.apache.maven.shared.invoker.InvocationResult</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#007020;font-weight:bold">import</span><span style="color:#bbb"> </span><span style="color:#0e84b5;font-weight:bold">org.apache.maven.shared.invoker.MavenInvocationException</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#007020;font-weight:bold">import</span><span style="color:#bbb"> </span><span style="color:#0e84b5;font-weight:bold">org.junit.jupiter.api.Test</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#007020;font-weight:bold">import</span><span style="color:#bbb"> </span><span style="color:#0e84b5;font-weight:bold">org.springframework.util.DigestUtils</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#007020;font-weight:bold">import</span><span style="color:#bbb"> </span><span style="color:#0e84b5;font-weight:bold">org.testcontainers.DockerClientFactory</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#007020;font-weight:bold">import</span><span style="color:#bbb"> </span><span style="color:#0e84b5;font-weight:bold">org.testcontainers.containers.GenericContainer</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#007020;font-weight:bold">import</span><span style="color:#bbb"> </span><span style="color:#0e84b5;font-weight:bold">org.testcontainers.utility.LazyFuture</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#007020;font-weight:bold">import</span><span style="color:#bbb"> </span><span style="color:#0e84b5;font-weight:bold">java.io.File</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#007020;font-weight:bold">import</span><span style="color:#bbb"> </span><span style="color:#0e84b5;font-weight:bold">java.util.List</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#007020;font-weight:bold">import</span><span style="color:#bbb"> </span><span style="color:#0e84b5;font-weight:bold">java.util.Properties</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#007020;font-weight:bold">import</span><span style="color:#bbb"> </span><span style="color:#0e84b5;font-weight:bold">java.util.concurrent.Future</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#007020;font-weight:bold">public</span><span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">class</span> <span style="color:#0e84b5;font-weight:bold">TccTest</span><span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#007020;font-weight:bold">private</span><span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">static</span><span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">final</span><span style="color:#bbb"> </span>Future<span style="color:#666">&lt;</span>String<span style="color:#666">&gt;</span><span style="color:#bbb"> </span>IMAGE_FUTURE:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">new</span><span style="color:#bbb"> </span>LazyFuture<span style="color:#666">&lt;&gt;</span>()<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#555;font-weight:bold">@Override</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#007020;font-weight:bold">protected</span><span style="color:#bbb"> </span>String<span style="color:#bbb"> </span><span style="color:#06287e">resolve</span>()<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#60a0b0;font-style:italic">// Find project&#39;s root dir</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span>File<span style="color:#bbb"> </span>cwd;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#007020;font-weight:bold">for</span><span style="color:#bbb"> </span>(<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">                    </span>cwd:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">new</span><span style="color:#bbb"> </span>File(<span style="color:#4070a0">&#34;.&#34;</span>);<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">                    </span><span style="color:#666">!</span><span style="color:#007020;font-weight:bold">new</span><span style="color:#bbb"> </span>File(cwd,<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;mvnw&#34;</span>).<span style="color:#4070a0">isFile</span>();<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">                    </span>cwd:<span style="color:#bbb"> </span>cwd.<span style="color:#4070a0">getParentFile</span>()<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span>);<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#60a0b0;font-style:italic">// Make it unique per folder (for caching)</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#007020;font-weight:bold">var</span><span style="color:#bbb"> </span>imageName:<span style="color:#bbb"> </span>String.<span style="color:#4070a0">format</span>(<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">                    </span><span style="color:#4070a0">&#34;local/app-%s:%s&#34;</span>,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">                    </span>DigestUtils.<span style="color:#4070a0">md5DigestAsHex</span>(cwd.<span style="color:#4070a0">getAbsolutePath</span>().<span style="color:#4070a0">getBytes</span>()),<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">                    </span>System.<span style="color:#4070a0">currentTimeMillis</span>()<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span>);<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#007020;font-weight:bold">var</span><span style="color:#bbb"> </span>properties:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">new</span><span style="color:#bbb"> </span>Properties();<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span>properties.<span style="color:#4070a0">put</span>(<span style="color:#4070a0">&#34;spring-boot.build-image.imageName&#34;</span>,<span style="color:#bbb"> </span>imageName);<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span>properties.<span style="color:#4070a0">put</span>(<span style="color:#4070a0">&#34;skipTests&#34;</span>,<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;true&#34;</span>);<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#007020;font-weight:bold">var</span><span style="color:#bbb"> </span>request:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">new</span><span style="color:#bbb"> </span>DefaultInvocationRequest()<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">                    </span>.<span style="color:#4070a0">addShellEnvironment</span>(<span style="color:#4070a0">&#34;DOCKER_HOST&#34;</span>,<span style="color:#bbb"> </span>DockerClientFactory.<span style="color:#4070a0">instance</span>().<span style="color:#4070a0">getTransportConfig</span>().<span style="color:#4070a0">getDockerHost</span>().<span style="color:#4070a0">toString</span>())<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">                    </span>.<span style="color:#4070a0">setPomFile</span>(<span style="color:#007020;font-weight:bold">new</span><span style="color:#bbb"> </span>File(cwd,<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;pom.xml&#34;</span>))<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">                    </span>.<span style="color:#4070a0">setGoals</span>(List.<span style="color:#4070a0">of</span>(<span style="color:#4070a0">&#34;spring-boot:build-image&#34;</span>))<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">                    </span>.<span style="color:#4070a0">setMavenExecutable</span>(<span style="color:#007020;font-weight:bold">new</span><span style="color:#bbb"> </span>File(cwd,<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;mvnw&#34;</span>))<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">                    </span>.<span style="color:#4070a0">setProfiles</span>(List.<span style="color:#4070a0">of</span>(<span style="color:#4070a0">&#34;native&#34;</span>))<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">                    </span>.<span style="color:#4070a0">setProperties</span>(properties);<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span>InvocationResult<span style="color:#bbb"> </span>invocationResult:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">null</span>;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#007020;font-weight:bold">try</span><span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">                </span>invocationResult:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">new</span><span style="color:#bbb"> </span>DefaultInvoker().<span style="color:#4070a0">execute</span>(request);<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span>}<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">catch</span><span style="color:#bbb"> </span>(MavenInvocationException<span style="color:#bbb"> </span>e)<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">                </span><span style="color:#007020;font-weight:bold">throw</span><span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">new</span><span style="color:#bbb"> </span>RuntimeException(e);<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span>}<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#007020;font-weight:bold">if</span><span style="color:#bbb"> </span>(invocationResult.<span style="color:#4070a0">getExitCode</span>()<span style="color:#bbb"> </span><span style="color:#666">!=</span><span style="color:#bbb"> </span>0)<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">                </span><span style="color:#007020;font-weight:bold">throw</span><span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">new</span><span style="color:#bbb"> </span>RuntimeException(invocationResult.<span style="color:#4070a0">getExecutionException</span>());<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span>}<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#007020;font-weight:bold">return</span><span style="color:#bbb"> </span>imageName;<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>}<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span>};<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#007020;font-weight:bold">static</span><span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">final</span><span style="color:#bbb"> </span>GenericContainer<span style="color:#666">&lt;?&gt;</span><span style="color:#bbb"> </span>APP:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">new</span><span style="color:#bbb"> </span>GenericContainer<span style="color:#666">&lt;&gt;</span>(IMAGE_FUTURE)<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span>.<span style="color:#4070a0">withExposedPorts</span>(8080);<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#555;font-weight:bold">@Test</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#902000">void</span><span style="color:#bbb"> </span><span style="color:#06287e">letsGo</span>()<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">throws</span><span style="color:#bbb"> </span>Exception<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>APP.<span style="color:#4070a0">start</span>();<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span>}<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span>}<span style="color:#bbb">
+</span></span></span></code></pre></div><p>In <a href="https://github.com/dashaun/spring-boot-3-buildpacks-with-testcontainers-cloud"  class="external-link" target="_blank" rel="noopener">my example repository</a>, I actually create test classes for a regular OCI image and a <code>native</code> OCI image.</p>
+<h2 id="verify">
+  Verify
+  <a class="heading-link" href="#verify">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>./mvnw clean <span style="color:#007020">test</span>
+</span></span></code></pre></div><p>Expected output should look similar to this:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>[INFO] Successfully built image &#39;docker.io/local/demo-native-fd68c3c276000d13d54a7aa30ef1b687:1669735799186&#39;
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO] ------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>[INFO] BUILD SUCCESS
+</span></span><span style="display:flex;"><span>[INFO] ------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>[INFO] Total time:  04:04 min
+</span></span><span style="display:flex;"><span>[INFO] Finished at: 2022-11-22T09:34:05-06:00
+</span></span><span style="display:flex;"><span>[INFO] ------------------------------------------------------------------------
+</span></span></code></pre></div><p>Boom! You get an OCI image, or two if you use <a href="https://github.com/dashaun/spring-boot-3-buildpacks-with-testcontainers-cloud"  class="external-link" target="_blank" rel="noopener">my example repository</a>.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker images | grep <span style="color:#4070a0">&#34;local&#34;</span>
+</span></span></code></pre></div><p>Expected output should look similar to this if you use <a href="https://github.com/dashaun/sprng-boot-3-buildpacks-with-testcontainers-cloud"  class="external-link" target="_blank" rel="noopener">the example repository</a>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>local/demo-fd68c3c276000d13d54a7aa30ef1b687          1669735745365   f95025279447   42 years ago   278MB
+</span></span><span style="display:flex;"><span>local/demo-native-fd68c3c276000d13d54a7aa30ef1b687   1669735799186   238a9c2a37d8   42 years ago   103MB
+</span></span></code></pre></div><p>Enjoy!</p>
+<h2 id="summary">
+  Summary
+  <a class="heading-link" href="#summary">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>This is slick.
+It brings me joy.
+When I am presenting this topic, I no longer need to have <code>Docker Desktop</code> running on my laptop.
+Therefore, my laptop battery will last longer.
+My builds will be consistently faster, using Testcontainers Cloud, and my demos will be smoother.</p>
+<p>I am completely rethinking a few of my own use cases.
+I will definitely create more Testcontainers Cloud content in the future.</p>
+<p>Please let me know what you think!</p>
+<h2 id="links">
+  Links
+  <a class="heading-link" href="#links">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><a href="https://testcontainers.cloud"  class="external-link" target="_blank" rel="noopener">Testcontainers Cloud</a></li>
+<li><a href="https://github.com/dashaun/spring-boot-3-buildpacks-with-testcontainers-cloud"  class="external-link" target="_blank" rel="noopener">Example Repository</a></li>
+<li><a href="https://bsideup.github.io/posts/spring_boot_in_container/"  class="external-link" target="_blank" rel="noopener">Sergei Egorov Blog</a></li>
+</ul>
+<p><img src="images/sergei-pairing.png" alt="Pairing with Sergei"></p>
+
+      </div>
+
+
+      <footer>
+        
+
+<section class="see-also">
+  
+    
+    
+    
+  
+</section>
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

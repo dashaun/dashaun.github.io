@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Spring Boot Le Potato · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="Spring Boot running on Libre AML-S905X-CC (Le Potato) board">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://dashaun.com/posts/spring-boot-le-potato/images/feature.png">
+  <meta name="twitter:title" content="Spring Boot Le Potato">
+  <meta name="twitter:description" content="Spring Boot running on Libre AML-S905X-CC (Le Potato) board">
+
+<meta property="og:url" content="https://dashaun.com/posts/spring-boot-le-potato/">
+  <meta property="og:site_name" content="DaShaun">
+  <meta property="og:title" content="Spring Boot Le Potato">
+  <meta property="og:description" content="Spring Boot running on Libre AML-S905X-CC (Le Potato) board">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-12-01T16:52:44-06:00">
+    <meta property="article:modified_time" content="2025-02-24T16:16:50-06:00">
+    <meta property="og:image" content="https://dashaun.com/posts/spring-boot-le-potato/images/feature.png">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/spring-boot-le-potato/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Follow me on Twitch</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/spring-boot-le-potato/">
+              Spring Boot Le Potato
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2023-12-01T16:52:44-06:00'>
+                December 1, 2023
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2023-12-01T16:52:44-06:00'>
+                February 24, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              2-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='images/feature.png' alt="Featured image"/>
+        
+        <p>One of the nice things about the <a href="https://libre.computer/"  class="external-link" target="_blank" rel="noopener">Libre Computing</a> boards is the LTS OS releases.
+The Atomic Pi boards, just confirmed, have only released 20.04, way back in July 2020.
+We should still be able to do some cool things with Atomic Pi, later.
+For now, let&rsquo;s focus on the <a href="https://libre.computer/products/aml-s905x-cc/"  class="external-link" target="_blank" rel="noopener">Libre AML-S905X-CC (Le Potato) board</a>.</p>
+<h2 id="first-pass">
+  First Pass
+  <a class="heading-link" href="#first-pass">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I assumed that I could boot directly from the USB drive, but that did not work.
+I deployed the <a href="https://distro.libre.computer/ci/ubuntu/22.04/ubuntu-22.04.3-preinstalled-server-arm64%2Baml-s905x-cc.img.xz"  class="external-link" target="_blank" rel="noopener">Ubuntu 22.04 image</a> to the SDCard and booted from that.
+Things worked, I was able to connect the device to my Kubernetes cluster and deploy a Spring Boot application.</p>
+<h2 id="i-wasnt-happy">
+  I wasn&rsquo;t happy
+  <a class="heading-link" href="#i-wasnt-happy">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Booting Ubuntu directly from the SDcard works, but it is slower, I didn&rsquo;t want that solution long term.
+I did a little bit of research and found out that I could use the SDcard to deploy the bootloader, and load the OS from the USB drive.</p>
+<h2 id="bootloader">
+  Bootloader
+  <a class="heading-link" href="#bootloader">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>This did not work from my Mac, it worked from other Linux machines though.
+The repo for the bootloader is here: <a href="https://github.com/libre-computer-project/libretech-flash-tool"  class="external-link" target="_blank" rel="noopener">https://github.com/libre-computer-project/libretech-flash-tool</a></p>
+<h2 id="create-the-usb-drive">
+  Create the USB drive
+  <a class="heading-link" href="#create-the-usb-drive">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li>Used the Raspberry Pi Imager tool.</li>
+<li><a href="https://distro.libre.computer/ci/ubuntu/22.04/ubuntu-22.04.3-preinstalled-server-arm64%2Baml-s905x-cc.img.xz"  class="external-link" target="_blank" rel="noopener">https://distro.libre.computer/ci/ubuntu/22.04/ubuntu-22.04.3-preinstalled-server-arm64%2Baml-s905x-cc.img.xz</a></li>
+<li>Needed to use p7zip to unzip the file.</li>
+</ul>
+<p>The Raspberry Pi imager tool was able to setup default users and SSH keys, properly.
+This made the process pretty painless.</p>
+<h2 id="install-the-sdccard-with-bootloader-and-usb-into-the-new-libre-computer-le-potato">
+  Install the SDCcard with bootloader and USB into the new Libre Computer <code>Le Potato</code>
+  <a class="heading-link" href="#install-the-sdccard-with-bootloader-and-usb-into-the-new-libre-computer-le-potato">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li>Red and Blue light mean that power is good.</li>
+<li>Wait for the green light, which means it found the operating system.</li>
+<li>Then the blue light starts flashing for what looks like activity.</li>
+</ul>
+<p><img src="images/libre01.png" alt=""></p>
+<h2 id="after-deployment">
+  After deployment
+  <a class="heading-link" href="#after-deployment">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>The steps that I took before adding the device to the Kubernetes cluster are here:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt update
+</span></span><span style="display:flex;"><span>sudo apt dist-upgrade -y
+</span></span><span style="display:flex;"><span>sudo apt autoremove -y
+</span></span><span style="display:flex;"><span>curl -fsSL https://tailscale.com/install.sh | sh
+</span></span><span style="display:flex;"><span>sudo apt install prometheus-node-exporter -y
+</span></span></code></pre></div><h2 id="summary">
+  Summary
+  <a class="heading-link" href="#summary">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I used my <a href="https://dashaun.com/posts/sping-native-edge-rpi/"  class="external-link" target="_blank" rel="noopener">Spring Native Edge Rpi</a> article as a guideline.
+This time, I added the nodes to a Kubernetes cluster, instead of using Docker.  I&rsquo;ve now got 4 nodes in my cluster.
+I&rsquo;ll be adding more nodes, and more devices, as I continue to build out my home lab.</p>
+<h2 id="see-also">
+  See Also
+  <a class="heading-link" href="#see-also">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p><a href="https://www.youtube.com/live/0Z630tAAOEw?si=wcibGZ5tS346HbLe"  class="external-link" target="_blank" rel="noopener">Live stream showing the work</a></p>
+<h2 id="homelab-inspiration">
+  Homelab Inspiration
+  <a class="heading-link" href="#homelab-inspiration">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p><a href="https://twitter.com/beginbotbot/status/1708005689728393266"  class="external-link" target="_blank" rel="noopener"><img src="images/insipration.jpg" alt=""></a></p>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

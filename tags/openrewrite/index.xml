@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Openrewrite on DaShaun</title>
+        <link>https://dashaun.com/tags/openrewrite/</link>
+        <description>Recent content in Openrewrite on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Fri, 16 Feb 2024 19:48:20 -0600</lastBuildDate><atom:link href="https://dashaun.com/tags/openrewrite/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Spring Health Assessment Report</title>
+            <link>https://dashaun.com/posts/spring-health-assessment-report/</link>
+            <pubDate>Fri, 16 Feb 2024 19:48:20 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/spring-health-assessment-report/</guid>
+            <description>&lt;p&gt;Spring Boot 3.0.0 was released 450 days ago. Helping people upgrade, and enjoy all the amazing benefits, has been one of my passions for about 450 days.  I&amp;rsquo;m a Spring Developer Advocate and I love my job.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://twitter.com/tschuehly/status/1723106405756846117&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;img src=&#34;images/normalconversation.png&#34; alt=&#34;Thomas Schuehly has thoughts&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;It&amp;rsquo;s a passion really. Thomas Schuehly gets it.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;At SpringOne 2023 in Las Vegas, my friend, Joachim Pasquali, over at Fiserv, shared a story that I&amp;rsquo;ll not soon forget.  The process of upgrading and patching, doesn&amp;rsquo;t have to be a painful process.  On that day, his flagship product, was on the latest and greatest version of Spring Boot.  &lt;a href=&#34;https://youtube.com/clip/UgkxKNJxAWtsIWDzsFJM8tDB8VvG1E66EMVk?si=0e7-mUIHfjIHl9Qp&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Watch the clip that gave me all the feels here.&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I want you to know about some tools and techniques that can help you upgrade your Spring Boot projects with more joy, frequently, and safely.&lt;/p&gt;
+&lt;p&gt;First things first, let&amp;rsquo;s talk about the challenges. Outdated Spring Boot versions can expose your projects to security risks, leave you without access to the latest features and performance improvements, and can be costing you more money. Have you ever been working, on an outdated JVM perhaps, or an older Spring Boot version, and secretly wished you were using the latest release? I get it, I&amp;rsquo;ve been there too, and I&amp;rsquo;m here to help.&lt;/p&gt;
+&lt;p&gt;I want you to check out the &lt;a href=&#34;https://tanzu.vmware.com/spring-health-assessment&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Health Assessment Report&lt;/a&gt;.  This tool is very similar to something you probably have running already, it tells you about known vulnerabilities. However, this tool is also unique in a few very special ways.  First of all, it&amp;rsquo;s free for you to use.  It also has the support timeline information built in. It provides a measure of how hard it will be to upgrade. Finally, it only reports on the Spring and Micrometer dependencies that you are using. It&amp;rsquo;s very focused and actionable.&lt;/p&gt;
+&lt;p&gt;I like to call &lt;a href=&#34;https://docs.openrewrite.org&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;OpenRewrite&lt;/a&gt; my favorite &lt;code&gt;cheat code&lt;/code&gt;. When I say that I demonstrate &lt;code&gt;OpenRewrite&lt;/code&gt; twenty times per week, I&amp;rsquo;m not exaggerating.  It&amp;rsquo;s a powerful tool, and I&amp;rsquo;m still surprised by how many developers still don&amp;rsquo;t know about it.  &lt;a href=&#34;https://github.com/dashaun/openrewrite-spring-boot-upgrade-example&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;This repository includes one of those demos, that I deliver multiple times every week&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Software is soft for a reason.  It&amp;rsquo;s meant to be changed.  It&amp;rsquo;s meant to be upgraded.  It&amp;rsquo;s meant to be improved.  Java comes out with a new JVM, every 6-months.  The Spring team releases a new Spring Boot version every 6-months.  It&amp;rsquo;s time to start upgrading more frequently.  In 2023, there were only 4-weeks, of the entire year, that the Spring team didn&amp;rsquo;t release something new.  You can see for yourself over at &lt;a href=&#34;https://calendar.spring.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;calendar-dot-spring-dot-io&lt;/a&gt;.  It&amp;rsquo;s time to start upgrading more frequently.&lt;/p&gt;
+&lt;p&gt;I believe that the way software is going to be measured, going forward, is by how easy it is to maintain. I&amp;rsquo;m convinced that continuous upgrading, and continuous patching, is going to be a key differentiator for software projects.  I want you to get started, today.&lt;/p&gt;
+&lt;p&gt;By upgrading your Spring Boot projects, you can benefit from improved security, performance, and access to the latest features. You&amp;rsquo;ll also be able to take advantage of the ongoing support and updates provided by the Spring team and the Java team!&lt;/p&gt;
+&lt;p&gt;So why wait? &lt;a href=&#34;https://youtu.be/XI_7mpEiPjI&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Watch this video I made last week&lt;/a&gt;. Check out the Spring Health Assessment Report. You will see a few reasons why you should upgrade.  You will also see how easy it can be. Spring Boot 3.2.3 comes out next Thursday, how long will it take you to upgrade?&lt;/p&gt;
+&lt;h2 id=&#34;links&#34;&gt;
+  Links
+  &lt;a class=&#34;heading-link&#34; href=&#34;#links&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtu.be/XI_7mpEiPjI&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring into Action: Boost Your Java Projects with Essential Upgrade Tools!&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://tanzu.vmware.com/spring-health-assessment&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Health Assessment Report&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://twitter.com/tschuehly/status/1723106405756846117&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Thomas Schuehly gets it&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/openrewrite-spring-boot-upgrade-example&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;OpenRewrite Spring Boot Upgrade Example&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtube.com/clip/UgkxKNJxAWtsIWDzsFJM8tDB8VvG1E66EMVk?si=bF6GiJRZgWbH78JX&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Joachim Pasquali at SpringOne 2023&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Spring Essential Upgrade Tools</title>
+            <link>https://dashaun.com/posts/spring-essential-upgrade-tools/</link>
+            <pubDate>Wed, 07 Feb 2024 19:47:40 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/spring-essential-upgrade-tools/</guid>
+            <description></description>
+        </item>
+        
+    </channel>
+</rss>

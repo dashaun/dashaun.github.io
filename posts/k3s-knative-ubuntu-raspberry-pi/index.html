@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  K3s Knative Ubuntu Raspberry Pi · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="Get Knative Serving working on a Raspberry Pi device">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://dashaun.com/images/avatar.png">
+  <meta name="twitter:title" content="K3s Knative Ubuntu Raspberry Pi">
+  <meta name="twitter:description" content="Get Knative Serving working on a Raspberry Pi device">
+
+<meta property="og:url" content="https://dashaun.com/posts/k3s-knative-ubuntu-raspberry-pi/">
+  <meta property="og:site_name" content="DaShaun">
+  <meta property="og:title" content="K3s Knative Ubuntu Raspberry Pi">
+  <meta property="og:description" content="Get Knative Serving working on a Raspberry Pi device">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-12-03T10:26:52-06:00">
+    <meta property="article:modified_time" content="2025-02-24T16:16:50-06:00">
+    <meta property="article:tag" content="Knative">
+    <meta property="article:tag" content="K3s">
+    <meta property="article:tag" content="Raspberrypi">
+    <meta property="article:tag" content="Ubuntu">
+    <meta property="og:image" content="https://dashaun.com/images/avatar.png">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/k3s-knative-ubuntu-raspberry-pi/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Follow me on Twitch</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/k3s-knative-ubuntu-raspberry-pi/">
+              K3s Knative Ubuntu Raspberry Pi
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2022-12-03T10:26:52-06:00'>
+                December 3, 2022
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2022-12-03T10:26:52-06:00'>
+                February 24, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              4-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='images/feature.png' alt="Featured image"/>
+        
+        <h1 id="k3s-knative-ubuntu-raspberry-pi">
+  K3s Knative Ubuntu Raspberry Pi
+  <a class="heading-link" href="#k3s-knative-ubuntu-raspberry-pi">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<p>Knative is a super exciting solution for serverless and event driven applications.
+Personally, I have been using it as a part of my <code>inner loop</code> development.
+I can deploy dozens of workloads.
+All scaled down to zero when they aren&rsquo;t being used.
+All responding and starting up quickly when they are needed.</p>
+<p>I ran into a couple of problems with Envoy on Raspberry Pi OS.
+After investigating, it is a known issue in the Raspberry Pi OS kernel.
+In order to keep going forward with my project I had to choose between fixing the kernel or trying Ubuntu.</p>
+<p>This is an overview of how to get Knative Serving working on a Raspberry Pi device with K3s and Ubuntu.</p>
+<h2 id="install-ubuntu-server">
+  Install Ubuntu Server
+  <a class="heading-link" href="#install-ubuntu-server">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Use RPI Imager.
+Select <code>Ubuntu Server 22.10 64-bit</code> from the list of other distributions.
+Boot the new image.</p>
+<p>I was happy to see that SSH and the default user were configured as expected by using the advanced settings options.</p>
+<h2 id="upgrade-the-stuff">
+  Upgrade the stuff
+  <a class="heading-link" href="#upgrade-the-stuff">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Grab the latest repository info</span>
+</span></span><span style="display:flex;"><span>sudo apt update 
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Install one prerequisite package that isn&#39;t installed by default</span>
+</span></span><span style="display:flex;"><span>sudo apt install linux-modules-extra-raspi -y
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Upgrade everything that can be upgraded</span>
+</span></span><span style="display:flex;"><span>sudo apt dist-upgrade -y
+</span></span></code></pre></div><h2 id="fix-cgroup">
+  Fix cgroup
+  <a class="heading-link" href="#fix-cgroup">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Add this to the beginning of /boot/firmware/cmdline.txt</span>
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory</span>
+</span></span><span style="display:flex;"><span>sudo nano -w /boot/firmware/cmdline.txt
+</span></span></code></pre></div><blockquote>
+<p>Reboot after making this change.</p></blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo shutdown -r now
+</span></span></code></pre></div><h2 id="install-k3s-via-k3sup">
+  Install k3s via k3sup
+  <a class="heading-link" href="#install-k3s-via-k3sup">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>From my laptop, not one of the Raspberry Pi nodes, run <a href="https://github.com/alexellis/k3sup"  class="external-link" target="_blank" rel="noopener">k3sup</a>, it&rsquo;s super easy.
+If you haven&rsquo;t figured it out by now, I&rsquo;m a big fan of <a href="https://github.com/alexellis/k3sup"  class="external-link" target="_blank" rel="noopener">k3sup</a>.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">CONTROL_NODE_IP</span><span style="color:#666">=</span>10.0.0.10
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Disable Traefik because we will use kourier for knative</span>
+</span></span><span style="display:flex;"><span>k3sup install --ip <span style="color:#bb60d5">$CONTROL_NODE_IP</span> --user pi --k3s-extra-args <span style="color:#4070a0">&#39;--disable traefik&#39;</span> --merge --local-path ~/.kube/config --context cluster00
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Knative-Serving with Kourier works on a single Raspberry Pi 4 with 8GB</span>
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Optionally add other nodes</span>
+</span></span><span style="display:flex;"><span>k3sup join --ip 10.0.0.11 --server-ip <span style="color:#bb60d5">$CONTROL_NODE_IP</span> --user pi
+</span></span><span style="display:flex;"><span>k3sup join --ip 10.0.0.12 --server-ip <span style="color:#bb60d5">$CONTROL_NODE_IP</span> --user pi
+</span></span></code></pre></div><h2 id="deep-breath">
+  Deep breath
+  <a class="heading-link" href="#deep-breath">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>This is where I struggled with how to deliver this example.
+The <a href="https://knative.dev/docs/install/yaml-install/serving/install-serving-with-yaml/"  class="external-link" target="_blank" rel="noopener">Knative install documentation</a> is awesome.
+I&rsquo;ve been through it dozens of times!</p>
+<p>I tried to simplify this for you.
+I want to give you the &rsquo;easy button&rsquo; experience.
+I created a <a href="https://github.com/dashaun/knative-serving-raspberry-pi"  class="external-link" target="_blank" rel="noopener">repository</a> with all the YAML you need to deploy Knative Serving to this K3s cluster.</p>
+<h2 id="knative-serving-with-kourier">
+  Knative Serving with Kourier
+  <a class="heading-link" href="#knative-serving-with-kourier">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/dashaun/knative-serving-raspberry-pi
+</span></span><span style="display:flex;"><span><span style="color:#007020">cd</span> knative-serving-raspberry-pi/operator-serving-kourier
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Use the `default` namespace in the Kubernetes cluster</span>
+</span></span><span style="display:flex;"><span>kubectl config set-context --current --namespace<span style="color:#666">=</span>default
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Deploy the Knative operator</span>
+</span></span><span style="display:flex;"><span>kubectl apply -f operator.yaml
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Check the deployment status</span>
+</span></span><span style="display:flex;"><span>kubectl get deployment knative-operator
+</span></span></code></pre></div><blockquote>
+<p>Continue when <code>Ready</code> status is <code>1/1</code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+</span></span><span style="display:flex;"><span>knative-operator   1/1     1            1           19h
+</span></span></code></pre></div></blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Install Knative Serving custom resource and Kourier</span>
+</span></span><span style="display:flex;"><span>kubectl apply -f knative-serving.yaml
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Check the custom resource status</span>
+</span></span><span style="display:flex;"><span>kubectl get KnativeServing knative-serving -n knative-serving
+</span></span></code></pre></div><blockquote>
+<p>Continue when <code>READY</code> is <code>True</code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>NAME              VERSION   READY   REASON
+</span></span><span style="display:flex;"><span>knative-serving   1.8.0     True
+</span></span></code></pre></div></blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Check the deployment status</span>
+</span></span><span style="display:flex;"><span>kubectl get deployment -n knative-serving
+</span></span></code></pre></div><blockquote>
+<p>Continue when <code>READY</code> are all <code>1/1</code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>NAME                     READY   UP-TO-DATE   AVAILABLE   AGE
+</span></span><span style="display:flex;"><span>activator                1/1     1            1           23m
+</span></span><span style="display:flex;"><span>autoscaler               1/1     1            1           23m
+</span></span><span style="display:flex;"><span>controller               1/1     1            1           23m
+</span></span><span style="display:flex;"><span>domain-mapping           1/1     1            1           23m
+</span></span><span style="display:flex;"><span>domainmapping-webhook    1/1     1            1           23m
+</span></span><span style="display:flex;"><span>autoscaler-hpa           1/1     1            1           23m
+</span></span><span style="display:flex;"><span>3scale-kourier-gateway   1/1     1            1           23m
+</span></span><span style="display:flex;"><span>webhook                  1/1     1            1           23m
+</span></span><span style="display:flex;"><span>net-kourier-controller   1/1     1            1           23m
+</span></span></code></pre></div></blockquote>
+<h2 id="sslipio-and-a-spring-boot-3-native-application">
+  SSLIP.IO and a Spring Boot 3 <code>native</code> application
+  <a class="heading-link" href="#sslipio-and-a-spring-boot-3-native-application">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Install default domain</span>
+</span></span><span style="display:flex;"><span>kubectl apply -f serving-default-domain.yaml
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Deploy a Spring Boot 3 `native` application</span>
+</span></span><span style="display:flex;"><span>kubectl apply -f spring-boot-native-pi-service.yaml
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Get the address</span>
+</span></span><span style="display:flex;"><span>kubectl get ksvc spring-boot-native-pi --output<span style="color:#666">=</span>custom-columns<span style="color:#666">=</span>NAME:.metadata.name,URL:.status.url
+</span></span></code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>NAME                    URL
+</span></span><span style="display:flex;"><span>spring-boot-native-pi   http://spring-boot-native-pi.default.10.0.0.10.sslip.io
+</span></span></code></pre></div></blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Curl the address provided by knative with `/actuator/health` at the end</span>
+</span></span><span style="display:flex;"><span>curl http://spring-boot-native-pi.default.default.10.0.0.10.sslip.io/actuator/health
+</span></span></code></pre></div><blockquote>
+<p>Expected output:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>{&#34;status&#34;:&#34;UP&#34;}
+</span></span></code></pre></div></blockquote>
+<h2 id="summary">
+  Summary
+  <a class="heading-link" href="#summary">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>With the recent release of Spring Boot 3.0.0, my Raspberry Pi collection has become significantly more interesting.
+Knative Serving allows me to deploy dozens of Spring Boot / Spring Cloud workloads to a tiny, low power device, with very exciting capabilities.</p>
+<h2 id="keep-learning">
+  Keep Learning
+  <a class="heading-link" href="#keep-learning">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><a href="https://knative.dev"  class="external-link" target="_blank" rel="noopener">Knative</a></li>
+<li><a href="https://docs.spring.io/spring-boot/docs/current/reference/html/"  class="external-link" target="_blank" rel="noopener">Spring Boot</a></li>
+<li><a href="https://github.com/dashaun/knative-serving-raspberry-pi"  class="external-link" target="_blank" rel="noopener">Knative Serving Raspberry Pi</a></li>
+</ul>
+
+      </div>
+
+
+      <footer>
+        
+
+<section class="see-also">
+  
+    
+    
+    
+  
+</section>
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

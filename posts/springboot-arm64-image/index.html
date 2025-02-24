@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Spring Boot 2.6.3 ARM64 Image · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="
+  Spring Boot on Raspberry Pi 4b 8gb
+  
+    
+    Link to heading
+  
+
+The purpose of this article is to create a Spring Boot (2.6.3) native image for arm64.  In my case, the Raspberry Pi Zero 2W.  The Raspberry Pi Zero 2W only has 512mb of SDRAM. Because of the small footprint of the Zero 2W I want to be as efficient as possible.
+We will build a very simple Spring Boot app again, but add Spring Native to compile a native executable.">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://dashaun.com/images/avatar.png">
+  <meta name="twitter:title" content="Spring Boot 2.6.3 ARM64 Image">
+  <meta name="twitter:description" content="Spring Boot on Raspberry Pi 4b 8gb Link to heading The purpose of this article is to create a Spring Boot (2.6.3) native image for arm64. In my case, the Raspberry Pi Zero 2W. The Raspberry Pi Zero 2W only has 512mb of SDRAM. Because of the small footprint of the Zero 2W I want to be as efficient as possible.
+We will build a very simple Spring Boot app again, but add Spring Native to compile a native executable.">
+
+<meta property="og:url" content="https://dashaun.com/posts/springboot-arm64-image/">
+  <meta property="og:site_name" content="DaShaun">
+  <meta property="og:title" content="Spring Boot 2.6.3 ARM64 Image">
+  <meta property="og:description" content="Spring Boot on Raspberry Pi 4b 8gb Link to heading The purpose of this article is to create a Spring Boot (2.6.3) native image for arm64. In my case, the Raspberry Pi Zero 2W. The Raspberry Pi Zero 2W only has 512mb of SDRAM. Because of the small footprint of the Zero 2W I want to be as efficient as possible.
+We will build a very simple Spring Boot app again, but add Spring Native to compile a native executable.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-01-30T20:55:02-06:00">
+    <meta property="article:modified_time" content="2025-02-24T16:16:50-06:00">
+    <meta property="article:tag" content="Spring">
+    <meta property="article:tag" content="Raspberrypi">
+    <meta property="article:tag" content="Oci">
+    <meta property="article:tag" content="Docker">
+    <meta property="og:image" content="https://dashaun.com/images/avatar.png">
+      <meta property="og:see_also" content="https://dashaun.com/posts/sping-native-edge-rpi/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/springboot-2-6-2-rpi-4/">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/springboot-arm64-image/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Follow me on Twitch</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/springboot-arm64-image/">
+              Spring Boot 2.6.3 ARM64 Image
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2022-01-30T20:55:02-06:00'>
+                January 30, 2022
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2022-01-30T20:55:02-06:00'>
+                February 24, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              4-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+        <h1 id="spring-boot-on-raspberry-pi-4b-8gb">
+  Spring Boot on Raspberry Pi 4b 8gb
+  <a class="heading-link" href="#spring-boot-on-raspberry-pi-4b-8gb">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<p>The purpose of this article is to create a Spring Boot (2.6.3) native image for arm64.  In my case, the Raspberry Pi Zero 2W.  The Raspberry Pi Zero 2W only has 512mb of SDRAM. Because of the small footprint of the <code>Zero 2W</code> I want to be as efficient as possible.</p>
+<p>We will build a very simple Spring Boot app again, but add <code>Spring Native</code> to compile a native executable.</p>
+<p>A bunch of this information is repeated from the previous article.  Image creation happens on the Raspberry Pi 4.  The resulting image can be deployed to a Raspberry Pi Zero 2 W.</p>
+<h1 id="install-arm64-raspios-bullseye-on-raspberry-pi-4-with-8gb">
+  Install ARM64, RaspiOS Bullseye, on Raspberry Pi 4 with 8gb
+  <a class="heading-link" href="#install-arm64-raspios-bullseye-on-raspberry-pi-4-with-8gb">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<p>For this example I&rsquo;m using <a href="https://downloads.raspberrypi.org/raspios_arm64/images/raspios_arm64-2021-11-08/2021-10-30-raspios-bullseye-arm64.zip"  class="external-link" target="_blank" rel="noopener">RaspiOS Bullseye</a>.  I still recommend using the <a href="https://www.raspberrypi.com/software/"  class="external-link" target="_blank" rel="noopener">Raspberry Pi Imager</a> for the install.</p>
+<h2 id="update-upgrade-and-install">
+  Update, upgrade and install
+  <a class="heading-link" href="#update-upgrade-and-install">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sudo apt update
+</span></span><span style="display:flex;"><span>sudo apt upgrade -y
+</span></span><span style="display:flex;"><span>sudo apt install zip
+</span></span></code></pre></div><h2 id="install-docker">
+  Install docker
+  <a class="heading-link" href="#install-docker">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>curl -fsSL https://get.docker.com -o get-docker.sh
+</span></span><span style="display:flex;"><span>sudo sh get-docker.sh
+</span></span><span style="display:flex;"><span>sudo usermod -aG docker <span style="color:#bb60d5">$USER</span>
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">#you might need to logout and login to get the group assignment</span>
+</span></span><span style="display:flex;"><span>docker run hello-world
+</span></span></code></pre></div><h2 id="install-sdkman">
+  Install SDKMAN
+  <a class="heading-link" href="#install-sdkman">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>curl -s <span style="color:#4070a0">&#34;https://get.sdkman.io&#34;</span> | bash
+</span></span><span style="display:flex;"><span><span style="color:#007020">source</span> <span style="color:#4070a0">&#34;</span><span style="color:#bb60d5">$HOME</span><span style="color:#4070a0">/.sdkman/bin/sdkman-init.sh&#34;</span>
+</span></span><span style="display:flex;"><span>sdk version
+</span></span></code></pre></div><h2 id="install-a-jdk">
+  Install a JDK
+  <a class="heading-link" href="#install-a-jdk">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Install the latest version of the JDK.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>sdk list java
+</span></span><span style="display:flex;"><span>sdk install java 22.0.0.2.r17-grl
+</span></span><span style="display:flex;"><span>java -version
+</span></span></code></pre></div><h2 id="create-simple-spring-boot-application">
+  Create simple Spring Boot application
+  <a class="heading-link" href="#create-simple-spring-boot-application">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Use the Spring Initializer web API to create a simple example.</p>
+<p>The parameters below:</p>
+<ul>
+<li>name the artifact</li>
+<li>choose Java 17</li>
+<li>include the &ldquo;web&rdquo;,&ldquo;actuator&rdquo; and &ldquo;spring native&rdquo; dependencies</li>
+<li>use latest version of Spring Boot by default</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>mkdir demo
+</span></span><span style="display:flex;"><span><span style="color:#007020">cd</span> demo
+</span></span><span style="display:flex;"><span>curl https://start.spring.io/starter.tgz -d <span style="color:#bb60d5">groupId</span><span style="color:#666">=</span>dev.dashaun -d <span style="color:#bb60d5">artifactId</span><span style="color:#666">=</span>spring-pi -d <span style="color:#bb60d5">name</span><span style="color:#666">=</span>spring-pi -d <span style="color:#bb60d5">packageName</span><span style="color:#666">=</span>dev.dashaun.spring-pi -d <span style="color:#bb60d5">dependencies</span><span style="color:#666">=</span>web,actuator,native -d <span style="color:#bb60d5">javaVersion</span><span style="color:#666">=</span><span style="color:#40a070">17</span> | tar -xzf -
+</span></span></code></pre></div><h2 id="two-changes">
+  Two changes
+  <a class="heading-link" href="#two-changes">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p><a href="https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/#_starters_requiring_special_build_configuration"  class="external-link" target="_blank" rel="noopener">Starters requiring special build configuration</a>.</p>
+<p>Swap out the tomcat version:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&lt;dependency&gt;
+</span></span><span style="display:flex;"><span>    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+</span></span><span style="display:flex;"><span>    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+</span></span><span style="display:flex;"><span>    &lt;exclusions&gt;
+</span></span><span style="display:flex;"><span>        &lt;exclusion&gt;
+</span></span><span style="display:flex;"><span>            &lt;groupId&gt;org.apache.tomcat.embed&lt;/groupId&gt;
+</span></span><span style="display:flex;"><span>            &lt;artifactId&gt;tomcat-embed-core&lt;/artifactId&gt;
+</span></span><span style="display:flex;"><span>        &lt;/exclusion&gt;
+</span></span><span style="display:flex;"><span>        &lt;exclusion&gt;
+</span></span><span style="display:flex;"><span>            &lt;groupId&gt;org.apache.tomcat.embed&lt;/groupId&gt;
+</span></span><span style="display:flex;"><span>            &lt;artifactId&gt;tomcat-embed-websocket&lt;/artifactId&gt;
+</span></span><span style="display:flex;"><span>        &lt;/exclusion&gt;
+</span></span><span style="display:flex;"><span>    &lt;/exclusions&gt;
+</span></span><span style="display:flex;"><span>&lt;/dependency&gt;
+</span></span><span style="display:flex;"><span>&lt;dependency&gt;
+</span></span><span style="display:flex;"><span>    &lt;groupId&gt;org.apache.tomcat.experimental&lt;/groupId&gt;
+</span></span><span style="display:flex;"><span>    &lt;artifactId&gt;tomcat-embed-programmatic&lt;/artifactId&gt;
+</span></span><span style="display:flex;"><span>    &lt;version&gt;${tomcat.version}&lt;/version&gt;
+</span></span><span style="display:flex;"><span>&lt;/dependency&gt;
+</span></span></code></pre></div><blockquote>
+<p>Exclude io.micrometer:micrometer-core when metrics are not used for optimized footprint.</p></blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>&lt;dependency&gt;
+</span></span><span style="display:flex;"><span>    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+</span></span><span style="display:flex;"><span>    &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;
+</span></span><span style="display:flex;"><span>    &lt;exclusions&gt;
+</span></span><span style="display:flex;"><span>        &lt;exclusion&gt;
+</span></span><span style="display:flex;"><span>            &lt;groupId&gt;io.micrometer&lt;/groupId&gt;
+</span></span><span style="display:flex;"><span>            &lt;artifactId&gt;micrometer-core&lt;/artifactId&gt;
+</span></span><span style="display:flex;"><span>        &lt;/exclusion&gt;
+</span></span><span style="display:flex;"><span>    &lt;/exclusions&gt;
+</span></span><span style="display:flex;"><span>&lt;/dependency&gt;
+</span></span></code></pre></div><h2 id="milestone-reached">
+  Milestone reached
+  <a class="heading-link" href="#milestone-reached">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>At this point I can generate an ARM64 <code>native</code> executable using the native build tools.</p>
+<p>Install the native-image extensions for the JDK:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>gu install native-image
+</span></span></code></pre></div><p>Build the application with Maven</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>./mvnw -Pnative -DskipTests package
+</span></span></code></pre></div><p>I didn&rsquo;t panic when I saw the warnings during compilation, because I had read the documenation.</p>
+<p><a href="https://docs.spring.io/spring-native/docs/current/reference/htmlsingle/"  class="external-link" target="_blank" rel="noopener">From the Spring Native Documentation</a></p>
+<blockquote>
+<p>During the native compilation, you will see a lot of WARNING: Could not register reflection metadata messages. They are expected and will be removed in a future version, see #502 for more details.</p></blockquote>
+<p>There will be a <code>target/spring-pi</code> executable, 63mb in my example.</p>
+<p>Copy that to your <code>Raspberry Pi Zero 2 W</code> and it works as expected!</p>
+<h2 id="keep-going">
+  Keep going
+  <a class="heading-link" href="#keep-going">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>How am I supposed to handle that native executable?  Where do I put it?  Do I make it a Github release package?  Do people use Github releases in their CI/CD?</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>  &#34;The container image is the new artifact.&#34;
+</span></span><span style="display:flex;"><span>      - Cora Iberkleid
+</span></span></code></pre></div><h2 id="getting-unexpected-help">
+  Getting Unexpected Help
+  <a class="heading-link" href="#getting-unexpected-help">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I was on a path to create my own buildpack for ARM64, but I was going the long way.</p>
+<p>Daniel Mikusa created a better way.</p>
+<p><a href="https://github.com/dmikusa-pivotal/paketo-arm64"  class="external-link" target="_blank" rel="noopener">dmikusa-pivotal/paketo-arm64</a></p>
+<p>I followed his repository and created my own versions of the cloud native buildpacks.  I pushed those images to my public docker repo.</p>
+<h2 id="building-an-image">
+  Building an Image
+  <a class="heading-link" href="#building-an-image">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>The default builder <code>&lt;builder&gt;paketobuildpacks/builder:tiny&lt;/builder&gt;</code> doesn&rsquo;t have arm64 images yet.
+So edit <code>pom.xml</code> to use <code>&lt;builder&gt;dashaun/native-builder:focal-arm64&lt;/builder&gt;</code> instead.</p>
+<p>Now you can create a native arm64 image using the spring boot plugin:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>./mvnw -Pnative spring-boot:build-image -DskipTests
+</span></span></code></pre></div><p>When that is complete, you can run the image:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-shell" data-lang="shell"><span style="display:flex;"><span>docker run -p 8080:8080 spring-pi:0.0.1-SNAPSHOT
+</span></span></code></pre></div><blockquote>
+<p>Our applicaiton is now running on port 8080</p></blockquote>
+<h2 id="summary">
+  Summary
+  <a class="heading-link" href="#summary">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Building arm64 images on a Raspberry Pi 4 is not fast.  Being able to run arm64 native images on a Raspberry Pi Zero 2 W has me super excited.  I&rsquo;ve made the cloud native buildpack images available via Docker Hub.  I&rsquo;ve also created an example repository on Github.</p>
+<p>For me, this opens the door for a software supply chain, that creates native arm64 images for my Spring Boot projects.  This also makes kubernetes on arm64 devices, as small as the Raspberry Pi Zero 2 W, much more interesting!</p>
+<h2 id="links">
+  Links
+  <a class="heading-link" href="#links">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><a href="https://github.com/dmikusa-pivotal/paketo-arm64"  class="external-link" target="_blank" rel="noopener">https://github.com/dmikusa-pivotal/paketo-arm64</a></li>
+<li><a href="https://github.com/dashaun/spring-boot-native-pi"  class="external-link" target="_blank" rel="noopener">https://github.com/dashaun/spring-boot-native-pi</a></li>
+<li><a href="https://hub.docker.com/r/dashaun/native-builder"  class="external-link" target="_blank" rel="noopener">https://hub.docker.com/r/dashaun/native-builder</a></li>
+<li><a href="https://hub.docker.com/r/dashaun/stack-build"  class="external-link" target="_blank" rel="noopener">https://hub.docker.com/r/dashaun/stack-build</a></li>
+<li><a href="https://hub.docker.com/r/dashaun/stack-run"  class="external-link" target="_blank" rel="noopener">https://hub.docker.com/r/dashaun/stack-run</a></li>
+<li><a href="https://hub.docker.com/r/dashaun/spring-pi-native"  class="external-link" target="_blank" rel="noopener">https://hub.docker.com/r/dashaun/spring-pi-native</a></li>
+</ul>
+
+      </div>
+
+
+      <footer>
+        
+
+<section class="see-also">
+  
+    
+    
+    
+  
+</section>
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

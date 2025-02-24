@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Teamwork makes the dream work for this multi-architecture builder. · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="New multi-architecture builder: dashaun/builder:tiny">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://dashaun.com/posts/teamwork-makes-the-dream-work-for-multiarch-builder/images/feature.png">
+  <meta name="twitter:title" content="Teamwork makes the dream work for this multi-architecture builder.">
+  <meta name="twitter:description" content="New multi-architecture builder: dashaun/builder:tiny">
+
+<meta property="og:url" content="https://dashaun.com/posts/teamwork-makes-the-dream-work-for-multiarch-builder/">
+  <meta property="og:site_name" content="DaShaun">
+  <meta property="og:title" content="Teamwork makes the dream work for this multi-architecture builder.">
+  <meta property="og:description" content="New multi-architecture builder: dashaun/builder:tiny">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-12-12T15:13:23-06:00">
+    <meta property="article:modified_time" content="2025-02-24T16:16:50-06:00">
+    <meta property="article:tag" content="Arm64">
+    <meta property="article:tag" content="Multiarch">
+    <meta property="article:tag" content="Buildpacks">
+    <meta property="article:tag" content="Spring">
+    <meta property="og:image" content="https://dashaun.com/posts/teamwork-makes-the-dream-work-for-multiarch-builder/images/feature.png">
+      <meta property="og:see_also" content="https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/five-months-in-the-making-multi-arch-builder/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/paketo-steering-committee-candidacy/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/multi-architecture-stacks-and-buildpacks/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/circleci-arm64-first-impression/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/better-late-than-never-video/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/builder-20230203/">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/teamwork-makes-the-dream-work-for-multiarch-builder/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Follow me on Twitch</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/teamwork-makes-the-dream-work-for-multiarch-builder/">
+              Teamwork makes the dream work for this multi-architecture builder.
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2022-12-12T15:13:23-06:00'>
+                December 12, 2022
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2022-12-12T15:13:23-06:00'>
+                February 24, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              8-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='images/feature.png' alt="Featured image"/>
+        
+        <h1 id="teamwork-makes-the-dream-work-for-this-multi-architecture-builder">
+  Teamwork makes the dream work for this multi-architecture builder
+  <a class="heading-link" href="#teamwork-makes-the-dream-work-for-this-multi-architecture-builder">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<p>There has never been a better time to start delivering Spring Boot applications to ARM64 architectures. I&rsquo;ve been working on ARM64 buildpacks for over a year now and I want you to see how far things have come.  These last few days have been leveled-up with help from Daniel Mikusa and Salman Malik, and the results are amazing.</p>
+<h2 id="so-close">
+  So close
+  <a class="heading-link" href="#so-close">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I&rsquo;m excited because the builder for ARM64 is so close to the AMD64 builder supported by Paketo.  To see just how close things are, we can do a simple <code>diff</code> of the builders, from different architectures.</p>
+<blockquote>
+<p>Optionally, clear cached images first</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker system prune -a --volumes -f
+</span></span></code></pre></div></blockquote>
+<h2 id="inspect-with-arm64">
+  Inspect with ARM64
+  <a class="heading-link" href="#inspect-with-arm64">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>On an ARM64 device:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pack builder inspect dashaun/builder:tiny &gt; ~/dashaun.builder.tiny.arm64
+</span></span></code></pre></div><p>The file should look like this:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Inspecting builder: dashaun/builder:tiny
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>REMOTE:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Description: Tiny base image (bionic build image, distroless-like run image) with buildpacks for Java, Java Native Image and Go
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Created By:
+</span></span><span style="display:flex;"><span>Name: Pack CLI
+</span></span><span style="display:flex;"><span>Version: 0.28.0+git-b10e41f.build-3729
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Trusted: No
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Stack:
+</span></span><span style="display:flex;"><span>ID: io.paketo.stacks.tiny
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Lifecycle:
+</span></span><span style="display:flex;"><span>Version: 0.15.2
+</span></span><span style="display:flex;"><span>Buildpack APIs:
+</span></span><span style="display:flex;"><span>Deprecated: (none)
+</span></span><span style="display:flex;"><span>Supported: 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9
+</span></span><span style="display:flex;"><span>Platform APIs:
+</span></span><span style="display:flex;"><span>Deprecated: (none)
+</span></span><span style="display:flex;"><span>Supported: 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.10
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Run Images:
+</span></span><span style="display:flex;"><span>index.docker.io/paketobuildpacks/run:tiny-cnb
+</span></span><span style="display:flex;"><span>gcr.io/paketo-buildpacks/run:tiny-cnb
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Buildpacks:
+</span></span><span style="display:flex;"><span>ID                                                  NAME                                                   VERSION        HOMEPAGE
+</span></span><span style="display:flex;"><span>paketo-buildpacks/apache-tomcat                     Paketo Buildpack for Apache Tomcat                     7.9.1          https://github.com/paketo-buildpacks/apache-tomcat
+</span></span><span style="display:flex;"><span>paketo-buildpacks/apache-tomee                      Paketo Buildpack for Apache Tomee                      1.4.0          https://github.com/paketo-buildpacks/apache-tomee
+</span></span><span style="display:flex;"><span>paketo-buildpacks/azure-application-insights        Paketo Buildpack for Azure Application Insights        5.9.3          https://github.com/paketo-buildpacks/azure-application-insights
+</span></span><span style="display:flex;"><span>paketo-buildpacks/bellsoft-liberica                 Paketo Buildpack for BellSoft Liberica                 9.10.1         https://github.com/paketo-buildpacks/bellsoft-liberica
+</span></span><span style="display:flex;"><span>paketo-buildpacks/ca-certificates                   Paketo Buildpack for CA Certificates                   3.5.1          https://github.com/paketo-buildpacks/ca-certificates
+</span></span><span style="display:flex;"><span>paketo-buildpacks/clojure-tools                     Paketo Buildpack for Clojure Tools                     2.6.1          https://github.com/paketo-buildpacks/clojure-tools
+</span></span><span style="display:flex;"><span>paketo-buildpacks/datadog                           Paketo Buildpack for Datadog                           3.1.0          https://github.com/paketo-buildpacks/datadog
+</span></span><span style="display:flex;"><span>paketo-buildpacks/dist-zip                          Paketo Buildpack for DistZip                           5.4.0          https://github.com/paketo-buildpacks/dist-zip
+</span></span><span style="display:flex;"><span>paketo-buildpacks/encrypt-at-rest                   Paketo Buildpack for Encrypt-at-Rest                   4.3.2          https://github.com/paketo-buildpacks/encrypt-at-rest
+</span></span><span style="display:flex;"><span>paketo-buildpacks/environment-variables             Paketo Buildpack for Environment Variables             4.4.0          https://github.com/paketo-buildpacks/environment-variables
+</span></span><span style="display:flex;"><span>paketo-buildpacks/executable-jar                    Paketo Buildpack for Executable JAR                    6.5.0          https://github.com/paketo-buildpacks/executable-jar
+</span></span><span style="display:flex;"><span>paketo-buildpacks/git                               Paketo Buildpack for Git                               1.0.0          https://github.com/paketo-buildpacks/git
+</span></span><span style="display:flex;"><span>paketo-buildpacks/go                                Paketo Buildpack for Go                                4.0.0          https://github.com/paketo-buildpacks/go
+</span></span><span style="display:flex;"><span>paketo-buildpacks/go-build                          Paketo Buildpack for Go Build                          2.0.7          https://github.com/paketo-buildpacks/go-build
+</span></span><span style="display:flex;"><span>paketo-buildpacks/go-dist                           Paketo Buildpack for Go Distribution                   2.2.2          https://github.com/paketo-buildpacks/go-dist
+</span></span><span style="display:flex;"><span>paketo-buildpacks/go-mod-vendor                     Paketo Buildpack for Go Mod Vendor                     1.0.6          https://github.com/paketo-buildpacks/go-mod-vendor
+</span></span><span style="display:flex;"><span>paketo-buildpacks/google-stackdriver                Paketo Buildpack for Google Stackdriver                7.0.0          https://github.com/paketo-buildpacks/google-stackdriver
+</span></span><span style="display:flex;"><span>paketo-buildpacks/gradle                            Paketo Buildpack for Gradle                            6.10.0         https://github.com/paketo-buildpacks/gradle
+</span></span><span style="display:flex;"><span>paketo-buildpacks/image-labels                      Paketo Buildpack for Image Labels                      4.3.0          https://github.com/paketo-buildpacks/image-labels
+</span></span><span style="display:flex;"><span>paketo-buildpacks/jattach                           Paketo Buildpack for JAttach                           1.2.0          https://github.com/paketo-buildpacks/jattach
+</span></span><span style="display:flex;"><span>paketo-buildpacks/java                              Paketo Buildpack for Java                              8.1.0          https://paketo.io/docs/howto/java
+</span></span><span style="display:flex;"><span>paketo-buildpacks/java-memory-assistant             Paketo Buildpack for Java Memory Assistant             1.2.0          https://github.com/paketo-buildpacks/java-memory-assistant
+</span></span><span style="display:flex;"><span>paketo-buildpacks/java-native-image                 Paketo Buildpack for Java Native Image                 7.42.0         https://paketo.io/docs/howto/java/#build-an-app-as-a-graalvm-native-image-application
+</span></span><span style="display:flex;"><span>paketo-buildpacks/leiningen                         Paketo Buildpack for Leiningen                         4.4.0          https://github.com/paketo-buildpacks/leiningen
+</span></span><span style="display:flex;"><span>paketo-buildpacks/liberty                           Paketo Buildpack for Liberty                           3.1.0          https://github.com/paketo-buildpacks/liberty
+</span></span><span style="display:flex;"><span>paketo-buildpacks/maven                             Paketo Buildpack for Maven                             6.11.0         https://github.com/paketo-buildpacks/maven
+</span></span><span style="display:flex;"><span>paketo-buildpacks/native-image                      Paketo Buildpack for Native Image                      5.6.0          https://github.com/paketo-buildpacks/native-image
+</span></span><span style="display:flex;"><span>paketo-buildpacks/procfile                          Paketo Buildpack for Procfile                          5.5.0          https://github.com/paketo-buildpacks/procfile
+</span></span><span style="display:flex;"><span>paketo-buildpacks/sbt                               Paketo Buildpack for SBT                               6.9.0          https://github.com/paketo-buildpacks/sbt
+</span></span><span style="display:flex;"><span>paketo-buildpacks/spring-boot                       Paketo Buildpack for Spring Boot                       5.20.0         https://github.com/paketo-buildpacks/spring-boot
+</span></span><span style="display:flex;"><span>paketo-buildpacks/syft                              Paketo Buildpack for Syft                              1.23.0         https://github.com/paketo-buildpacks/syft
+</span></span><span style="display:flex;"><span>paketo-buildpacks/upx                               Paketo Buildpack for UPX                               3.3.0          https://github.com/paketo-buildpacks/upx
+</span></span><span style="display:flex;"><span>paketo-buildpacks/watchexec                         Paketo Buildpack for Watchexec                         2.7.0          https://github.com/paketo-buildpacks/watchexec
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Detection Order:
+</span></span><span style="display:flex;"><span>├ Group #1:
+</span></span><span style="display:flex;"><span>│  └ paketo-buildpacks/java-native-image@7.42.0
+</span></span><span style="display:flex;"><span>│     └ Group #1:
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/ca-certificates@3.5.1          (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/upx@3.3.0                      (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/bellsoft-liberica@9.10.1
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/syft@1.23.0                    (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/leiningen@4.4.0                (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/gradle@6.10.0                  (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/maven@6.11.0                   (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/sbt@6.9.0                      (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/executable-jar@6.5.0           (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/spring-boot@5.20.0             (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/native-image@5.6.0
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/procfile@5.5.0                 (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/environment-variables@4.4.0    (optional)
+</span></span><span style="display:flex;"><span>│        └ paketo-buildpacks/image-labels@4.3.0             (optional)
+</span></span><span style="display:flex;"><span>├ Group #2:
+</span></span><span style="display:flex;"><span>│  └ paketo-buildpacks/java@8.1.0
+</span></span><span style="display:flex;"><span>│     └ Group #1:
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/ca-certificates@3.5.1               (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/bellsoft-liberica@9.10.1
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/syft@1.23.0                         (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/leiningen@4.4.0                     (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/clojure-tools@2.6.1                 (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/gradle@6.10.0                       (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/maven@6.11.0                        (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/sbt@6.9.0                           (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/watchexec@2.7.0                     (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/executable-jar@6.5.0                (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/apache-tomcat@7.9.1                 (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/apache-tomee@1.4.0                  (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/liberty@3.1.0                       (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/dist-zip@5.4.0                      (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/spring-boot@5.20.0                  (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/procfile@5.5.0                      (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/jattach@1.2.0                       (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/azure-application-insights@5.9.3    (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/google-stackdriver@7.0.0            (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/datadog@3.1.0                       (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/java-memory-assistant@1.2.0         (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/encrypt-at-rest@4.3.2               (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/environment-variables@4.4.0         (optional)
+</span></span><span style="display:flex;"><span>│        └ paketo-buildpacks/image-labels@4.3.0                  (optional)
+</span></span><span style="display:flex;"><span>├ Group #3:
+</span></span><span style="display:flex;"><span>│  ├ paketo-buildpacks/go@4.0.0
+</span></span><span style="display:flex;"><span>│  │  └ Group #1:
+</span></span><span style="display:flex;"><span>│  │     ├ paketo-buildpacks/ca-certificates@3.5.1          (optional)
+</span></span><span style="display:flex;"><span>│  │     ├ paketo-buildpacks/watchexec@2.7.0                (optional)
+</span></span><span style="display:flex;"><span>│  │     ├ paketo-buildpacks/go-dist@2.2.2
+</span></span><span style="display:flex;"><span>│  │     ├ paketo-buildpacks/git@1.0.0                      (optional)
+</span></span><span style="display:flex;"><span>│  │     ├ paketo-buildpacks/go-mod-vendor@1.0.6
+</span></span><span style="display:flex;"><span>│  │     ├ paketo-buildpacks/go-build@2.0.7
+</span></span><span style="display:flex;"><span>│  │     ├ paketo-buildpacks/procfile@5.5.0                 (optional)
+</span></span><span style="display:flex;"><span>│  │     ├ paketo-buildpacks/environment-variables@4.4.0    (optional)
+</span></span><span style="display:flex;"><span>│  │     └ paketo-buildpacks/image-labels@4.3.0             (optional)
+</span></span><span style="display:flex;"><span>│  └ paketo-buildpacks/go@4.0.0
+</span></span><span style="display:flex;"><span>│     └ Group #2:
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/ca-certificates@3.5.1          (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/watchexec@2.7.0                (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/go-dist@2.2.2
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/git@1.0.0                      (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/go-build@2.0.7
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/procfile@5.5.0                 (optional)
+</span></span><span style="display:flex;"><span>│        ├ paketo-buildpacks/environment-variables@4.4.0    (optional)
+</span></span><span style="display:flex;"><span>│        └ paketo-buildpacks/image-labels@4.3.0             (optional)
+</span></span><span style="display:flex;"><span>└ Group #4:
+</span></span><span style="display:flex;"><span>└ paketo-buildpacks/procfile@5.5.0
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>LOCAL:
+</span></span><span style="display:flex;"><span>(not present)
+</span></span></code></pre></div><h2 id="inspect-with-amd64">
+  Inspect with AMD64
+  <a class="heading-link" href="#inspect-with-amd64">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>On an AMD64 device:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pack builder inspect dashaun/builder:tiny &gt; ~/dashaun.builder.tiny.amd64
+</span></span></code></pre></div><p>The file will look very similar:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Inspecting builder: dashaun/builder:tiny
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>REMOTE:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Description: Tiny base image (bionic build image, distroless-like run image) with buildpacks for Java, Java Native Image and Go
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Created By:
+</span></span><span style="display:flex;"><span>  Name: Pack CLI
+</span></span><span style="display:flex;"><span>  Version: 0.28.0+git-b10e41f.build-3729
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Trusted: No
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Stack:
+</span></span><span style="display:flex;"><span>  ID: io.paketo.stacks.tiny
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Lifecycle:
+</span></span><span style="display:flex;"><span>  Version: 0.15.2
+</span></span><span style="display:flex;"><span>  Buildpack APIs:
+</span></span><span style="display:flex;"><span>    Deprecated: (none)
+</span></span><span style="display:flex;"><span>    Supported: 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9
+</span></span><span style="display:flex;"><span>  Platform APIs:
+</span></span><span style="display:flex;"><span>    Deprecated: (none)
+</span></span><span style="display:flex;"><span>    Supported: 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.10
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Run Images:
+</span></span><span style="display:flex;"><span>  index.docker.io/paketobuildpacks/run:tiny-cnb
+</span></span><span style="display:flex;"><span>  gcr.io/paketo-buildpacks/run:tiny-cnb
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Buildpacks:
+</span></span><span style="display:flex;"><span>  ID                                                  NAME                                                   VERSION        HOMEPAGE
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/apache-tomcat                     Paketo Buildpack for Apache Tomcat                     7.9.1          https://github.com/paketo-buildpacks/apache-tomcat
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/apache-tomee                      Paketo Buildpack for Apache Tomee                      1.4.0          https://github.com/paketo-buildpacks/apache-tomee
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/azure-application-insights        Paketo Buildpack for Azure Application Insights        5.9.3          https://github.com/paketo-buildpacks/azure-application-insights
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/bellsoft-liberica                 Paketo Buildpack for BellSoft Liberica                 9.10.1         https://github.com/paketo-buildpacks/bellsoft-liberica
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/ca-certificates                   Paketo Buildpack for CA Certificates                   3.5.1          https://github.com/paketo-buildpacks/ca-certificates
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/clojure-tools                     Paketo Buildpack for Clojure Tools                     2.6.1          https://github.com/paketo-buildpacks/clojure-tools
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/datadog                           Paketo Buildpack for Datadog                           3.1.0          https://github.com/paketo-buildpacks/datadog
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/dist-zip                          Paketo Buildpack for DistZip                           5.4.0          https://github.com/paketo-buildpacks/dist-zip
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/encrypt-at-rest                   Paketo Buildpack for Encrypt-at-Rest                   4.3.2          https://github.com/paketo-buildpacks/encrypt-at-rest
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/environment-variables             Paketo Buildpack for Environment Variables             4.4.0          https://github.com/paketo-buildpacks/environment-variables
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/executable-jar                    Paketo Buildpack for Executable JAR                    6.5.0          https://github.com/paketo-buildpacks/executable-jar
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/git                               Paketo Buildpack for Git                               1.0.0          https://github.com/paketo-buildpacks/git
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/go                                Paketo Buildpack for Go                                4.0.0          https://github.com/paketo-buildpacks/go
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/go-build                          Paketo Buildpack for Go Build                          2.0.7          https://github.com/paketo-buildpacks/go-build
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/go-dist                           Paketo Buildpack for Go Distribution                   2.2.2          https://github.com/paketo-buildpacks/go-dist
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/go-mod-vendor                     Paketo Buildpack for Go Mod Vendor                     1.0.6          https://github.com/paketo-buildpacks/go-mod-vendor
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/google-stackdriver                Paketo Buildpack for Google Stackdriver                7.0.0          https://github.com/paketo-buildpacks/google-stackdriver
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/gradle                            Paketo Buildpack for Gradle                            6.10.0         https://github.com/paketo-buildpacks/gradle
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/image-labels                      Paketo Buildpack for Image Labels                      4.3.0          https://github.com/paketo-buildpacks/image-labels
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/jattach                           Paketo Buildpack for JAttach                           1.2.0          https://github.com/paketo-buildpacks/jattach
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/java                              Paketo Buildpack for Java                              8.1.0          https://paketo.io/docs/howto/java
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/java-memory-assistant             Paketo Buildpack for Java Memory Assistant             1.2.0          https://github.com/paketo-buildpacks/java-memory-assistant
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/java-native-image                 Paketo Buildpack for Java Native Image                 7.42.0         https://paketo.io/docs/howto/java/#build-an-app-as-a-graalvm-native-image-application
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/leiningen                         Paketo Buildpack for Leiningen                         4.4.0          https://github.com/paketo-buildpacks/leiningen
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/liberty                           Paketo Buildpack for Liberty                           3.1.0          https://github.com/paketo-buildpacks/liberty
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/maven                             Paketo Buildpack for Maven                             6.11.0         https://github.com/paketo-buildpacks/maven
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/native-image                      Paketo Buildpack for Native Image                      5.6.0          https://github.com/paketo-buildpacks/native-image
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/procfile                          Paketo Buildpack for Procfile                          5.5.0          https://github.com/paketo-buildpacks/procfile
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/sbt                               Paketo Buildpack for SBT                               6.9.0          https://github.com/paketo-buildpacks/sbt
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/spring-boot                       Paketo Buildpack for Spring Boot                       5.20.0         https://github.com/paketo-buildpacks/spring-boot
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/syft                              Paketo Buildpack for Syft                              1.23.0         https://github.com/paketo-buildpacks/syft
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/upx                               Paketo Buildpack for UPX                               3.3.0          https://github.com/paketo-buildpacks/upx
+</span></span><span style="display:flex;"><span>  paketo-buildpacks/watchexec                         Paketo Buildpack for Watchexec                         2.7.0          https://github.com/paketo-buildpacks/watchexec
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Detection Order:
+</span></span><span style="display:flex;"><span> ├ Group #1:
+</span></span><span style="display:flex;"><span> │  └ paketo-buildpacks/java-native-image@7.42.0
+</span></span><span style="display:flex;"><span> │     └ Group #1:
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/ca-certificates@3.5.1          (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/upx@3.3.0                      (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/bellsoft-liberica@9.10.1
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/syft@1.23.0                    (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/leiningen@4.4.0                (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/gradle@6.10.0                  (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/maven@6.11.0                   (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/sbt@6.9.0                      (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/executable-jar@6.5.0           (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/spring-boot@5.20.0             (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/native-image@5.6.0
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/procfile@5.5.0                 (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/environment-variables@4.4.0    (optional)
+</span></span><span style="display:flex;"><span> │        └ paketo-buildpacks/image-labels@4.3.0             (optional)
+</span></span><span style="display:flex;"><span> ├ Group #2:
+</span></span><span style="display:flex;"><span> │  └ paketo-buildpacks/java@8.1.0
+</span></span><span style="display:flex;"><span> │     └ Group #1:
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/ca-certificates@3.5.1               (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/bellsoft-liberica@9.10.1
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/syft@1.23.0                         (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/leiningen@4.4.0                     (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/clojure-tools@2.6.1                 (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/gradle@6.10.0                       (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/maven@6.11.0                        (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/sbt@6.9.0                           (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/watchexec@2.7.0                     (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/executable-jar@6.5.0                (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/apache-tomcat@7.9.1                 (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/apache-tomee@1.4.0                  (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/liberty@3.1.0                       (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/dist-zip@5.4.0                      (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/spring-boot@5.20.0                  (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/procfile@5.5.0                      (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/jattach@1.2.0                       (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/azure-application-insights@5.9.3    (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/google-stackdriver@7.0.0            (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/datadog@3.1.0                       (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/java-memory-assistant@1.2.0         (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/encrypt-at-rest@4.3.2               (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/environment-variables@4.4.0         (optional)
+</span></span><span style="display:flex;"><span> │        └ paketo-buildpacks/image-labels@4.3.0                  (optional)
+</span></span><span style="display:flex;"><span> ├ Group #3:
+</span></span><span style="display:flex;"><span> │  ├ paketo-buildpacks/go@4.0.0
+</span></span><span style="display:flex;"><span> │  │  └ Group #1:
+</span></span><span style="display:flex;"><span> │  │     ├ paketo-buildpacks/ca-certificates@3.5.1          (optional)
+</span></span><span style="display:flex;"><span> │  │     ├ paketo-buildpacks/watchexec@2.7.0                (optional)
+</span></span><span style="display:flex;"><span> │  │     ├ paketo-buildpacks/go-dist@2.2.2
+</span></span><span style="display:flex;"><span> │  │     ├ paketo-buildpacks/git@1.0.0                      (optional)
+</span></span><span style="display:flex;"><span> │  │     ├ paketo-buildpacks/go-mod-vendor@1.0.6
+</span></span><span style="display:flex;"><span> │  │     ├ paketo-buildpacks/go-build@2.0.7
+</span></span><span style="display:flex;"><span> │  │     ├ paketo-buildpacks/procfile@5.5.0                 (optional)
+</span></span><span style="display:flex;"><span> │  │     ├ paketo-buildpacks/environment-variables@4.4.0    (optional)
+</span></span><span style="display:flex;"><span> │  │     └ paketo-buildpacks/image-labels@4.3.0             (optional)
+</span></span><span style="display:flex;"><span> │  └ paketo-buildpacks/go@4.0.0
+</span></span><span style="display:flex;"><span> │     └ Group #2:
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/ca-certificates@3.5.1          (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/watchexec@2.7.0                (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/go-dist@2.2.2
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/git@1.0.0                      (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/go-build@2.0.7
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/procfile@5.5.0                 (optional)
+</span></span><span style="display:flex;"><span> │        ├ paketo-buildpacks/environment-variables@4.4.0    (optional)
+</span></span><span style="display:flex;"><span> │        └ paketo-buildpacks/image-labels@4.3.0             (optional)
+</span></span><span style="display:flex;"><span> └ Group #4:
+</span></span><span style="display:flex;"><span>    └ paketo-buildpacks/procfile@5.5.0
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>LOCAL:
+</span></span><span style="display:flex;"><span>(not present)
+</span></span></code></pre></div><p>Now, take a look at the <code>diff</code> between those two files:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>diff dashaun.builder.tiny.arm64 dashaun.builder.tiny.amd64
+</span></span></code></pre></div><p>As I&rsquo;m writing this, the <code>diff</code> looks like this:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>&lt; Inspecting builder: &#39;dashaun/builder:tiny&#39;
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>&gt; Inspecting builder: &#39;paketobuildpacks/builder:tiny&#39;
+</span></span><span style="display:flex;"><span>11c11
+</span></span><span style="display:flex;"><span>&lt; Trusted: No
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>&gt; Trusted: Yes
+</span></span></code></pre></div><p>When you use <code>dashaun/builder:tiny</code> on ARM64, you are getting <code>dashaun/builder:tiny</code> which is my version. If you use <code>dashaun/builder:tiny</code> on AMD64, you are actually using <code>paketobuildpacks/builder:tiny</code> from <a href="https://paketo.io"  class="external-link" target="_blank" rel="noopener">Paketo</a>.  So this is an easy way, to use my unsupported builder when you are on ARM64, and stay with the supported upstream on AMD64.</p>
+<h2 id="teamwork">
+  Teamwork
+  <a class="heading-link" href="#teamwork">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I&rsquo;ve delivered dozens of stacks, buildpacks, and builders.  It took a couple of hours of pairing with Salman Malik, to get to the nice <code>diff</code> with upstream.  I also spent a few hours on Slack with Daniel Mikusa, cleaning and troubleshooting the <code>manifest</code> creation.</p>
+<h2 id="upx">
+  UPX
+  <a class="heading-link" href="#upx">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Another big milestone from this work, is that UPX compression now works on ARM64. Well, it was working for a while, then it was broken, but now it&rsquo;s working again. When it was working before, the containers were still rather large, so you couldn&rsquo;t really see the value of the UPX compression. By taking the time to upgrade the underlying <code>stack</code> from <code>Ubuntu Focal</code> to <code>Ubuntu Jammy</code> I was also able to reduce the UPX compressed OCI image size.</p>
+<p>Check out the difference this makes for <a href="https://github.com/dashaun/dev.dashaun.service.gateway"  class="external-link" target="_blank" rel="noopener">dev.dashaun.service.gateway</a>, <a href="https://dashaun.com/posts/spring-cloud-gateway-4-0-0-rc2-native-example-with-testcontainers/"  class="external-link" target="_blank" rel="noopener">the example I worked on last week.</a></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>$ docker images | grep gateway
+</span></span><span style="display:flex;"><span>dashaun/dev.dashaun.service.gateway  0.0.4  3f91fcfc6324  42 years ago  194MB
+</span></span><span style="display:flex;"><span>dashaun/dev.dashaun.service.gateway  0.0.5  f5d179a7b5c7  42 years ago  49.7MB
+</span></span></code></pre></div><blockquote>
+<p><a href="https://hub.docker.com/r/dashaun/dev.dashaun.service.gateway"  class="external-link" target="_blank" rel="noopener">These images</a> are public on my Docker Hub.</p></blockquote>
+<h2 id="paketo-2023-roadmap-discussion">
+  Paketo 2023 Roadmap Discussion
+  <a class="heading-link" href="#paketo-2023-roadmap-discussion">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I found out yesterday, now I&rsquo;m sharing with you today, December 12, 2022. The <a href="https://github.com/orgs/paketo-buildpacks/discussions/58"  class="external-link" target="_blank" rel="noopener">discussion for the Paketo 2023 Roadmap</a> is open. I would really appreciate any support you could put toward prioritizing ARM64 in <a href="https://github.com/orgs/paketo-buildpacks/discussions/58"  class="external-link" target="_blank" rel="noopener">this</a> open discussion.</p>
+<h2 id="keep-learning">
+  Keep Learning
+  <a class="heading-link" href="#keep-learning">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><a href="https://github.com/dashaun/paketo-arm64"  class="external-link" target="_blank" rel="noopener">dashaun/paketo-arm64</a></li>
+<li><a href="https://paketo.io"  class="external-link" target="_blank" rel="noopener">Paketo</a></li>
+<li><a href="https://buildpacks.io"  class="external-link" target="_blank" rel="noopener">Cloud Native Buildpacks</a></li>
+<li><a href="https://github.com/dashaun/cobol-buildpack"  class="external-link" target="_blank" rel="noopener">Cobol Buildpack</a></li>
+</ul>
+
+      </div>
+
+
+      <footer>
+        
+
+<section class="see-also">
+  
+    
+    
+    
+  
+</section>
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Azul on DaShaun</title>
+        <link>https://dashaun.com/tags/azul/</link>
+        <description>Recent content in Azul on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Fri, 30 Jun 2023 18:51:10 -0500</lastBuildDate><atom:link href="https://dashaun.com/tags/azul/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Spring Boot Maven Plugin Azul Buildpack</title>
+            <link>https://dashaun.com/posts/spring-boot-maven-plugin-azul-buildpack/</link>
+            <pubDate>Fri, 30 Jun 2023 18:51:10 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/spring-boot-maven-plugin-azul-buildpack/</guid>
+            <description>&lt;h1 id=&#34;spring-boot-maven-plugin-using-the-azul-buildpack-from-paketo&#34;&gt;
+  Spring Boot Maven Plugin using the Azul Buildpack from Paketo
+  &lt;a class=&#34;heading-link&#34; href=&#34;#spring-boot-maven-plugin-using-the-azul-buildpack-from-paketo&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;It&amp;rsquo;s a great day to be a Spring Developer. This morning, my good friend Frank Delporte from Azul reached out with some questions about the Spring Boot Maven Plugin and the use of Azul Zulu JDK. It felt like a great opportunity to help out an amazing member of the community. At the end of the day, I spent some time creating a demo to help him out. I thought it would be a good idea to share it with you all as well.&lt;/p&gt;
+&lt;h2 id=&#34;initializr-plusplus&#34;&gt;
+  Initializr-plusplus
+  &lt;a class=&#34;heading-link&#34; href=&#34;#initializr-plusplus&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I do believe this is a great candidate for the &lt;a href=&#34;https://github.com/spring-projects-experimental/spring-cli&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring-CLI&lt;/a&gt; project, but for now, I have &lt;a href=&#34;https://github.com/dashaun/initializr-plusplus&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Initializr-plusplus&lt;/a&gt; a much simpler Spring Shell project that I use personally. Since I already had an option for using my &lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;multi-architecture buildpack&lt;/a&gt; it was a simple matter of copying and pasting with a couple of small edits.  The resulting &lt;code&gt;initializer-plusplus zulu-builder&lt;/code&gt; command is available in &lt;a href=&#34;https://github.com/dashaun/initializr-plusplus/releases/tag/v0.0.34&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;v0.0.34&lt;/a&gt; of the project.&lt;/p&gt;
+&lt;h2 id=&#34;the-questions&#34;&gt;
+  The Questions
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-questions&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;How to switch from default &lt;code&gt;paketobuildpacks/builder&lt;/code&gt; to &lt;code&gt;paketobuildpacks/azul-zulu&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;How to add options to the JVM command line like &lt;code&gt;-Xlog:gc:gc.log&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Can it be done &lt;code&gt;simply&lt;/code&gt;?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;the-demo&#34;&gt;
+  The Demo
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-demo&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I can&amp;rsquo;t think of an easier way to switch between buildpacks than using the &lt;code&gt;initializer-plusplus&lt;/code&gt; project. Creating a Spring Shell CLI to manage Maven &lt;code&gt;pom&lt;/code&gt; files or other project features, consistently, feels like a cheat code.&lt;/p&gt;
+&lt;p&gt;In the demo, I switch to the Azul Zulu JDK for the entire demo, even though it isn&amp;rsquo;t required, because the JDK is included in the buildpack. I tried to make things pretty and showed the &lt;code&gt;java -version&lt;/code&gt; output before creating the Spring Boot project.&lt;/p&gt;
+&lt;p&gt;I used &lt;code&gt;curl&lt;/code&gt; to create the Spring Boot project and added dependencies for &lt;code&gt;web&lt;/code&gt; and &lt;code&gt;actuator&lt;/code&gt; in order to get a simple project that is easy to test.  Of course, I also select Java 17 as the JDK version.&lt;/p&gt;
+&lt;p&gt;I run the &lt;code&gt;git init&lt;/code&gt; command to initialize a new git repository. With that, I can easily show the import &lt;code&gt;diff&lt;/code&gt; that I&amp;rsquo;m generating with the &lt;code&gt;initializer-plusplus zulu-builder&lt;/code&gt; command.  I show the new section of the &lt;code&gt;pom.xml&lt;/code&gt; and move on to creating the image with the Spring Boot Maven Plugin.&lt;/p&gt;
+&lt;h2 id=&#34;building-the-image&#34;&gt;
+  Building the Image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#building-the-image&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Our mission is accomplished once the Zulu build pack is incorporated. As long as we put the &lt;code&gt;Azul Zulu&lt;/code&gt; buildpack in front of the Java buildpack, we will get the &lt;code&gt;Azul Zulu&lt;/code&gt; buildpack instead of the default &lt;code&gt;Liberica&lt;/code&gt; version. The image is built successfully, and we pull in all other stuff from the Java build pack.&lt;/p&gt;
+&lt;h2 id=&#34;running-and-validating-the-image&#34;&gt;
+  Running and Validating the Image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#running-and-validating-the-image&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The demo image is run after assigning a unique name to it and exposing Port 8080. I verify the image&amp;rsquo;s status and validate the endpoint&amp;rsquo;s health. A thorough check inside the image confirms the inclusion of the &amp;lsquo;GC log&amp;rsquo; command, one of the options chosen for the demo.&lt;/p&gt;
+&lt;h2 id=&#34;wrapping-up-the-demo&#34;&gt;
+  Wrapping Up the Demo
+  &lt;a class=&#34;heading-link&#34; href=&#34;#wrapping-up-the-demo&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The entire process concludes with a peek into the GC log. And voila! We&amp;rsquo;ve accomplished our mission. The entire process was wrapped up in less than 5 minutes, and all the steps were integrated into a repository for you to experiment and tweak as you please.&lt;/p&gt;
+&lt;h2 id=&#34;afterthoughts-and-tips&#34;&gt;
+  Afterthoughts and Tips
+  &lt;a class=&#34;heading-link&#34; href=&#34;#afterthoughts-and-tips&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;An important concept I wish to emphasize is the flexibility in switching between the buildpacks. It&amp;rsquo;s essential to acknowledge that not all tasks need to follow the same path to production. It is prudent to evaluate as different workloads may have varying requirements, and different JVMs might perform better or worse.&lt;/p&gt;
+&lt;p&gt;So, don&amp;rsquo;t hesitate to put in those 5 minutes to conduct an experiment. Validate your assumptions by testing if an application benefits from using a different JVM or a different garbage collection method. After all, we&amp;rsquo;re dealing with applications that could potentially go into production hundreds or even thousands of times.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/live/6FfP3v40il8&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Watch the demo on YouTube&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/spring-boot-maven-plugin-azul-buildpack-example&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The demo repository&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

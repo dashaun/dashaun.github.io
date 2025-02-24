@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Series on DaShaun</title>
+        <link>https://dashaun.com/series/</link>
+        <description>Recent content in Series on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Sat, 25 Jan 2025 10:18:26 -0600</lastBuildDate><atom:link href="https://dashaun.com/series/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Spring Boot to Production</title>
+            <link>https://dashaun.com/series/spring-boot-to-production/</link>
+            <pubDate>Sat, 25 Jan 2025 10:18:26 -0600</pubDate>
+            
+            <guid>https://dashaun.com/series/spring-boot-to-production/</guid>
+            <description></description>
+        </item>
+        
+        <item>
+            <title>Java Native Builder Multiarch</title>
+            <link>https://dashaun.com/series/java-native-builder-multiarch/</link>
+            <pubDate>Thu, 12 Dec 2024 10:15:30 -0600</pubDate>
+            
+            <guid>https://dashaun.com/series/java-native-builder-multiarch/</guid>
+            <description></description>
+        </item>
+        
+        <item>
+            <title>Spring Boot 3 Native</title>
+            <link>https://dashaun.com/series/spring-boot-3-native/</link>
+            <pubDate>Thu, 12 Dec 2024 10:15:30 -0600</pubDate>
+            
+            <guid>https://dashaun.com/series/spring-boot-3-native/</guid>
+            <description></description>
+        </item>
+        
+        <item>
+            <title>Knative Raspberry Pi</title>
+            <link>https://dashaun.com/series/knative-raspberry-pi/</link>
+            <pubDate>Sat, 03 Dec 2022 10:26:52 -0600</pubDate>
+            
+            <guid>https://dashaun.com/series/knative-raspberry-pi/</guid>
+            <description></description>
+        </item>
+        
+        <item>
+            <title>Spring Boot 2.6 on Raspberry Pi</title>
+            <link>https://dashaun.com/series/spring-boot-2.6-on-raspberry-pi/</link>
+            <pubDate>Mon, 18 Apr 2022 10:41:31 -0500</pubDate>
+            
+            <guid>https://dashaun.com/series/spring-boot-2.6-on-raspberry-pi/</guid>
+            <description></description>
+        </item>
+        
+    </channel>
+</rss>

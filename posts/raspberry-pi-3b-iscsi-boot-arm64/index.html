@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Raspberry Pi 3B&#43; ISCSI boot with RaspiOS ARM64 · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="
+  Raspberry Pi 3B&#43; diskless boot via ISCSI
+  
+    
+    Link to heading
+  
+
+Raspios 64-bit recently went GA and I recently found new joy in my Raspberry Pi 3B&#43; and Raspberry Pi Zero 2 W devices.
+Now feels like a great time to revisit diskless booting.
+This is what I&rsquo;m using:
+
+UniFi for DHCP
+QNAP NAS for TFTP and ISCSI
+Raspberry Pi 3B&#43;
+
+
+  Install RaspiOS 64-bit
+  
+    
+    Link to heading
+  
+
+Use rpi-imager">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://dashaun.com/images/avatar.png">
+  <meta name="twitter:title" content="Raspberry Pi 3B&#43; ISCSI boot with RaspiOS ARM64">
+  <meta name="twitter:description" content="Raspberry Pi 3B&#43; diskless boot via ISCSI Link to heading Raspios 64-bit recently went GA and I recently found new joy in my Raspberry Pi 3B&#43; and Raspberry Pi Zero 2 W devices.
+Now feels like a great time to revisit diskless booting.
+This is what I’m using:
+UniFi for DHCP QNAP NAS for TFTP and ISCSI Raspberry Pi 3B&#43; Install RaspiOS 64-bit Link to heading Use rpi-imager">
+
+<meta property="og:url" content="https://dashaun.com/posts/raspberry-pi-3b-iscsi-boot-arm64/">
+  <meta property="og:site_name" content="DaShaun">
+  <meta property="og:title" content="Raspberry Pi 3B&#43; ISCSI boot with RaspiOS ARM64">
+  <meta property="og:description" content="Raspberry Pi 3B&#43; diskless boot via ISCSI Link to heading Raspios 64-bit recently went GA and I recently found new joy in my Raspberry Pi 3B&#43; and Raspberry Pi Zero 2 W devices.
+Now feels like a great time to revisit diskless booting.
+This is what I’m using:
+UniFi for DHCP QNAP NAS for TFTP and ISCSI Raspberry Pi 3B&#43; Install RaspiOS 64-bit Link to heading Use rpi-imager">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-02-11T14:32:36-06:00">
+    <meta property="article:modified_time" content="2025-02-24T16:16:50-06:00">
+    <meta property="og:image" content="https://dashaun.com/images/avatar.png">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/raspberry-pi-3b-iscsi-boot-arm64/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Follow me on Twitch</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/raspberry-pi-3b-iscsi-boot-arm64/">
+              Raspberry Pi 3B&#43; ISCSI boot with RaspiOS ARM64
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2022-02-11T14:32:36-06:00'>
+                February 11, 2022
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2022-02-11T14:32:36-06:00'>
+                February 24, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              9-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+        <h1 id="raspberry-pi-3b-diskless-boot-via-iscsi">
+  Raspberry Pi 3B+ diskless boot via ISCSI
+  <a class="heading-link" href="#raspberry-pi-3b-diskless-boot-via-iscsi">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<p>Raspios 64-bit recently went <a href="https://www.raspberrypi.com/news/raspberry-pi-os-64-bit/"  class="external-link" target="_blank" rel="noopener">GA</a> and I recently found <a href="https://dashaun.com/posts/springboot-2-6-2-rpi-zero-2-w-native/" >new joy</a> in my Raspberry Pi 3B+ and Raspberry Pi Zero 2 W devices.</p>
+<p>Now feels like a great time to revisit diskless booting.</p>
+<p>This is what I&rsquo;m using:</p>
+<ul>
+<li>UniFi for DHCP</li>
+<li>QNAP NAS for TFTP and ISCSI</li>
+<li>Raspberry Pi 3B+</li>
+</ul>
+<h3 id="install-raspios-64-bit">
+  Install RaspiOS 64-bit
+  <a class="heading-link" href="#install-raspios-64-bit">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Use <code>rpi-imager</code></p>
+<h3 id="enable-usb-boot-mode">
+  Enable USB Boot Mode
+  <a class="heading-link" href="#enable-usb-boot-mode">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>The devices that I have are 4-6 years old.  I&rsquo;m not sure if new ones will have this set already or not.</p>
+<p>Run this command, the &ldquo;OTP dump&rdquo;, to see if usb_boot_mode is enabled:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>vcgencmd otp_dump | grep 17:
+</span></span></code></pre></div><p>This is what my OTP dump looked like before usb_boot_mode enabled.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>17:1020000a
+</span></span></code></pre></div><p>If the output looks like this, get the latest firmware:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>sudo rpi-update
+</span></span></code></pre></div><p>I was a little nervous about the <code>rpi-update</code>, but I&rsquo;m also following my own notes.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-gdscript3" data-lang="gdscript3"><span style="display:flex;"><span> <span style="color:#666">***</span> Raspberry Pi firmware updater by Hexxeh, enhanced by AndrewS <span style="color:#007020;font-weight:bold">and</span> Dom
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> Performing self<span style="color:#666">-</span>update
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> Relaunching after update
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> Raspberry Pi firmware updater by Hexxeh, enhanced by AndrewS <span style="color:#007020;font-weight:bold">and</span> Dom
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> We<span style="color:#4070a0">&#39;re running for the first time</span>
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> Backing up files (this will take a few minutes)
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> Backing up firmware
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> Backing up modules <span style="color:#40a070">5.10</span><span style="color:#666">.</span><span style="color:#40a070">63</span><span style="color:#666">-</span>v8<span style="color:#666">+</span>
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">#############################################################</span>
+</span></span><span style="display:flex;"><span>WARNING: This update bumps to rpi<span style="color:#666">-</span><span style="color:#40a070">5.15</span><span style="color:#666">.</span>y linux tree
+</span></span><span style="display:flex;"><span>See: https:<span style="color:#666">//</span>forums<span style="color:#666">.</span>raspberrypi<span style="color:#666">.</span>com<span style="color:#666">/</span>viewtopic<span style="color:#666">.</span>php<span style="">?</span>t<span style="color:#666">=</span><span style="color:#40a070">322879</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#4070a0">&#39;rpi-update&#39;</span> should only be used <span style="color:#007020;font-weight:bold">if</span> there is a specific
+</span></span><span style="display:flex;"><span>reason to <span style="color:#007020;font-weight:bold">do</span> so <span style="color:#666">-</span> <span style="color:#007020;font-weight:bold">for</span> example, a request by a Raspberry Pi
+</span></span><span style="display:flex;"><span>engineer <span style="color:#007020;font-weight:bold">or</span> <span style="color:#007020;font-weight:bold">if</span> you want to help the testing effort
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">and</span> are comfortable with restoring <span style="color:#007020;font-weight:bold">if</span> there are regressions<span style="color:#666">.</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>DO NOT use <span style="color:#4070a0">&#39;rpi-update&#39;</span> as part of a regular update process<span style="color:#666">.</span>
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">##############################################################</span>
+</span></span><span style="display:flex;"><span>Would you like to proceed<span style="">?</span> (y<span style="color:#666">/</span>N)
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> Downloading specific firmware revision (this will take a few minutes)
+</span></span><span style="display:flex;"><span>  <span style="color:#666">%</span> Total    <span style="color:#666">%</span> Received <span style="color:#666">%</span> Xferd  Average Speed   Time    Time     Time  Current
+</span></span><span style="display:flex;"><span>                                 Dload  Upload   Total   Spent    Left  Speed
+</span></span><span style="display:flex;"><span><span style="color:#40a070">100</span>   <span style="color:#40a070">173</span>  <span style="color:#40a070">100</span>   <span style="color:#40a070">173</span>    <span style="color:#40a070">0</span>     <span style="color:#40a070">0</span>    <span style="color:#40a070">678</span>      <span style="color:#40a070">0</span> <span style="color:#666">--</span>:<span style="color:#666">--</span>:<span style="color:#666">--</span> <span style="color:#666">--</span>:<span style="color:#666">--</span>:<span style="color:#666">--</span> <span style="color:#666">--</span>:<span style="color:#666">--</span>:<span style="color:#666">--</span>   <span style="color:#40a070">678</span>
+</span></span><span style="display:flex;"><span><span style="color:#40a070">100</span>  <span style="color:#40a070">123</span>M    <span style="color:#40a070">0</span>  <span style="color:#40a070">123</span>M    <span style="color:#40a070">0</span>     <span style="color:#40a070">0</span>  <span style="color:#40a070">4052</span>k      <span style="color:#40a070">0</span> <span style="color:#666">--</span>:<span style="color:#666">--</span>:<span style="color:#666">--</span>  <span style="color:#40a070">0</span>:<span style="color:#40a070">00</span>:<span style="color:#40a070">31</span> <span style="color:#666">--</span>:<span style="color:#666">--</span>:<span style="color:#666">--</span> <span style="color:#40a070">3014</span>k
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> Updating firmware
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> Updating kernel modules
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> depmod <span style="color:#40a070">5.15</span><span style="color:#666">.</span><span style="color:#40a070">21</span><span style="color:#666">-</span>v8<span style="color:#666">+</span>
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> depmod <span style="color:#40a070">5.15</span><span style="color:#666">.</span><span style="color:#40a070">21</span><span style="color:#666">-</span>v7<span style="color:#666">+</span>
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> depmod <span style="color:#40a070">5.15</span><span style="color:#666">.</span><span style="color:#40a070">21</span><span style="color:#666">-</span>v7l<span style="color:#666">+</span>
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> depmod <span style="color:#40a070">5.15</span><span style="color:#666">.</span><span style="color:#40a070">21</span><span style="color:#666">+</span>
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> Updating VideoCore libraries
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> Using SoftFP libraries
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> Updating SDK
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> Running ldconfig
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> Storing current firmware revision
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> Deleting downloaded files
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> Syncing changes to disk
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> If no errors appeared, your firmware was successfully updated to fbcab73d5a20f592aa9f6b0e364757ef131dae27
+</span></span><span style="display:flex;"><span> <span style="color:#666">***</span> A reboot is needed to activate the new firmware
+</span></span></code></pre></div><p>After rebooting from the <code>rpi-update</code> we still need to enable usb_boot_mode, just needed the latest firmware to do so.</p>
+<p>Add this line to <code>/boot/config.txt</code> it doesn&rsquo;t matter where, but needs its own line.  I put it at the top.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>program_usb_boot_mode=1
+</span></span></code></pre></div><p>Then reboot the device again.  Now the OTP dump should look like this:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>17:3020000a
+</span></span></code></pre></div><p>Now that the OTP dump is set, it is safe to remove the <code>program_usb_boot_mode=1</code> line from <code>/boot/config.txt</code> file.  There is no need to reboot, but if you remove the line, and reboot, you will see that the OTP dump still shows usb_boot_mode enabled.</p>
+<h3 id="enable-iscsi-module-with-initramfs-tool">
+  Enable ISCSI module with initramfs tool
+  <a class="heading-link" href="#enable-iscsi-module-with-initramfs-tool">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>These are the steps I took:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># Update repositories
+</span></span><span style="display:flex;"><span>sudo apt update
+</span></span><span style="display:flex;"><span># Install available upgrades
+</span></span><span style="display:flex;"><span>sudo apt upgrade -y
+</span></span><span style="display:flex;"><span># Install open-iscsi
+</span></span><span style="display:flex;"><span>sudo apt install open-iscsi
+</span></span><span style="display:flex;"><span># Start open-iscsi to create the configs that we wil use later
+</span></span><span style="display:flex;"><span>sudo systemctl start open-iscsi
+</span></span><span style="display:flex;"><span># Create initramfs flag file for the iscsi module
+</span></span><span style="display:flex;"><span>sudo touch /etc/iscsi/iscsi.initramfs
+</span></span><span style="display:flex;"><span># Create a new initramfs image that includes the iscsi module from the current kernel
+</span></span><span style="display:flex;"><span>sudo update-initramfs -v -k `uname -r` -c
+</span></span></code></pre></div><p>You should now have a <code>initrd.img</code> in your <code>/boot</code> directory.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>ls -latr /boot/initrd.img*
+</span></span></code></pre></div><p>The output should look like this:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>-rwxr-xr-x 1 root root 10487750 Feb 11 10:59 /boot/initrd.img-5.15.21-v8+
+</span></span></code></pre></div><p>We will refer to this new <code>initrd.img</code> file later!</p>
+<h3 id="add-tftp-options-to-dhcp-server">
+  Add TFTP options to DHCP server
+  <a class="heading-link" href="#add-tftp-options-to-dhcp-server">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>At this point, the bootloader on our device will accept a network boot, similar to PXE, but not exactly the same.</p>
+<p>Setup your DHCP server to point to your TFTP server.  The DHCP protocol has <code>Option 66</code> for TFTP Server.  Basically, you want to tell your DHCP client (the Raspberry Pi 3B+) which server to connect to next, to get further instructions.</p>
+<h3 id="setup-tftp-server">
+  Setup TFTP Server
+  <a class="heading-link" href="#setup-tftp-server">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>The network boot process for the Raspberry Pi 3B+ is PXE-like.  So it requires a slightly custom setup.  It requires the serial number of the device, to be known in advance.</p>
+<p>Grab the serial number of the device:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>grep Serial /proc/cpuinfo
+</span></span></code></pre></div><p>In my case it looks like this:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Serial		: 000000002edd5668
+</span></span></code></pre></div><p>On the TFTP server, create a directory for the device.  In the case of my QNAP server, the TFTP root is at <code>/share/tftp</code> but I&rsquo;ll use the variable <code>TFTP_ROOT</code>.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-gdscript3" data-lang="gdscript3"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Set the implementation specific TFTP_ROOT</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">export</span> TFTP_ROOT<span style="color:#666">=/</span>share<span style="color:#666">/</span>tftp
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Create directory using the device serial number, without leading 0s</span>
+</span></span><span style="display:flex;"><span>sudo mkdir <span style="color:#666">$</span>TFTP_ROOT<span style="color:#666">/</span><span style="color:#40a070">2</span>edd5668
+</span></span></code></pre></div><p>Now, from the TFTP server, copy over the <code>/boot</code> partition that includes our new kernel.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>sudo scp -r pi@2edd5668:/boot/* $TFTP_ROOT/2edd5668/
+</span></span></code></pre></div><p>If you want to check your work, the directory should look something like this:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>COPYING.linux*            bcm2708-rpi-cm.dtb*       bcm2710-rpi-3-b-plus.dtb* bcm2711-rpi-4-b.dtb*      cmdline.txt*              fixup4db.dat*             initrd.img-5.15.21-v8+*   kernel8.img*              start4db.elf*
+</span></span><span style="display:flex;"><span>LICENCE.broadcom*         bcm2708-rpi-zero-w.dtb*   bcm2710-rpi-3-b.dtb*      bcm2711-rpi-400.dtb*      config.txt*               fixup4x.dat*              issue.txt*                overlays/                 start4x.elf*
+</span></span><span style="display:flex;"><span>bcm2708-rpi-b-plus.dtb*   bcm2708-rpi-zero.dtb*     bcm2710-rpi-cm3.dtb*      bcm2711-rpi-cm4.dtb*      fixup.dat*                fixup_cd.dat*             kernel.img*               start.elf*                start_cd.elf*
+</span></span><span style="display:flex;"><span>bcm2708-rpi-b-rev1.dtb*   bcm2709-rpi-2-b.dtb*      bcm2710-rpi-zero-2-w.dtb* bcm2711-rpi-cm4s.dtb*     fixup4.dat*               fixup_db.dat*             kernel7.img*              start4.elf*               start_db.elf*
+</span></span><span style="display:flex;"><span>bcm2708-rpi-b.dtb*        bcm2710-rpi-2-b.dtb*      bcm2710-rpi-zero-2.dtb*   bootcode.bin*             fixup4cd.dat*             fixup_x.dat*              kernel7l.img*             start4cd.elf*             start_x.elf*
+</span></span></code></pre></div><p>Now, because this is PXE-like, we need to copy the <code>bootcode.bin</code> to the <code>TFTP_ROOT</code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>sudo cp $TFTP_ROOT/2edd5668/bootcode.bin $TFTP_ROOT/
+</span></span></code></pre></div><p>At this point, without an SD Card installed, the Raspberry Pi 3B+ will:</p>
+<ul>
+<li>Ask the DHCP server for an IP address</li>
+<li>Our DHCP server will provide an IP address AND tell the device to visit the TFTP server for more info</li>
+<li>Our device will ask the TFTP server for $TFTP_ROOT/bootcode.bin</li>
+<li>Our device will try to boot from $TFTP_ROOT/2edd5668/</li>
+</ul>
+<p>At this point though, our <code>$TFTP_ROOT/2edd5668/</code> exactly matches what is on the SD Card in our device. We need to tell the device to use our new ISCSI enabled kernel.</p>
+<p>I added the following line to the bottom of <code>$TFTP_ROOT/2edd5668/config.txt</code>, but you should use your specific <code>initrd.img</code> version.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>initramfs initrd.img-5.15.21-v8+ followkernel
+</span></span></code></pre></div><h3 id="create-iscsi-lun-for-the-device">
+  Create ISCSI LUN for the device
+  <a class="heading-link" href="#create-iscsi-lun-for-the-device">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>For simplicity, I&rsquo;m creating a 32GB LUN, with &ldquo;thick&rdquo; provisioning on my NAS, and mapping that to an ISCSI Target.  I also used the serial number in the naming of the LUN and ISCI target.</p>
+<p>To verify that your new ISCSI LUN is accessible we will connect to it from the Raspberry Pi 3B+.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-gdscript3" data-lang="gdscript3"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># set the IP address of the ISCSI server</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">export</span> ISCSI_IP<span style="color:#666">=</span><span style="color:#40a070">192.168</span><span style="color:#666">.</span><span style="color:#40a070">1.248</span>
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># </span>
+</span></span><span style="display:flex;"><span>sudo iscsiadm <span style="color:#666">-</span>m discovery <span style="color:#666">-</span>t sendtargets <span style="color:#666">-</span>p <span style="color:#666">$</span>ISCSI_IP <span style="color:#666">|</span> grep <span style="color:#40a070">2</span>edd5668
+</span></span></code></pre></div><p>The output should contain the new ISCSI target.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>192.168.1.248:3260,1 iqn.2004-04.com.qnap:ts-231p:iscsi.2edd5668.21250c
+</span></span></code></pre></div><p>From above the TARGET_IQN is <code>iqn.2004-04.com.qnap:ts-231p:iscsi.2edd5668.21250c</code> and I create an enviroment varialbe to store it.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-gdscript3" data-lang="gdscript3"><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">export</span> TARGET_IQN<span style="color:#666">=</span>iqn<span style="color:#666">.</span><span style="color:#40a070">2004</span><span style="color:#666">-</span><span style="color:#40a070">04.</span>com<span style="color:#666">.</span>qnap:ts<span style="color:#666">-</span><span style="color:#40a070">231</span>p:iscsi<span style="color:#666">.</span><span style="color:#40a070">2</span>edd5668<span style="color:#666">.</span><span style="color:#40a070">21250</span>c
+</span></span></code></pre></div><h3 id="mount-the-iscsi-lun-to-the-raspberry-pi">
+  Mount the ISCSI LUN to the Raspberry Pi
+  <a class="heading-link" href="#mount-the-iscsi-lun-to-the-raspberry-pi">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Login to the ISCSI LUN, this example is not using CHAP authentication.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>sudo iscsiadm -m node -l -T $TARGET_IQN -p $ISCSI_IP
+</span></span></code></pre></div><p>Success should look similar to this:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Logging in to [iface: default, target: iqn.2004-04.com.qnap:ts-231p:iscsi.2edd5668.21250c, portal: 192.168.1.248,3260]
+</span></span><span style="display:flex;"><span>Login to [iface: default, target: iqn.2004-04.com.qnap:ts-231p:iscsi.2edd5668.21250c, portal: 192.168.1.248,3260] successful.
+</span></span></code></pre></div><p>I validate the new ISCSI connection using <code>sudo fdisk -l</code> from the Raspberry Pi 3B+ and look for something like this, showing the 32GB LUN attached via ISCSI</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>Disk /dev/sda: 32 GiB, 34359738368 bytes, 67108864 sectors
+</span></span><span style="display:flex;"><span>Disk model: iSCSI Storage   
+</span></span><span style="display:flex;"><span>Units: sectors of 1 * 512: 512 bytes
+</span></span><span style="display:flex;"><span>Sector size (logical/physical): 512 bytes / 512 bytes
+</span></span><span style="display:flex;"><span>I/O size (minimum/optimal): 1048576 bytes / 1048576 bytes
+</span></span></code></pre></div><p>The LUN is showing up as <code>/dev/sda</code> in this case.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># Format the LUN attached as /dev/sda to ext4
+</span></span><span style="display:flex;"><span>sudo mkfs.ext4 /dev/sda
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>mke2fs 1.46.2 (28-Feb-2021)
+</span></span><span style="display:flex;"><span>Creating filesystem with 8388608 4k blocks and 2097152 inodes
+</span></span><span style="display:flex;"><span>Filesystem UUID: f581fa52-f7ea-4c87-91cc-e236d64f63a6
+</span></span><span style="display:flex;"><span>Superblock backups stored on blocks: 
+</span></span><span style="display:flex;"><span>	32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208, 
+</span></span><span style="display:flex;"><span>	4096000, 7962624
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Allocating group tables: done                            
+</span></span><span style="display:flex;"><span>Writing inode tables: done                            
+</span></span><span style="display:flex;"><span>Creating journal (65536 blocks): done
+</span></span><span style="display:flex;"><span>Writing superblocks and filesystem accounting information: done
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># Get the UUID of the LUN
+</span></span><span style="display:flex;"><span>sudo blkid /dev/sda
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>/dev/sda: UUID=&#34;f581fa52-f7ea-4c87-91cc-e236d64f63a6&#34; BLOCK_SIZE=&#34;4096&#34; TYPE=&#34;ext4&#34;
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># Mount the new disk
+</span></span><span style="display:flex;"><span>sudo mount /dev/sda /mnt
+</span></span></code></pre></div><h3 id="copy-the-existing-installation-to-the-mounted-lun">
+  Copy the existing installation to the mounted LUN
+  <a class="heading-link" href="#copy-the-existing-installation-to-the-mounted-lun">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>This step takes some time.  We are copying all of the files from the <code>/</code> partition of the SD card on the Raspberry Pi 3B+ to the network attached LUN.  We are excluding the directories that are mounted during boot.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># Copy / partition to /mnt
+</span></span><span style="display:flex;"><span>sudo rsync -avhP --exclude /boot --exclude /proc --exclude /sys --exclude /dev --exclude /mnt / /mnt/
+</span></span><span style="display:flex;"><span># Create directories that are mounted during boot
+</span></span><span style="display:flex;"><span>sudo mkdir /mnt/{dev,proc,sys,boot,mnt}
+</span></span></code></pre></div><h3 id="remove-sd-card-details-from-etcfstab">
+  Remove SD Card details from /etc/fstab
+  <a class="heading-link" href="#remove-sd-card-details-from-etcfstab">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>cat /mnt/etc/fstab
+</span></span></code></pre></div><p>Before:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>proc            /proc           proc    defaults          0       0
+</span></span><span style="display:flex;"><span>PARTUUID=9633a3a2-01  /boot           vfat    defaults          0       2
+</span></span><span style="display:flex;"><span>PARTUUID=9633a3a2-02  /               ext4    defaults,noatime  0       1
+</span></span><span style="display:flex;"><span># a swapfile is not a swap partition, no line here
+</span></span><span style="display:flex;"><span>#   use  dphys-swapfile swap[on|off]  for that
+</span></span></code></pre></div><p>Remove the lines containing <code>PARTUUID</code> which are referring to the SDCard.</p>
+<p>After:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>proc            /proc           proc    defaults          0       0
+</span></span><span style="display:flex;"><span># a swapfile is not a swap partition, no line here
+</span></span><span style="display:flex;"><span>#   use  dphys-swapfile swap[on|off]  for that
+</span></span></code></pre></div><h3 id="update-the-kernel-configs-on-tftp-server">
+  Update the kernel configs on TFTP server
+  <a class="heading-link" href="#update-the-kernel-configs-on-tftp-server">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Now that we have updated our filesystem.  We need to revisit kernel that is getting loaded over the network.  We need to tell it how to mount the <code>/</code> filesystem via ISCSI.</p>
+<p>The ISCSI Initiator, which identifies the Raspberry Pi 3B+ device, can be found at <code>/etc/iscsi/initiatorname.iscsi</code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>sudo cat /etc/iscsi/initiatorname.iscsi
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>## DO NOT EDIT OR REMOVE THIS FILE!
+</span></span><span style="display:flex;"><span>## If you remove this file, the iSCSI daemon will not start.
+</span></span><span style="display:flex;"><span>## If you change the InitiatorName, existing access control lists
+</span></span><span style="display:flex;"><span>## may reject this initiator.  The InitiatorName must be unique
+</span></span><span style="display:flex;"><span>## for each iSCSI initiator.  Do NOT duplicate iSCSI InitiatorNames.
+</span></span><span style="display:flex;"><span>InitiatorName=iqn.1993-08.org.debian:01:2ccb20a316
+</span></span></code></pre></div><p>On the TFTP server, I&rsquo;m modifying the <code>$TFTP_ROOT/2edd5668/cmdline.txt</code> file.</p>
+<p>I&rsquo;m adding/updating these details for mounting the ISCSI drive:</p>
+<ul>
+<li>ip=::::2edd5668:eth0:dhcp
+<ul>
+<li>hostname of the device</li>
+</ul>
+</li>
+<li>root=UUID=f581fa52-f7ea-4c87-91cc-e236d64f63a6
+<ul>
+<li>From the blkid command against the LUN</li>
+</ul>
+</li>
+<li>ISCSI_INITIATOR=iqn.1993-08.org.debian:01:2ccb20a316</li>
+<li>ISCSI_TARGET_NAME=iqn.2004-04.com.qnap:ts-231p:iscsi.2edd5668.21250c</li>
+<li>ISCSI_TARGET_IP=192.168.1.248</li>
+<li>ISCSI_TARGET_PORT=3260</li>
+<li>rw</li>
+</ul>
+<p>Before:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>console=serial0,115200 console=tty1 root=PARTUUID=9633a3a2-02 rootfstype=ext4 fsck.repair=yes rootwait cgroup_enable=cpuset cgroup_enable=memory cgroup_enable=pids cgroup_memory=1 systemd.unified_cgroup_hierarchy=0
+</span></span></code></pre></div><p>After:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>console=serial0,115200 console=tty1 root=PARTUUID=9633a3a2-02 rootfstype=ext4 fsck.repair=yes rootwait cgroup_enable=cpuset cgroup_enable=memory cgroup_enable=pids cgroup_memory=1 systemd.unified_cgroup_hierarchy=0 ISCSI_INITIATOR=iqn.1993-08.org.debian:01:2ccb20a316 ISCSI_TARGET_NAME=iqn.2004-04.com.qnap:ts-231p:iscsi.2edd5668.21250c ISCSI_TARGET_IP=192.168.1.248 ISCSI_TARGET_PORT=3260 rw
+</span></span></code></pre></div><blockquote>
+<p>This all needs to be on a single line.</p></blockquote>
+<h3 id="ready-to-reboot">
+  Ready to reboot!
+  <a class="heading-link" href="#ready-to-reboot">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>From the Raspberry Pi 3B+ device:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span># Unmount the drive
+</span></span><span style="display:flex;"><span>sudo umount /mnt
+</span></span><span style="display:flex;"><span># Disconnect from ISCSI
+</span></span><span style="display:flex;"><span>sudo iscsiadm -m node --logout all
+</span></span><span style="display:flex;"><span># Shutdown
+</span></span><span style="display:flex;"><span>sudo shutdown now
+</span></span></code></pre></div><p>Remove the SD card and restart the device!</p>
+<h3 id="summary">
+  Summary
+  <a class="heading-link" href="#summary">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>If you were paying close attention, you may have notice that the <code>cmdline.txt</code> also had some non-default settings in it.  Those are there to allow <code>k3s</code> to run as well.</p>
+<p>This article is very specific to the Raspberry Pi 3B+ and using ISCSI.  Look for a follow-up example using the Raspberry Pi 4.</p>
+<p>Soon, I&rsquo;ll document a diskless-pipeline for setting up Raspberry Pi 3B+ and Raspberry Pi 4, that includes using <code>arkade</code> and <code>k3sup</code> to configure the kubernetes abstraction layer across all of these homelab devices.</p>
+<h3 id="acknowledgements-and-references">
+  Acknowledgements and References
+  <a class="heading-link" href="#acknowledgements-and-references">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li><a href="https://www.raspberrypi.com/documentation/computers/config_txt.html#boot-options"  class="external-link" target="_blank" rel="noopener">https://www.raspberrypi.com/documentation/computers/config_txt.html#boot-options</a></li>
+<li><a href="https://stuff.drkn.ninja/post/2016/11/08/Net-boot-%28PXE-iSCSI%29-with-a-RaspberryPi-3"  class="external-link" target="_blank" rel="noopener">https://stuff.drkn.ninja/post/2016/11/08/Net-boot-%28PXE-iSCSI%29-with-a-RaspberryPi-3</a></li>
+</ul>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

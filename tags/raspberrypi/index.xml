@@ -1,0 +1,861 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Raspberrypi on DaShaun</title>
+        <link>https://dashaun.com/tags/raspberrypi/</link>
+        <description>Recent content in Raspberrypi on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Sat, 03 Dec 2022 10:26:52 -0600</lastBuildDate><atom:link href="https://dashaun.com/tags/raspberrypi/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>K3s Knative Ubuntu Raspberry Pi</title>
+            <link>https://dashaun.com/posts/k3s-knative-ubuntu-raspberry-pi/</link>
+            <pubDate>Sat, 03 Dec 2022 10:26:52 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/k3s-knative-ubuntu-raspberry-pi/</guid>
+            <description>&lt;h1 id=&#34;k3s-knative-ubuntu-raspberry-pi&#34;&gt;
+  K3s Knative Ubuntu Raspberry Pi
+  &lt;a class=&#34;heading-link&#34; href=&#34;#k3s-knative-ubuntu-raspberry-pi&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;Knative is a super exciting solution for serverless and event driven applications.
+Personally, I have been using it as a part of my &lt;code&gt;inner loop&lt;/code&gt; development.
+I can deploy dozens of workloads.
+All scaled down to zero when they aren&amp;rsquo;t being used.
+All responding and starting up quickly when they are needed.&lt;/p&gt;
+&lt;p&gt;I ran into a couple of problems with Envoy on Raspberry Pi OS.
+After investigating, it is a known issue in the Raspberry Pi OS kernel.
+In order to keep going forward with my project I had to choose between fixing the kernel or trying Ubuntu.&lt;/p&gt;
+&lt;p&gt;This is an overview of how to get Knative Serving working on a Raspberry Pi device with K3s and Ubuntu.&lt;/p&gt;
+&lt;h2 id=&#34;install-ubuntu-server&#34;&gt;
+  Install Ubuntu Server
+  &lt;a class=&#34;heading-link&#34; href=&#34;#install-ubuntu-server&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Use RPI Imager.
+Select &lt;code&gt;Ubuntu Server 22.10 64-bit&lt;/code&gt; from the list of other distributions.
+Boot the new image.&lt;/p&gt;
+&lt;p&gt;I was happy to see that SSH and the default user were configured as expected by using the advanced settings options.&lt;/p&gt;
+&lt;h2 id=&#34;upgrade-the-stuff&#34;&gt;
+  Upgrade the stuff
+  &lt;a class=&#34;heading-link&#34; href=&#34;#upgrade-the-stuff&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Grab the latest repository info&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt update 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Install one prerequisite package that isn&amp;#39;t installed by default&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt install linux-modules-extra-raspi -y
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Upgrade everything that can be upgraded&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt dist-upgrade -y
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;fix-cgroup&#34;&gt;
+  Fix cgroup
+  &lt;a class=&#34;heading-link&#34; href=&#34;#fix-cgroup&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Add this to the beginning of /boot/firmware/cmdline.txt&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo nano -w /boot/firmware/cmdline.txt
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Reboot after making this change.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo shutdown -r now
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;install-k3s-via-k3sup&#34;&gt;
+  Install k3s via k3sup
+  &lt;a class=&#34;heading-link&#34; href=&#34;#install-k3s-via-k3sup&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;From my laptop, not one of the Raspberry Pi nodes, run &lt;a href=&#34;https://github.com/alexellis/k3sup&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;k3sup&lt;/a&gt;, it&amp;rsquo;s super easy.
+If you haven&amp;rsquo;t figured it out by now, I&amp;rsquo;m a big fan of &lt;a href=&#34;https://github.com/alexellis/k3sup&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;k3sup&lt;/a&gt;.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#bb60d5&#34;&gt;CONTROL_NODE_IP&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;10.0.0.10
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Disable Traefik because we will use kourier for knative&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;k3sup install --ip &lt;span style=&#34;color:#bb60d5&#34;&gt;$CONTROL_NODE_IP&lt;/span&gt; --user pi --k3s-extra-args &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;--disable traefik&amp;#39;&lt;/span&gt; --merge --local-path ~/.kube/config --context cluster00
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Knative-Serving with Kourier works on a single Raspberry Pi 4 with 8GB&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Optionally add other nodes&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;k3sup join --ip 10.0.0.11 --server-ip &lt;span style=&#34;color:#bb60d5&#34;&gt;$CONTROL_NODE_IP&lt;/span&gt; --user pi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;k3sup join --ip 10.0.0.12 --server-ip &lt;span style=&#34;color:#bb60d5&#34;&gt;$CONTROL_NODE_IP&lt;/span&gt; --user pi
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;deep-breath&#34;&gt;
+  Deep breath
+  &lt;a class=&#34;heading-link&#34; href=&#34;#deep-breath&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;This is where I struggled with how to deliver this example.
+The &lt;a href=&#34;https://knative.dev/docs/install/yaml-install/serving/install-serving-with-yaml/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Knative install documentation&lt;/a&gt; is awesome.
+I&amp;rsquo;ve been through it dozens of times!&lt;/p&gt;
+&lt;p&gt;I tried to simplify this for you.
+I want to give you the &amp;rsquo;easy button&amp;rsquo; experience.
+I created a &lt;a href=&#34;https://github.com/dashaun/knative-serving-raspberry-pi&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;repository&lt;/a&gt; with all the YAML you need to deploy Knative Serving to this K3s cluster.&lt;/p&gt;
+&lt;h2 id=&#34;knative-serving-with-kourier&#34;&gt;
+  Knative Serving with Kourier
+  &lt;a class=&#34;heading-link&#34; href=&#34;#knative-serving-with-kourier&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git clone https://github.com/dashaun/knative-serving-raspberry-pi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;cd&lt;/span&gt; knative-serving-raspberry-pi/operator-serving-kourier
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Use the `default` namespace in the Kubernetes cluster&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl config set-context --current --namespace&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;default
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Deploy the Knative operator&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl apply -f operator.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Check the deployment status&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl get deployment knative-operator
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Continue when &lt;code&gt;Ready&lt;/code&gt; status is &lt;code&gt;1/1&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;knative-operator   1/1     1            1           19h
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Install Knative Serving custom resource and Kourier&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl apply -f knative-serving.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Check the custom resource status&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl get KnativeServing knative-serving -n knative-serving
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Continue when &lt;code&gt;READY&lt;/code&gt; is &lt;code&gt;True&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;NAME              VERSION   READY   REASON
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;knative-serving   1.8.0     True
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Check the deployment status&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl get deployment -n knative-serving
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Continue when &lt;code&gt;READY&lt;/code&gt; are all &lt;code&gt;1/1&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;NAME                     READY   UP-TO-DATE   AVAILABLE   AGE
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;activator                1/1     1            1           23m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;autoscaler               1/1     1            1           23m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;controller               1/1     1            1           23m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;domain-mapping           1/1     1            1           23m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;domainmapping-webhook    1/1     1            1           23m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;autoscaler-hpa           1/1     1            1           23m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;3scale-kourier-gateway   1/1     1            1           23m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;webhook                  1/1     1            1           23m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;net-kourier-controller   1/1     1            1           23m
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/blockquote&gt;
+&lt;h2 id=&#34;sslipio-and-a-spring-boot-3-native-application&#34;&gt;
+  SSLIP.IO and a Spring Boot 3 &lt;code&gt;native&lt;/code&gt; application
+  &lt;a class=&#34;heading-link&#34; href=&#34;#sslipio-and-a-spring-boot-3-native-application&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Install default domain&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl apply -f serving-default-domain.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Deploy a Spring Boot 3 `native` application&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl apply -f spring-boot-native-pi-service.yaml
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Get the address&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl get ksvc spring-boot-native-pi --output&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;custom-columns&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;NAME:.metadata.name,URL:.status.url
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;NAME                    URL
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;spring-boot-native-pi   http://spring-boot-native-pi.default.10.0.0.10.sslip.io
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Curl the address provided by knative with `/actuator/health` at the end&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl http://spring-boot-native-pi.default.default.10.0.0.10.sslip.io/actuator/health
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Expected output:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{&amp;#34;status&amp;#34;:&amp;#34;UP&amp;#34;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/blockquote&gt;
+&lt;h2 id=&#34;summary&#34;&gt;
+  Summary
+  &lt;a class=&#34;heading-link&#34; href=&#34;#summary&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;With the recent release of Spring Boot 3.0.0, my Raspberry Pi collection has become significantly more interesting.
+Knative Serving allows me to deploy dozens of Spring Boot / Spring Cloud workloads to a tiny, low power device, with very exciting capabilities.&lt;/p&gt;
+&lt;h2 id=&#34;keep-learning&#34;&gt;
+  Keep Learning
+  &lt;a class=&#34;heading-link&#34; href=&#34;#keep-learning&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://knative.dev&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Knative&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.spring.io/spring-boot/docs/current/reference/html/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Boot&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/knative-serving-raspberry-pi&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Knative Serving Raspberry Pi&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>A new builder for Spring Boot 3 RC1 on ARM64</title>
+            <link>https://dashaun.com/posts/paketo-aarch64-builder-spring-boot-3-rc1/</link>
+            <pubDate>Thu, 10 Nov 2022 06:18:05 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/paketo-aarch64-builder-spring-boot-3-rc1/</guid>
+            <description>&lt;h2 id=&#34;background&#34;&gt;
+  Background
+  &lt;a class=&#34;heading-link&#34; href=&#34;#background&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;m a fan of using buildpacks.
+I&amp;rsquo;ve been &lt;a href=&#34;https://dashaun.com/posts/springboot-arm64-image/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;using&lt;/a&gt; and updating the &lt;a href=&#34;https://github.com/dmikusa/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paketo-arm64 repository started by Daniel Mikusa&lt;/a&gt;.
+With Spring Boot 3 going GA, very soon, more people are wanting to use buildpacks with their M1 machines.
+I feel pressure, in a great way, to get a new version released that includes the latest version of GraalVM.&lt;/p&gt;
+&lt;p&gt;Because I&amp;rsquo;m not doing this regularly, I forget the steps that I take to create a new build.
+So this post, is really a reminder-to-self, but hopefully it helps someone else also.&lt;/p&gt;
+&lt;p&gt;You can follow along with this on &lt;code&gt;M1&lt;/code&gt;,&lt;code&gt;Raspberry Pi&lt;/code&gt;, or a free-tier &lt;code&gt;ARM64&lt;/code&gt; instance from Oracle.&lt;/p&gt;
+&lt;h2 id=&#34;prerequisite&#34;&gt;
+  Prerequisite
+  &lt;a class=&#34;heading-link&#34; href=&#34;#prerequisite&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;ve been setting up a temporary ARM64 machine on Oracle Cloud for ARM64/aarch64 builds.
+The repository I use is &lt;a href=&#34;https://github.com/dashaun/oci-arm64-gha-runner-terraform&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.
+I should probably talk about that in another post, also.&lt;/p&gt;
+&lt;p&gt;My first step was to deploy that machine, so it can be used to build the builder!
+Once I got the machine up and connected to my repository, I was ready to update the code.&lt;/p&gt;
+&lt;h2 id=&#34;make-changes&#34;&gt;
+  Make changes
+  &lt;a class=&#34;heading-link&#34; href=&#34;#make-changes&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;First I just made changes to the versions in &lt;a href=&#34;https://raw.githubusercontent.com/dashaun/paketo-arm64/main/.github/workflows/paketo-arm64.yml&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;my GitHub workflow&lt;/a&gt;.
+That worked and pushed out a new image, but it wasn&amp;rsquo;t enough.&lt;/p&gt;
+&lt;p&gt;I had to re-read the workflow to understand what I was missing.&lt;/p&gt;
+&lt;p&gt;For each of the files in the &lt;code&gt;arm64-toml&lt;/code&gt; of &lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;the repository&lt;/a&gt; I needed to update to the latest versions.
+This is a tedious, and currently manual, process that requires copy, paste, merge and then creating sha256 values.&lt;/p&gt;
+&lt;p&gt;For these versions, it was extra messy, because naming conventions changed since my last release.
+In some places &lt;code&gt;arm64&lt;/code&gt; was replaced with &lt;code&gt;aarch64&lt;/code&gt; as one example.&lt;/p&gt;
+&lt;p&gt;Additionally, some dependencies had even more releases, and I decided to go with the &lt;code&gt;full&lt;/code&gt; option when it was available.&lt;/p&gt;
+&lt;p&gt;The last real time-suck was the &lt;code&gt;sha&lt;/code&gt; values.
+In the GitHub releases, the sha values are provided as &lt;code&gt;sha1sum&lt;/code&gt; values.
+In the builder metadata, it requires &lt;code&gt;sha256&lt;/code&gt; values.
+Since I couldn&amp;rsquo;t find &lt;code&gt;sha256&lt;/code&gt; values published anywhere, I had to download the dependencies and calculate the values manually.
+For each dependency update, &lt;code&gt;curl&lt;/code&gt; then &lt;code&gt;shasum&lt;/code&gt;, which can be error prone.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -L https://github.com/bell-sw/Liberica/releases/download/8u352+8/bellsoft-jdk8u352+8-linux-aarch64.tar.gz -O
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;shasum -a &lt;span style=&#34;color:#40a070&#34;&gt;256&lt;/span&gt; bellsoft-jdk8u352+8-linux-aarch64.tar.gz
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Hopefully, this post and the small updates I made to the &lt;code&gt;README.md&lt;/code&gt; will remind me next time.
+I should probably figure out a way to automate some of that.
+Maybe a CLI?&lt;/p&gt;
+&lt;h2 id=&#34;create-an-application-image&#34;&gt;
+  Create an application image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#create-an-application-image&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Create a Spring Boot 3 application with &lt;code&gt;web&lt;/code&gt; and &lt;code&gt;actuator&lt;/code&gt; which is enough for a simple test.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Create a Spring Boot 3 application&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl https://start.spring.io/starter.tgz -d &lt;span style=&#34;color:#bb60d5&#34;&gt;dependencies&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;web,actuator -d &lt;span style=&#34;color:#bb60d5&#34;&gt;javaVersion&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#40a070&#34;&gt;17&lt;/span&gt; -d &lt;span style=&#34;color:#bb60d5&#34;&gt;bootVersion&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;3.0.0-SNAPSHOT -d &lt;span style=&#34;color:#bb60d5&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;maven-project | tar -xzf -
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In the pom.xml replace this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-xml&#34; data-lang=&#34;xml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;build&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;plugins&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;plugin&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.boot&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-boot-maven-plugin&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/plugin&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/plugins&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/build&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;with this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-xml&#34; data-lang=&#34;xml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;build&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;plugins&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;plugin&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.boot&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-boot-maven-plugin&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;image&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;builder&amp;gt;&lt;/span&gt;dashaun/java-native-builder-arm64:7.37.0&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/builder&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/image&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/plugin&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/plugins&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/build&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Build an image using the image builder that we have created and configured.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./mvnw -Pnative spring-boot:build-image
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;run-and-test-the-image&#34;&gt;
+  Run and test the image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#run-and-test-the-image&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Run the OCI image with &lt;code&gt;docker&lt;/code&gt; to start up the server.
+It should start quickly!&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Forward the prt, run in the background, but see the startup time&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run -p 8080:8080 demo:0.0.1-SNAPSHOT &amp;amp;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Check the endpoint to validate&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;http :8080/actuator/health
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;finally&#34;&gt;
+  Finally
+  &lt;a class=&#34;heading-link&#34; href=&#34;#finally&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Because I&amp;rsquo;m done, and moved &lt;a href=&#34;https://hub.docker.com/r/dashaun/java-native-builder-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;builder version 7.37.0 to prod&lt;/a&gt;, I also cleaned up my &lt;code&gt;terraform&lt;/code&gt; deployment.&lt;/p&gt;
+&lt;p&gt;Another huge &amp;ldquo;Thanks&amp;rdquo; to &lt;a href=&#34;https://twitter.com/dmikusa&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Daniel Mikusa&lt;/a&gt; for all of his help.&lt;/p&gt;
+&lt;h2 id=&#34;links&#34;&gt;
+  Links
+  &lt;a class=&#34;heading-link&#34; href=&#34;#links&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://hub.docker.com/r/dashaun/java-native-builder-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dashaun/java-native-builder-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dashaun/paketo-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/oci-arm64-gha-runner-terraform&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dashaun/oci-arm64-gha-runner-terraform&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://dashaun.com/posts/springboot-arm64-image/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Related Post&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>K3s on Raspberry Pi and ClusterHat</title>
+            <link>https://dashaun.com/posts/k3s-on-raspberry-pi-clusterhat/</link>
+            <pubDate>Fri, 22 Jul 2022 16:42:08 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/k3s-on-raspberry-pi-clusterhat/</guid>
+            <description>&lt;h2 id=&#34;learn-how-to-deploy-k3s-to-a-raspberry-pi-cluster-with-clusterhat-and-clusterctrl&#34;&gt;
+  Learn how to deploy &lt;a href=&#34;https://k3s.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;k3s&lt;/a&gt; to a Raspberry Pi cluster with &lt;a href=&#34;https://clusterhat.com/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ClusterHat&lt;/a&gt; and &lt;a href=&#34;https://clusterctrl.com/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ClusterCTRL&lt;/a&gt;.
+  &lt;a class=&#34;heading-link&#34; href=&#34;#learn-how-to-deploy-k3s-to-a-raspberry-pi-cluster-with-clusterhat-and-clusterctrl&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;h3 id=&#34;hardware&#34;&gt;
+  Hardware
+  &lt;a class=&#34;heading-link&#34; href=&#34;#hardware&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;1 x 8GB Raspberry Pi 4&lt;/li&gt;
+&lt;li&gt;4 x Raspberry Pi Zero 2 W&lt;/li&gt;
+&lt;li&gt;1 x ClusterHat v2.5&lt;/li&gt;
+&lt;li&gt;5 x &lt;a href=&#34;https://www.sdcard.org/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;SD Card&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;custom-os-images&#34;&gt;
+  Custom OS Images
+  &lt;a class=&#34;heading-link&#34; href=&#34;#custom-os-images&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Because you are using a ClusterHat, you will want to use &lt;a href=&#34;https://clusterctrl.com/setup-software&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;custom OS images&lt;/a&gt;.
+For this guide you will be using the 64-bit versions of each and the &lt;code&gt;CNAT Lite&lt;/code&gt; version for the controller.
+Enable SSH for each of the images.
+The username does not have to be &lt;code&gt;pi&lt;/code&gt; but the username needs to be the same, across each of the nodes, for this guide.
+As you burn each of the SD Cards, place each one into their respective device, to keep them organized.
+The P1 node is the slot that is on the same side as the ethernet controller.
+The nodes increase, in order, to P4, which is on the same side as the power and HDMI connectors.
+You can refer to &lt;a href=&#34;https://dashaun.com/posts/sping-native-edge-rpi/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;an earlier post&lt;/a&gt;, for detailed steps using &lt;a href=&#34;https://www.raspberrypi.org/software/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Raspberry Pi Imager&lt;/a&gt; to create the SD Cards.&lt;/p&gt;
+&lt;h3 id=&#34;first-boot&#34;&gt;
+  First Boot
+  &lt;a class=&#34;heading-link&#34; href=&#34;#first-boot&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;With each SD card inserted into their respective nodes, you can turn on the control node.
+The ClusterHat will provide power and networking to the additional nodes.
+Power for each of the nodes can be controlled independently.
+You can connect to the device over SSH via WIFI, or via ethernet, depending on what you enabled in the previous step.&lt;/p&gt;
+&lt;p&gt;Connect to the control node and power on P1:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@control-node:~ $ clusterctrl on p1
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;You will see the green LED light up and the node will begin booting up.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;Power up the other nodes:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@control-node:~ $ clusterctrl on p2 &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; clusterctrl on P3 &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; clusterctrl on p4
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;update-the-os-images&#34;&gt;
+  Update the OS Images
+  &lt;a class=&#34;heading-link&#34; href=&#34;#update-the-os-images&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Update each of the images, from the upstream repositories, to get any of the changes made since the OS image was released.&lt;/p&gt;
+&lt;p&gt;Start with the control node:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@control-node:~ $ sudo apt update &lt;span style=&#34;color:#666&#34;&gt;&amp;amp;&amp;amp;&lt;/span&gt; sudo apt dist-upgrade -y
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Optionally, add the following lines to /etc/hosts, on the control node:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;172.19.181.1	p1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;172.19.181.2	p2
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;172.19.181.3	p3
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;172.19.181.4	p4
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;You can also use the IP address directly.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;Update each of the additional nodes via ssh:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@control-node:~ $ ssh p1 &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;sudo apt update &amp;amp;&amp;amp; sudo apt dist-upgrade -y&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@control-node:~ $ ssh p2 &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;sudo apt update &amp;amp;&amp;amp; sudo apt dist-upgrade -y&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@control-node:~ $ ssh p3 &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;sudo apt update &amp;amp;&amp;amp; sudo apt dist-upgrade -y&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@control-node:~ $ ssh p4 &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;sudo apt update &amp;amp;&amp;amp; sudo apt dist-upgrade -y&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;At the time of writing this article, an additional change is required for the base OS on each node.
+This change is needed in order to run containers, as the defaults for cgroups has changed recently.&lt;/p&gt;
+&lt;p&gt;Add the following configuration to &lt;code&gt;/boot/cmdline.txt&lt;/code&gt; on each node and then reboot:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;cgroup_memory=1 cgroup_enable=memory
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;ready-for-k3s&#34;&gt;
+  Ready for k3s
+  &lt;a class=&#34;heading-link&#34; href=&#34;#ready-for-k3s&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;The documentation for &lt;a href=&#34;https://k3s.io/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;k3s&lt;/a&gt; is incredible.
+For this guide, you will use another tool called &lt;code&gt;k3sup&lt;/code&gt; to deploy the k3s cluster.&lt;/p&gt;
+&lt;p&gt;First install k3sup:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@control-node:~ $ sudo curl -sLS https://get.k3sup.dev | sh
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Install the control node of k3sup:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@control-node:~ $ k3sup install --ip 172.19.181.254 --user &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;$(&lt;/span&gt;whoami&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;That process will end with output similar to this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;...
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Saving file to: /home/pi/kubeconfig
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;# Test your cluster with:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;export KUBECONFIG=/home/pi/kubeconfig
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl config set-context default
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kubectl get node -o wide
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@control-node:~ $
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;After setting up your context and verifying your control node is ready, add the other nodes to the cluster.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@control-node:~ $ k3sup join --ip 172.19.181.1 --server-ip 172.19.181.254 --user &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;$(&lt;/span&gt;whoami&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@control-node:~ $ k3sup join --ip 172.19.181.2 --server-ip 172.19.181.254 --user &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;$(&lt;/span&gt;whoami&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@control-node:~ $ k3sup join --ip 172.19.181.3 --server-ip 172.19.181.254 --user &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;$(&lt;/span&gt;whoami&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@control-node:~ $ k3sup join --ip 172.19.181.4 --server-ip 172.19.181.254 --user &lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;$(&lt;/span&gt;whoami&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;You now have a kubernetes cluster, deployed to about $100 of hardware.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@control-node:~ $ kubectl get node
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;NAME         STATUS ROLES                AGE VERSION
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;control-node Ready  control-plane,master 25m v1.24.3+k3s1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;p1           Ready  &amp;lt;none&amp;gt;               20m v1.24.3+k3s1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;p2           Ready  &amp;lt;none&amp;gt;               20m v1.24.3+k3s1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;p3           Ready  &amp;lt;none&amp;gt;               22m v1.24.3+k3s1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;p4           Ready  &amp;lt;none&amp;gt;               19m v1.24.3+k3s1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@control-node:~ $
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;test-deployment&#34;&gt;
+  Test deployment
+  &lt;a class=&#34;heading-link&#34; href=&#34;#test-deployment&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Deploy &lt;a href=&#34;https://dashaun.com/posts/springboot-arm64-image/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;an ARM64 native Spring Boot application&lt;/a&gt; to the cluster:&lt;/p&gt;
+&lt;p&gt;Create a file, spring-boot-native-pi.yaml&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;apiVersion: apps/v1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kind: Deployment
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;metadata:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  name: spring-boot-native-pi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;spec:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  selector:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    matchLabels:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      app: springbootnativepi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  replicas: 4
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  template:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    metadata:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      labels:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        app: springbootnativepi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    spec:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      containers:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      - name: springbootnativepi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        image: dashaun/spring-pi-native:focal-arm64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        ports:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        - containerPort: 8080
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;---
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;apiVersion: v1
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;kind: Service
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;metadata:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  name: web-service
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;spec:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  selector:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    app: springbootnativepi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  ports:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    - protocol: TCP
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      port: 8080
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Verify:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@control-node:~ &lt;span style=&#34;color:#bb60d5&#34;&gt;$kubectl&lt;/span&gt; get pods
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;NAME                                     READY   STATUS    RESTARTS   AGE
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;spring-boot-native-pi-59f7d7659c-hvlp8   1/1     Running   &lt;span style=&#34;color:#40a070&#34;&gt;0&lt;/span&gt;          42m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;spring-boot-native-pi-59f7d7659c-dp7nn   1/1     Running   &lt;span style=&#34;color:#40a070&#34;&gt;0&lt;/span&gt;          42m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;spring-boot-native-pi-59f7d7659c-sf899   1/1     Running   &lt;span style=&#34;color:#40a070&#34;&gt;0&lt;/span&gt;          42m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;spring-boot-native-pi-59f7d7659c-99vfq   1/1     Running   &lt;span style=&#34;color:#40a070&#34;&gt;0&lt;/span&gt;          42m
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@control-node:~ $
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;summary&#34;&gt;
+  Summary
+  &lt;a class=&#34;heading-link&#34; href=&#34;#summary&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;In this guide, you learned how to deploy k3s on top of the custom OS images provided by ClusterHat, with Raspberry Pi.&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Raspberry Pi Zero W Camera Server</title>
+            <link>https://dashaun.com/posts/quick-cool-remote-control-camera-zero-w/</link>
+            <pubDate>Mon, 18 Jul 2022 04:22:45 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/quick-cool-remote-control-camera-zero-w/</guid>
+            <description>&lt;p&gt;This is an overview of a recent project.&lt;/p&gt;
+&lt;p&gt;A friend needed:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;a camera&lt;/li&gt;
+&lt;li&gt;that could be mounted in a conference booth&lt;/li&gt;
+&lt;li&gt;remote controlled &lt;code&gt;somehow&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;automatically display each snapshot on an attached big screen&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;After lots of missteps, the solution I landed on is so easy to do.&lt;/p&gt;
+&lt;p&gt;There is no programming involved.  Definitely easy enough for beginners.&lt;/p&gt;
+&lt;h3 id=&#34;hardware-used&#34;&gt;
+  Hardware Used
+  &lt;a class=&#34;heading-link&#34; href=&#34;#hardware-used&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Raspberry Pi Zero W / Raspberry Pi Zero 2 W&lt;/li&gt;
+&lt;li&gt;Raspberry Pi Camera Module v2&lt;/li&gt;
+&lt;li&gt;Raspberry Pi Camera Module Cable&lt;/li&gt;
+&lt;li&gt;Raspberry Pi Zero Case&lt;/li&gt;
+&lt;li&gt;Raspberry Pi Power Adapter&lt;/li&gt;
+&lt;li&gt;SDCard (micro sd)&lt;/li&gt;
+&lt;li&gt;Raspberry Pi HDMI adapter&lt;/li&gt;
+&lt;li&gt;HDMI capable monitor&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://dashaun.com/images/blog/remote-controlled-photo-booth-pi/hardware-setup.jpg&#34; alt=&#34;Hardware setup&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;raspberry-pi-os&#34;&gt;
+  Raspberry Pi OS
+  &lt;a class=&#34;heading-link&#34; href=&#34;#raspberry-pi-os&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Install Raspberry Pi OS Lite (32-bit) &lt;code&gt;Bullseye&lt;/code&gt; onto a &lt;a href=&#34;https://www.sdcard.org/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;SD card&lt;/a&gt;
+using the &lt;a href=&#34;https://www.raspberrypi.org/software/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Raspberry Pi Imager&lt;/a&gt; (rpi-imager).&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;This will not work with 64-bit version of Raspberry Pi OS / Bullseye&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;Use the advanced options gear to set the following before writing:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;hostname&lt;/li&gt;
+&lt;li&gt;enable ssh&lt;/li&gt;
+&lt;li&gt;ssh-key&lt;/li&gt;
+&lt;li&gt;wifi settings&lt;/li&gt;
+&lt;li&gt;Leave user as &amp;lsquo;pi&amp;rsquo; but provide a password&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;hardware&#34;&gt;
+  Hardware
+  &lt;a class=&#34;heading-link&#34; href=&#34;#hardware&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Plug everything together while your image is burning.&lt;/p&gt;
+&lt;h2 id=&#34;rpi-cam-web-interface&#34;&gt;
+  Rpi Cam Web Interface
+  &lt;a class=&#34;heading-link&#34; href=&#34;#rpi-cam-web-interface&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Follow the instructions to install &lt;a href=&#34;https://github.com/silvanmelchior/RPi_Cam_Web_Interface&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Rpi Cam Web Interface&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;My options for the install:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;cam subfolder: &amp;#34;&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;autostart: yes
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Server: nginx
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;port: 80
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The config options I&amp;rsquo;m using with my Raspberry Pi Camera Module v2:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;image_width 3280
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;image_height 2464
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;image_quality 90
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;width 1080
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;/etc/raspimjpeg&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h2 id=&#34;hotspot&#34;&gt;
+  Hotspot
+  &lt;a class=&#34;heading-link&#34; href=&#34;#hotspot&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Follow the instructions to install &lt;a href=&#34;https://github.com/rudiratlos/hotspot&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Hotspot&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;The hotspot configuration uses &lt;code&gt;firewalld&lt;/code&gt; so I needed to make one more change.&lt;/p&gt;
+&lt;p&gt;In order to access the web cam service, I needed to open port 80.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@localhost:~ $ sudo firewall-cmd --zone&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;public --list-services 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dhcpv6-client ssh
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@localhost:~ $ sudo firewall-cmd --zone&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;public --add-service&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;http --permanent
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;success
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;pi@localhost:~ $ sudo firewall-cmd --zone&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;public --list-services 
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dhcpv6-client http ssh
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Add http (port 80) permanently to the firewall list of services to allow&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h2 id=&#34;output-to-big-screen&#34;&gt;
+  Output to Big Screen
+  &lt;a class=&#34;heading-link&#34; href=&#34;#output-to-big-screen&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I installed &lt;code&gt;fbi&lt;/code&gt; the framebuffer interface.&lt;/p&gt;
+&lt;p&gt;Then I used this program, to grab the latest snapshot, and push it to the connected display.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;#!/bin/bash
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#007020&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#bb60d5&#34;&gt;FRAMEBUFFER&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;/dev/fb0
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;export&lt;/span&gt; &lt;span style=&#34;color:#bb60d5&#34;&gt;DISPLAY&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;:0
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;#Loop as long as the directory exists&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;while&lt;/span&gt; &lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt; -d /var/www/media &lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;do&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;#list the files in the directory sort by timestamp and grab the newest 1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#bb60d5&#34;&gt;JPG&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;$(&lt;/span&gt;ls -atr /var/www/media/*.jpg | tail -n1&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;#Push the newest image to the framebuffer with autozoom&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    sudo fbi -a --noverbose -T &lt;span style=&#34;color:#40a070&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#bb60d5&#34;&gt;$JPG&lt;/span&gt; &amp;amp;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;#Let that image show for 60 seconds    &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    sleep &lt;span style=&#34;color:#40a070&#34;&gt;60&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;#Kill the framebuffer program and run another loop    &lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;	sudo killall -9 fbi
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020;font-weight:bold&#34;&gt;done&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Start the script by calling it from ~/.bashrc and using raspi-config to autologin with the &amp;lsquo;pi&amp;rsquo; user&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h2 id=&#34;testing-complete&#34;&gt;
+  Testing Complete
+  &lt;a class=&#34;heading-link&#34; href=&#34;#testing-complete&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Remote Control Web Cam&lt;/li&gt;
+&lt;li&gt;Private Hotspot Wi-fi&lt;/li&gt;
+&lt;li&gt;Connect via smartphone&lt;/li&gt;
+&lt;li&gt;Adjust camera settings&lt;/li&gt;
+&lt;li&gt;Take picture&lt;/li&gt;
+&lt;li&gt;Picture pushed to display via &lt;code&gt;fbi&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://dashaun.com/images/blog/remote-controlled-photo-booth-pi/hotspotted.jpg&#34; alt=&#34;Hotspotted&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;summary&#34;&gt;
+  Summary
+  &lt;a class=&#34;heading-link&#34; href=&#34;#summary&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;This project was built for a specific purpose, as part of conference booth.
+I was told there would be no internet or WI-FI available, but they wanted to be able to control it remotely.&lt;/p&gt;
+&lt;p&gt;Working through this introduced me to several easy to install applications for the Raspberry Pi.&lt;/p&gt;
+&lt;p&gt;There is way more we could do with this same hardware and &amp;ldquo;photobooth&amp;rdquo; objective, but this is a great start, easy to do.&lt;/p&gt;
+&lt;p&gt;Immediately after completing this project, I used &lt;a href=&#34;https://github.com/silvanmelchior/RPi_Cam_Web_Interface&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Rpi Cam Web Interface&lt;/a&gt;
+and deployed a &lt;code&gt;Zero 2 W&lt;/code&gt; and &lt;code&gt;Zero View&lt;/code&gt; device to my office window.
+It is using the motion enabled image capture feature to take pictures of our dog and the animals in the backyard.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://dashaun.com/images/blog/remote-controlled-photo-booth-pi/office-cam.jpg&#34; alt=&#34;Office Cam&#34;&gt;&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Spring Native Edge RPi</title>
+            <link>https://dashaun.com/posts/sping-native-edge-rpi/</link>
+            <pubDate>Mon, 18 Apr 2022 10:41:31 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/sping-native-edge-rpi/</guid>
+            <description>&lt;p&gt;Spring Native allows me to deploy Spring Boot applications on $15 Raspberry Pi Zero 2 W devices.
+This document describes how I create the base OS image used to deploy these applications.
+I use the Spring Boot Maven plugin to create ARM64-native OCI images.
+At the end of the process documented here, I have a device able to run those OCI images.
+I then deploy these devices indoors and outdoors, and within range of the configured WIFI.&lt;/p&gt;
+&lt;h3 id=&#34;raspberry-pi-zero-2w&#34;&gt;
+  Raspberry Pi Zero 2W
+  &lt;a class=&#34;heading-link&#34; href=&#34;#raspberry-pi-zero-2w&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Install Raspberry Pi OS &lt;code&gt;Bullseye&lt;/code&gt; onto a &lt;a href=&#34;https://www.sdcard.org/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;SD card&lt;/a&gt; using the &lt;a href=&#34;https://www.raspberrypi.org/software/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Raspberry Pi Imager&lt;/a&gt; (rpi-imager).
+I have used the rpi-imager tool on my Ubuntu desktop, my Mac laptop, as well as my Raspberry Pi 4 desktop.
+For this document, I&amp;rsquo;m using rpi-imager installed on my Mac, which has an SD drive attached.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;m using version v1.7.2 in this example.&lt;/p&gt;
+&lt;p&gt;Under &amp;ldquo;Operating System&amp;rdquo; click the &amp;ldquo;CHOOSE OS&amp;rdquo; button.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://dashaun.com/images/blog/rpi-imager/choose_os.png&#34; alt=&#34;Choose OS&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Click &amp;ldquo;Raspberry Pi OS (other)&amp;rdquo; from the list.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://dashaun.com/images/blog/rpi-imager/raspberry-pi-os-other.png&#34; alt=&#34;Other&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Select &amp;ldquo;Raspberry Pi OS Lite (64-bit)&amp;rdquo; from the list.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://dashaun.com/images/blog/rpi-imager/64-bit-Lite.png&#34; alt=&#34;64-bit-Lite&#34;&gt;&lt;/p&gt;
+&lt;p&gt;A new &amp;lsquo;gear&amp;rsquo; button will appear for advanced options settings.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://dashaun.com/images/blog/rpi-imager/with-gear.png&#34; alt=&#34;Advanced Options Gear&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Use the advanced options to configure the image before writing it to the SD card.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Set the hostname (hostname.local)&lt;/li&gt;
+&lt;li&gt;Configure WIFI
+&lt;ul&gt;
+&lt;li&gt;Network&lt;/li&gt;
+&lt;li&gt;Password&lt;/li&gt;
+&lt;li&gt;Region&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Set a username and password (username)&lt;/li&gt;
+&lt;li&gt;Enable SSH&lt;/li&gt;
+&lt;li&gt;Configure timezone&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://dashaun.com/images/blog/rpi-imager/advanced-options.png&#34; alt=&#34;Advanced Options&#34;&gt;&lt;/p&gt;
+&lt;p&gt;After configuring the advanced options:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Under &amp;ldquo;Storage&amp;rdquo; click &amp;ldquo;CHOOSE STORAGE&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;From the &amp;ldquo;Storage&amp;rdquo; list, select the SD card to write to.&lt;/li&gt;
+&lt;li&gt;Click the &amp;ldquo;WRITE&amp;rdquo; button to burn the image, and the advanced configurations to the SSD card.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://dashaun.com/images/blog/rpi-imager/with-gear.png&#34; alt=&#34;Advanced Options Gear&#34;&gt;&lt;/p&gt;
+&lt;p&gt;After the image write has completed, eject the SD card.
+Put the SD card into the Raspberry Pi Zero 2 W.
+Power up the device.
+The device will connect to the configured WIFI network.&lt;/p&gt;
+&lt;p&gt;This imager tool and these advanced settings have saved me so much time with this type of deployment.&lt;/p&gt;
+&lt;h3 id=&#34;first-boot&#34;&gt;
+  First Boot
+  &lt;a class=&#34;heading-link&#34; href=&#34;#first-boot&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Connect to the device via SSH:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;ssh username@hostname.local
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;username@hostname:~ $
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Update the repositories with the latest available version info:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; sudo apt update
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Upgrade to the latest version of anything that is available:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt full-upgrade -y
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Updating the firmware is not required for a standalone deployment.
+I do this for consistency with my other deployment types.&lt;/p&gt;
+&lt;p&gt;Upgrade the firmware:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo rpi-update
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Following a warning you will be prompted to proceed (y/N).&lt;/p&gt;
+&lt;p&gt;This process takes minutes, not seconds, on my Raspberry Pi Zero 2 W devices&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h3 id=&#34;add-the-container-runtime&#34;&gt;
+  Add the Container Runtime
+  &lt;a class=&#34;heading-link&#34; href=&#34;#add-the-container-runtime&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;I cringe every time I see a curl pipe to shell.
+I hope you do the same.
+Please review scripts before piping anything to shell!&lt;/p&gt;
+&lt;p&gt;Install Docker:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -sSL https://get.docker.com | sh
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Run Docker as a non-privileged user with Docker daemon in rootless mode.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;username@hostname:~ $ dockerd-rootless-setuptool.sh install
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;ERROR&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; Missing system requirements. Run the following commands to
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#666&#34;&gt;[&lt;/span&gt;ERROR&lt;span style=&#34;color:#666&#34;&gt;]&lt;/span&gt; install the requirements and run this tool again.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;########## BEGIN ##########&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo sh -eux &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;lt;&amp;lt;EOF
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;# Install newuidmap &amp;amp; newgidmap binaries
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;apt-get install -y uidmap
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;EOF&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;########## END ##########&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Install the missing requirements and try again:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo sh -eux &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;lt;&amp;lt;EOF
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;# Install newuidmap &amp;amp; newgidmap binaries
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;apt-get install -y uidmap
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;EOF&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dockerd-rootless-setuptool.sh install
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The output from &amp;lsquo;dockerd-rootless-setuptool.sh&amp;rsquo; provides configuration info:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Installed docker.service successfully.
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] To control docker.service, run: `systemctl --user (start|stop|restart) docker.service`
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] To run docker.service on system startup, run: `sudo loginctl enable-linger username`
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Creating CLI context &amp;#34;rootless&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Successfully created context &amp;#34;rootless&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;[INFO] Make sure the following environment variables are set (or add them to ~/.bashrc):
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;export PATH=/usr/bin:$PATH
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;export DOCKER_HOST=unix:///run/user/1000/docker.sock
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;direnv-for-configuration&#34;&gt;
+  Direnv for configuration
+  &lt;a class=&#34;heading-link&#34; href=&#34;#direnv-for-configuration&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;This section is not required if you follow the steps above.
+I have adopted &amp;lsquo;direnv&amp;rsquo; for configuring environments.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Install &amp;#39;direnv&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo apt install direnv -y
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Setup the shell hook&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;cat &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;lt;&amp;lt;&amp;#39;EOT&amp;#39; &amp;gt;&amp;gt; ~/.bashrc
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;eval &amp;#34;$(direnv hook bash)&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;EOT&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Enable the shell hook&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;source&lt;/span&gt; ~/.bashrc
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Add environment variables to .envrc file:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;cat &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;lt;&amp;lt;&amp;#39;EOT&amp;#39; &amp;gt;&amp;gt; ~/.envrc
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;export PATH=/usr/bin:$PATH
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;export DOCKER_HOST=unix:///run/user/1000/docker.sock
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;EOT&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Enable the new environment&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;direnv allow
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;verify-configuration&#34;&gt;
+  Verify Configuration
+  &lt;a class=&#34;heading-link&#34; href=&#34;#verify-configuration&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Configure Docker to run on system startup and reboot:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo loginctl enable-linger username
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo shutdown -r now
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now &amp;lsquo;username&amp;rsquo; can run Docker commands as a non-privileged user.&lt;/p&gt;
+&lt;p&gt;Verify:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker info
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;deploy-spring-boot-native-for-arm64-image&#34;&gt;
+  Deploy Spring Boot Native for ARM64 image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#deploy-spring-boot-native-for-arm64-image&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Run a Spring Boot &lt;a href=&#34;https://github.com/dashaun/spring-boot-native-pi&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;application&lt;/a&gt; delivered as an ARM64 native OCI image:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run --name spring-native-pi --rm -d -p 8080:8080 dashaun/spring-pi-native:focal-arm64
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Verify the deployment from another computer:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -fsSL hostname.local:8080/actuator | jq .
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;_links&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;self&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;href&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;http://hostname.local:8080/actuator&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;templated&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#007020&#34;&gt;false&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#666&#34;&gt;}&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;health-path&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;href&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;http://hostname.local:8080/actuator/health/{*path}&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;templated&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#007020&#34;&gt;true&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#666&#34;&gt;}&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;health&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#666&#34;&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;href&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;http://hostname.local:8080/actuator/health&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;templated&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#007020&#34;&gt;false&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#666&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#666&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#666&#34;&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;summary&#34;&gt;
+  Summary
+  &lt;a class=&#34;heading-link&#34; href=&#34;#summary&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;This is how I deploy standalone WIFI connected devices.
+This process could be simplified.
+I use this process as documented, to help me understand each step.
+With this process I am able to have a consistent method for deployment and maintenance.
+This allows me to deploy Spring Boot applications to the edge.
+With Spring Native it is easy and fun to enjoy Spring on Raspberry Pi.&lt;/p&gt;
+&lt;p&gt;I will share a &lt;a href=&#34;https://shop.pimoroni.com/products/enviro?variant=31155658457171&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Pimoroni Enviro+&lt;/a&gt; project using Spring Boot and Spring Native, soon.&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Buildpack on DaShaun</title>
+        <link>https://dashaun.com/tags/buildpack/</link>
+        <description>Recent content in Buildpack on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Thu, 08 Dec 2022 11:20:02 -0600</lastBuildDate><atom:link href="https://dashaun.com/tags/buildpack/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Spring Cloud Gateway 4.0.0-RC2 native example with Testcontainers</title>
+            <link>https://dashaun.com/posts/spring-cloud-gateway-4-0-0-rc2-native-example-with-testcontainers/</link>
+            <pubDate>Thu, 08 Dec 2022 11:20:02 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/spring-cloud-gateway-4-0-0-rc2-native-example-with-testcontainers/</guid>
+            <description>&lt;h1 id=&#34;spring-cloud-gateway-400-rc2-native-example-with-testcontainers&#34;&gt;
+  Spring Cloud Gateway 4.0.0-RC2 native example with Testcontainers
+  &lt;a class=&#34;heading-link&#34; href=&#34;#spring-cloud-gateway-400-rc2-native-example-with-testcontainers&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/dashaun/dev.dashaun.service.gateway&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;This example repository is on GitHub&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;There are 3 goals I have for this example:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Deliver Spring Cloud Gateway as a graalvm-native-image with Spring Boot 3&lt;/li&gt;
+&lt;li&gt;Get feedback on the multi-architecture buildpack that includes ARM64 support&lt;/li&gt;
+&lt;li&gt;Demonstrate a pattern for building and testing buildpack images using Testcontainers&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;spring-cloud-gateway&#34;&gt;
+  &lt;a href=&#34;https://spring.io/projects/spring-cloud-gateway&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Cloud Gateway&lt;/a&gt;
+  &lt;a class=&#34;heading-link&#34; href=&#34;#spring-cloud-gateway&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;From the &lt;a href=&#34;https://spring.io/projects/spring-cloud-gateway&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring.io&lt;/a&gt; website:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;Spring Cloud Gateway aims to provide a simple,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;yet effective way to route to APIs and provide
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;cross cutting concerns to them such as:
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;security, monitoring/metrics, and resiliency.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;It is very popular, and even more valuable than it is popular!&lt;/p&gt;
+&lt;p&gt;Spring Framework 6 and Spring Boot 3.0.0 have recently gone GA. My favorite feature of these new releases is hands down the AOT processing. The AOT processing, provided by &lt;a href=&#34;https://graalvm.org&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;GraalVM&lt;/a&gt;, creates statically linked binary images. These images are optimized, ahead of time, for the operating system and architecture. For many modern workloads they can provide smaller image sizes, smaller memory footprint, and a much faster startup time.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://dashaun.com/posts/k3s-knative-ubuntu-raspberry-pi/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;In a recent experiment&lt;/a&gt;, I was able to expose Spring Cloud Gateway to the public, and have it route to other Spring Boot 3 native image workloads.&lt;/p&gt;
+&lt;p&gt;In that experiment Spring Cloud Gateway provided:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Single service for SSL and ingress integration&lt;/li&gt;
+&lt;li&gt;YAML configured routing&lt;/li&gt;
+&lt;li&gt;Circuit Breaker capabilities with Resilience4j&lt;/li&gt;
+&lt;li&gt;Request Rate Limiting with Redis&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In the experiment, I left the Spring Cloud Gateway running, by setting the &lt;code&gt;min-scale&lt;/code&gt; value to 1.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;metadata&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;name&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;spring-cloud-gateway&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;namespace&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;default&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;spec&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;template&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;metadata&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;annotations&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;autoscaling.knative.dev/initial-scale&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;1&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;autoscaling.knative.dev/min-scale&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;1&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;autoscaling.knative.dev/max-scale&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;2&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;    &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;spec&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;      &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;containers&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;        &lt;/span&gt;- &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;image&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;dashaun/dev.dashaun.service.gateway:latest&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The other Spring Boot applications, being routed to by the gateway, were allowed to scale-to-zero when they weren&amp;rsquo;t used.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://dashaun.com/posts/k3s-knative-ubuntu-raspberry-pi/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;The experiment was on a cluster of Raspberry Pi&lt;/a&gt; devices which are ARM64 cpus.&lt;/p&gt;
+&lt;p&gt;The Spring Cloud Gateway, native image, typically starts up between 0.600s and 0.650s, on a Raspberry Pi.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;images/scg-startup-rpi.png&#34; &gt;&lt;img src=&#34;images/scg-startup-rpi.png&#34; alt=&#34;SCG native image Raspberry Pi startup&#34;&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Today, the buildpack delivered by &lt;a href=&#34;https://start.spring.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Initializr at start.spring.io&lt;/a&gt;, is unable to create native images on ARM64.&lt;/p&gt;
+&lt;h2 id=&#34;multi-architecture-buildpack&#34;&gt;
+  Multi-architecture buildpack
+  &lt;a class=&#34;heading-link&#34; href=&#34;#multi-architecture-buildpack&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Earlier this year, I started working on a buildpack to use with the experimental project, &lt;code&gt;Spring Native&lt;/code&gt;, and ARM64, for my Raspberry Pi devices. Later the M1/M2 Apple Silicon community, also ARM64, began showing interest in using this buildpack. &lt;a href=&#34;https://hub.docker.com/r/dashaun/java-native-builder-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;I have delivered a few versions to date&lt;/a&gt;. I&amp;rsquo;ve also created some automation to improve my process for creating these buildpacks.&lt;/p&gt;
+&lt;p&gt;Recently, I created a &lt;a href=&#34;https://hub.docker.com/r/dashaun/java-native-builder-multiarch&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;multi-architecture buildpack&lt;/a&gt; that can be used with Spring Boot 3, to create native images on both Intel/AMD64 and ARM64 architectures. This example repository is configured with this multi-architecture buildpack.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;m still working to improve this builder, in an effort to get ARM64 support upstream to &lt;a href=&#34;https://paketo.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Paketo&lt;/a&gt;. I have a long way to go, but with your help, I can discover gaps and continue this effort. One of the known, and frustrating gaps today, is that UPX compression does not work on ARM64, it does work with AMD64.  I really want to get this figured out, and it is a high priority for me.&lt;/p&gt;
+&lt;h2 id=&#34;building-and-testing-native-images&#34;&gt;
+  Building and testing native images
+  &lt;a class=&#34;heading-link&#34; href=&#34;#building-and-testing-native-images&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;One of the most common concerns I have heard from the community this year has been around validating that the native image artifacts are delivering the same results as the JIT/JVM based artifacts. This is a very valid concern.  This is also why I feel, that organizations with mature testing capabilities today, will be able to move forward with native images faster.&lt;/p&gt;
+&lt;p&gt;This repository provides a &lt;code&gt;BuildImageTest&lt;/code&gt; that uses the buildpack to create a native image.  It then tests the native image, using &lt;a href=&#34;https://testcontainers.org&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Testcontainers&lt;/a&gt; and &lt;a href=&#34;https://junit.org&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;JUnit&lt;/a&gt;. Building the native image with AOT processing, as part of a test, takes minutes not seconds, and should not be part of normal &amp;ldquo;inner loop&amp;rdquo; development.  So the &lt;code&gt;BuildImageTest&lt;/code&gt; is in a separate &lt;code&gt;sourceSet&lt;/code&gt; and can be executed independently. This is a very powerful pattern, that I&amp;rsquo;m just getting started with. I would love to hear your thoughts on this pattern or other alternatives to it.&lt;/p&gt;
+&lt;p&gt;To build and validate the native image:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./gradlew integrationTest
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;You can also execute the &lt;code&gt;BuildImageTest&lt;/code&gt; directly in your IDE.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h2 id=&#34;thanks&#34;&gt;
+  Thanks
+  &lt;a class=&#34;heading-link&#34; href=&#34;#thanks&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I am having so much fun with all of these new capabilities and challenges. I want to thank the Spring team, for all of their amazing work bring Spring Framework 6 and Spring Boot 3 to GA. I also want to thank Daniel Mikusa and the Paketo community for being amazing to work with. I want to thank Sergei Egorov for &lt;a href=&#34;https://bsideup.github.io/posts/spring_boot_in_container/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;sharing the testing pattern&lt;/a&gt; and supporting my Testcontainers journey. Finally, I would like to thank &lt;a href=&#34;https://danvega.dev&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Dan Vega&lt;/a&gt;, my &lt;a href=&#34;http://bit.ly/spring-office-hours&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Office Hours&lt;/a&gt; cohost, for being an amazing teammate, and having the JUICE.&lt;/p&gt;
+&lt;h2 id=&#34;keep-learning&#34;&gt;
+  Keep Learning
+  &lt;a class=&#34;heading-link&#34; href=&#34;#keep-learning&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://spring.io/projects/spring-cloud-gateway&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Boot Gateway&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://spring.io/projects/spring-cloud&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Cloud 2022.0.0-RC2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://spring.io/projects/spring-boot&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Boot 3.0.0&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://testcontainers.org&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Testcontainers&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://dashaun.com/posts/spring-boot-3-buildpacks-with-testcontainers-cloud/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Boot 3 buildpacks with Testcontainers Cloud&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://dashaun.com/posts/java-native-builder-multiarch-7-41-0/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cloud Native Buildpack for ARM64 and AMD64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://dashaun.com/posts/multiarch-builder-poc/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;First attempt at a multi-architecture buildpack&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://dashaun.com/posts/k3s-knative-ubuntu-raspberry-pi/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;K3s Knative Ubuntu Raspberry Pi&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>A new builder for Spring Boot 3 RC1 on ARM64</title>
+            <link>https://dashaun.com/posts/paketo-aarch64-builder-spring-boot-3-rc1/</link>
+            <pubDate>Thu, 10 Nov 2022 06:18:05 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/paketo-aarch64-builder-spring-boot-3-rc1/</guid>
+            <description>&lt;h2 id=&#34;background&#34;&gt;
+  Background
+  &lt;a class=&#34;heading-link&#34; href=&#34;#background&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;m a fan of using buildpacks.
+I&amp;rsquo;ve been &lt;a href=&#34;https://dashaun.com/posts/springboot-arm64-image/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;using&lt;/a&gt; and updating the &lt;a href=&#34;https://github.com/dmikusa/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paketo-arm64 repository started by Daniel Mikusa&lt;/a&gt;.
+With Spring Boot 3 going GA, very soon, more people are wanting to use buildpacks with their M1 machines.
+I feel pressure, in a great way, to get a new version released that includes the latest version of GraalVM.&lt;/p&gt;
+&lt;p&gt;Because I&amp;rsquo;m not doing this regularly, I forget the steps that I take to create a new build.
+So this post, is really a reminder-to-self, but hopefully it helps someone else also.&lt;/p&gt;
+&lt;p&gt;You can follow along with this on &lt;code&gt;M1&lt;/code&gt;,&lt;code&gt;Raspberry Pi&lt;/code&gt;, or a free-tier &lt;code&gt;ARM64&lt;/code&gt; instance from Oracle.&lt;/p&gt;
+&lt;h2 id=&#34;prerequisite&#34;&gt;
+  Prerequisite
+  &lt;a class=&#34;heading-link&#34; href=&#34;#prerequisite&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;ve been setting up a temporary ARM64 machine on Oracle Cloud for ARM64/aarch64 builds.
+The repository I use is &lt;a href=&#34;https://github.com/dashaun/oci-arm64-gha-runner-terraform&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.
+I should probably talk about that in another post, also.&lt;/p&gt;
+&lt;p&gt;My first step was to deploy that machine, so it can be used to build the builder!
+Once I got the machine up and connected to my repository, I was ready to update the code.&lt;/p&gt;
+&lt;h2 id=&#34;make-changes&#34;&gt;
+  Make changes
+  &lt;a class=&#34;heading-link&#34; href=&#34;#make-changes&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;First I just made changes to the versions in &lt;a href=&#34;https://raw.githubusercontent.com/dashaun/paketo-arm64/main/.github/workflows/paketo-arm64.yml&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;my GitHub workflow&lt;/a&gt;.
+That worked and pushed out a new image, but it wasn&amp;rsquo;t enough.&lt;/p&gt;
+&lt;p&gt;I had to re-read the workflow to understand what I was missing.&lt;/p&gt;
+&lt;p&gt;For each of the files in the &lt;code&gt;arm64-toml&lt;/code&gt; of &lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;the repository&lt;/a&gt; I needed to update to the latest versions.
+This is a tedious, and currently manual, process that requires copy, paste, merge and then creating sha256 values.&lt;/p&gt;
+&lt;p&gt;For these versions, it was extra messy, because naming conventions changed since my last release.
+In some places &lt;code&gt;arm64&lt;/code&gt; was replaced with &lt;code&gt;aarch64&lt;/code&gt; as one example.&lt;/p&gt;
+&lt;p&gt;Additionally, some dependencies had even more releases, and I decided to go with the &lt;code&gt;full&lt;/code&gt; option when it was available.&lt;/p&gt;
+&lt;p&gt;The last real time-suck was the &lt;code&gt;sha&lt;/code&gt; values.
+In the GitHub releases, the sha values are provided as &lt;code&gt;sha1sum&lt;/code&gt; values.
+In the builder metadata, it requires &lt;code&gt;sha256&lt;/code&gt; values.
+Since I couldn&amp;rsquo;t find &lt;code&gt;sha256&lt;/code&gt; values published anywhere, I had to download the dependencies and calculate the values manually.
+For each dependency update, &lt;code&gt;curl&lt;/code&gt; then &lt;code&gt;shasum&lt;/code&gt;, which can be error prone.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -L https://github.com/bell-sw/Liberica/releases/download/8u352+8/bellsoft-jdk8u352+8-linux-aarch64.tar.gz -O
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;shasum -a &lt;span style=&#34;color:#40a070&#34;&gt;256&lt;/span&gt; bellsoft-jdk8u352+8-linux-aarch64.tar.gz
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Hopefully, this post and the small updates I made to the &lt;code&gt;README.md&lt;/code&gt; will remind me next time.
+I should probably figure out a way to automate some of that.
+Maybe a CLI?&lt;/p&gt;
+&lt;h2 id=&#34;create-an-application-image&#34;&gt;
+  Create an application image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#create-an-application-image&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Create a Spring Boot 3 application with &lt;code&gt;web&lt;/code&gt; and &lt;code&gt;actuator&lt;/code&gt; which is enough for a simple test.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Create a Spring Boot 3 application&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl https://start.spring.io/starter.tgz -d &lt;span style=&#34;color:#bb60d5&#34;&gt;dependencies&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;web,actuator -d &lt;span style=&#34;color:#bb60d5&#34;&gt;javaVersion&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#40a070&#34;&gt;17&lt;/span&gt; -d &lt;span style=&#34;color:#bb60d5&#34;&gt;bootVersion&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;3.0.0-SNAPSHOT -d &lt;span style=&#34;color:#bb60d5&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;maven-project | tar -xzf -
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In the pom.xml replace this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-xml&#34; data-lang=&#34;xml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;build&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;plugins&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;plugin&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.boot&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-boot-maven-plugin&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/plugin&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/plugins&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/build&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;with this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-xml&#34; data-lang=&#34;xml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;build&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;plugins&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;plugin&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;org.springframework.boot&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;spring-boot-maven-plugin&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;image&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;builder&amp;gt;&lt;/span&gt;dashaun/java-native-builder-arm64:7.37.0&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/builder&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/image&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/plugin&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/plugins&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;lt;/build&amp;gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Build an image using the image builder that we have created and configured.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./mvnw -Pnative spring-boot:build-image
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;run-and-test-the-image&#34;&gt;
+  Run and test the image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#run-and-test-the-image&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Run the OCI image with &lt;code&gt;docker&lt;/code&gt; to start up the server.
+It should start quickly!&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Forward the prt, run in the background, but see the startup time&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run -p 8080:8080 demo:0.0.1-SNAPSHOT &amp;amp;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Check the endpoint to validate&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;http :8080/actuator/health
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;finally&#34;&gt;
+  Finally
+  &lt;a class=&#34;heading-link&#34; href=&#34;#finally&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Because I&amp;rsquo;m done, and moved &lt;a href=&#34;https://hub.docker.com/r/dashaun/java-native-builder-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;builder version 7.37.0 to prod&lt;/a&gt;, I also cleaned up my &lt;code&gt;terraform&lt;/code&gt; deployment.&lt;/p&gt;
+&lt;p&gt;Another huge &amp;ldquo;Thanks&amp;rdquo; to &lt;a href=&#34;https://twitter.com/dmikusa&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Daniel Mikusa&lt;/a&gt; for all of his help.&lt;/p&gt;
+&lt;h2 id=&#34;links&#34;&gt;
+  Links
+  &lt;a class=&#34;heading-link&#34; href=&#34;#links&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://hub.docker.com/r/dashaun/java-native-builder-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dashaun/java-native-builder-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dashaun/paketo-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/oci-arm64-gha-runner-terraform&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dashaun/oci-arm64-gha-runner-terraform&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://dashaun.com/posts/springboot-arm64-image/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Related Post&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

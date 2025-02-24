@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Kubectl config cleanup · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="This is just a note to myself, to remember how to clean up my kubectl config files.">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://dashaun.com/posts/kubectl-config-cleanup/images/feature.png">
+  <meta name="twitter:title" content="Kubectl config cleanup">
+  <meta name="twitter:description" content="This is just a note to myself, to remember how to clean up my kubectl config files.">
+
+<meta property="og:url" content="https://dashaun.com/posts/kubectl-config-cleanup/">
+  <meta property="og:site_name" content="DaShaun">
+  <meta property="og:title" content="Kubectl config cleanup">
+  <meta property="og:description" content="This is just a note to myself, to remember how to clean up my kubectl config files.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-03-08T15:04:21-06:00">
+    <meta property="article:modified_time" content="2025-02-24T16:16:50-06:00">
+    <meta property="article:tag" content="Kubernetes">
+    <meta property="og:image" content="https://dashaun.com/posts/kubectl-config-cleanup/images/feature.png">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/kubectl-config-cleanup/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Follow me on Twitch</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/kubectl-config-cleanup/">
+              Kubectl config cleanup
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2024-03-08T15:04:21-06:00'>
+                March 8, 2024
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2024-03-08T15:04:21-06:00'>
+                February 24, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              2-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='images/feature.png' alt="Featured image"/>
+        
+        <p>I have a bunch of Kubernetes configurations on my machine.  When I need to clean them up, I always forget the steps.  This is just a note to myself, to remember how to clean up my kubectl config files.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>juice :~ $ kubectx
+</span></span><span style="display:flex;"><span>arm64
+</span></span><span style="display:flex;"><span>build
+</span></span><span style="display:flex;"><span>clusterhat00
+</span></span><span style="display:flex;"><span>k3d-juice
+</span></span><span style="display:flex;"><span>korifi
+</span></span><span style="display:flex;"><span>luiki
+</span></span><span style="display:flex;"><span>mgmt
+</span></span><span style="display:flex;"><span>nucs
+</span></span><span style="display:flex;"><span>juice :~ $ kubectx luiki
+</span></span><span style="display:flex;"><span>Switched to context <span style="color:#4070a0">&#34;luiki&#34;</span>.
+</span></span><span style="display:flex;"><span>juice :~ $ kubectl get nodes -o wide
+</span></span><span style="display:flex;"><span>E0308 15:11:03.839634   <span style="color:#40a070">89098</span> memcache.go:265<span style="color:#666">]</span> couldn<span style="">&#39;</span>t get current server API group list: Get <span style="color:#4070a0">&#34;https://100.67.74.147:6443/api?timeout=32s&#34;</span>: dial tcp 100.67.74.147:6443: i/o timeout
+</span></span></code></pre></div><blockquote>
+<p>Starting with a context that doesn&rsquo;t work.</p></blockquote>
+<p>Delete the cluster from the config file.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>juice :~ $ kubectl config delete-cluster luiki
+</span></span><span style="display:flex;"><span>deleted cluster luiki from /Users/dashaun/.kube/config
+</span></span><span style="display:flex;"><span>juice :~ $ kubectx
+</span></span><span style="display:flex;"><span>arm64
+</span></span><span style="display:flex;"><span>build
+</span></span><span style="display:flex;"><span>clusterhat00
+</span></span><span style="display:flex;"><span>k3d-juice
+</span></span><span style="display:flex;"><span>korifi
+</span></span><span style="display:flex;"><span>luiki
+</span></span><span style="display:flex;"><span>mgmt
+</span></span><span style="display:flex;"><span>nucs
+</span></span><span style="display:flex;"><span>juice :~ $
+</span></span></code></pre></div><blockquote>
+<p>I don&rsquo;t think the order matters, but I start by deleting the cluster.</p></blockquote>
+<p>After deleting the cluster, the context still shows up in the list.
+So let&rsquo;s delete the context.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>juice :~ $ kubectl config delete-context luiki
+</span></span><span style="display:flex;"><span>deleted context luiki from /Users/dashaun/.kube/config
+</span></span><span style="display:flex;"><span>juice :~ $ kubectx
+</span></span><span style="display:flex;"><span>arm64
+</span></span><span style="display:flex;"><span>build
+</span></span><span style="display:flex;"><span>clusterhat00
+</span></span><span style="display:flex;"><span>k3d-juice
+</span></span><span style="display:flex;"><span>korifi
+</span></span><span style="display:flex;"><span>mgmt
+</span></span><span style="display:flex;"><span>nucs
+</span></span><span style="display:flex;"><span>juice :~ $
+</span></span></code></pre></div><blockquote>
+<p>The context is gone.</p></blockquote>
+<p>If I tried to create a new context named <code>luiki</code> I would get an error, because the user still exists.
+So let&rsquo;s delete the user from the config file.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>juice :~ $ kubectl config delete-user luiki
+</span></span><span style="display:flex;"><span>deleted user luiki from /Users/dashaun/.kube/config
+</span></span><span style="display:flex;"><span>juice :~ $ 
+</span></span></code></pre></div><blockquote>
+<p>The user is gone.</p></blockquote>
+<p>All done, I can create a new context named <code>luiki</code> now.</p>
+<p>If I want to simplify things for myself I might do something like this going forward:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#bb60d5">K3SUP_NAME</span><span style="color:#666">=</span>luiki
+</span></span><span style="display:flex;"><span>kubectl config delete-cluster <span style="color:#bb60d5">$K3SUP_NAME</span>
+</span></span><span style="display:flex;"><span>kubectl config delete-context <span style="color:#bb60d5">$K3SUP_NAME</span>
+</span></span><span style="display:flex;"><span>kubectl config delete-user <span style="color:#bb60d5">$K3SUP_NAME</span>
+</span></span></code></pre></div><blockquote>
+<p>This would be a good way to clean up after using <code>k3sup</code> to install a cluster.</p></blockquote>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

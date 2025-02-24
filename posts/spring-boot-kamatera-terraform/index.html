@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Spring Boot Kamatera Terraform · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="Deploy a Spring Boot Docker image to Kamatera in 5 minutes">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://dashaun.com/images/avatar.png">
+  <meta name="twitter:title" content="Spring Boot Kamatera Terraform">
+  <meta name="twitter:description" content="Deploy a Spring Boot Docker image to Kamatera in 5 minutes">
+
+<meta property="og:url" content="https://dashaun.com/posts/spring-boot-kamatera-terraform/">
+  <meta property="og:site_name" content="DaShaun">
+  <meta property="og:title" content="Spring Boot Kamatera Terraform">
+  <meta property="og:description" content="Deploy a Spring Boot Docker image to Kamatera in 5 minutes">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-10-24T11:19:03-05:00">
+    <meta property="article:modified_time" content="2025-02-24T16:16:50-06:00">
+    <meta property="article:tag" content="Spring">
+    <meta property="article:tag" content="Terraform">
+    <meta property="article:tag" content="Docker">
+    <meta property="og:image" content="https://dashaun.com/images/avatar.png">
+      <meta property="og:see_also" content="https://dashaun.com/posts/korifi-v0_14_0-on-raspberry-pi/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/korifi-on-raspberry-pi/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/spring-boot-stackpath-terraform/">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/spring-boot-kamatera-terraform/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Follow me on Twitch</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/spring-boot-kamatera-terraform/">
+              Spring Boot Kamatera Terraform
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2022-10-24T11:19:03-05:00'>
+                October 24, 2022
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2022-10-24T11:19:03-05:00'>
+                February 24, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              6-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='console-with-tasks.png' alt="Featured image"/>
+        
+        <p>Recently, during the <a href="https://bit.ly/spring-office-hours"  class="external-link" target="_blank" rel="noopener">Spring Office Hours</a>, we have been discussing <code>Spring to Production</code> as a topic.
+There are so many ways to get Spring Boot application to production.
+If your Spring Boot application is delivered as a container, all you really need is a Docker or Kubernetes dial tone.</p>
+<p>In this post, I&rsquo;m starting from nothing, and delivering a Spring Boot application to <a href="https://kamatera.com"  class="external-link" target="_blank" rel="noopener">Kamatera</a>.
+I&rsquo;ve never used Kamatera before this, so I&rsquo;m going document the entire process, and experience, for you.</p>
+<h2 id="getting-an-account">
+  Getting an account
+  <a class="heading-link" href="#getting-an-account">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p><a href="https://kamatera.com"  class="external-link" target="_blank" rel="noopener">Kamatera</a> provides a <code>30-Day Free Trial</code> which sounds wonderful!
+After validating my email address, I was required to add a billing profile.
+This makes sense.
+However, before signing up for the free trial, I did verify that there was a <a href="https://registry.terraform.io/providers/Kamatera/kamatera/latest/docs"  class="external-link" target="_blank" rel="noopener">Terraform provider for Kamatera</a>.</p>
+<p>While I was adding my billing profile, I saw more details of the 30-Day free trial.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>30 days Free Usage:
+</span></span><span style="display:flex;"><span>1 Cloud Server (of up to 100 USD)
+</span></span><span style="display:flex;"><span>1000 GB Cloud Block Storage
+</span></span><span style="display:flex;"><span>1000 GB Outgoing Internet Traffic
+</span></span></code></pre></div><p>This is plenty to work with, so I continued to proceed.
+The only option I had was to use a credit card.
+The process was pretty painless and only took a couple of minutes.</p>
+<p>The UI is easy to understand and navigate.
+I just don&rsquo;t want to use the UI.
+I want to automate all the things.
+Now that my account is set up, I want to set up my infrastructure as code.</p>
+<h2 id="kamatera-terraform-provider">
+  Kamatera Terraform Provider
+  <a class="heading-link" href="#kamatera-terraform-provider">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>A quick glance at the <a href="https://github.com/Kamatera/terraform-provider-kamatera/blob/master/README.md#usage-guide"  class="external-link" target="_blank" rel="noopener">Terraform Provider for Kamatera usage guide</a>
+and I see that I need:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>KAMATERA_API_CLIENT_ID
+</span></span><span style="display:flex;"><span>KAMATERA_API_SECRET
+</span></span></code></pre></div><p>In the <a href="https://console.kamatera.com"  class="external-link" target="_blank" rel="noopener">Kamatera console</a> I easily found where I needed to go <a href="https://console.kamatera.com/keys"  class="external-link" target="_blank" rel="noopener">to add keys</a>.</p>
+<p>I clicked the <code>+ Create New Key</code> button.  A <code>description</code> box is presented.
+I put <code>Spring Boot to Production with Kamatera</code> in the description and clicked <code>Create Key</code> to move forward.
+At that point, I am provided with my <code>Client ID</code> and <code>API Secret</code> which I then copy to a safe place.</p>
+<p>The <a href="https://github.com/Kamatera/terraform-provider-kamatera/blob/master/README.md#usage-guide"  class="external-link" target="_blank" rel="noopener">Terraform Provider for Kamatera usage guide</a> also provided an example Terraform file.
+I copied that and separated their <code>main.tf</code> into different files, that makes things easier for me to understand later.
+I started a <a href="https://github.com/dashaun/spring-boot-kamatera-terraform"  class="external-link" target="_blank" rel="noopener">github repository</a> to capture my changes.</p>
+<p>At this point, I determined that I couldn&rsquo;t configure Docker as an option via Terraform using one of their images.
+They have a tool that generates Terraform files, but the image ID never worked for me.
+I didn&rsquo;t spend much time investigating, probably user error.</p>
+<p>That is ok, because I can use an executable JAR and deploy that as a service.
+Or I can just install Docker as part of the startup scripts.</p>
+<p>I chose to use <code>Ubuntu</code> and their <code>22.04 64bit_optimized</code> image.</p>
+<h2 id="docker">
+  Docker
+  <a class="heading-link" href="#docker">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I attempted to install Docker using the <code>startup_script</code> value of the <code>kamatera_server</code> but I struggled with getting that to work consistently.
+The problem appeared to be timing.
+I&rsquo;m still unsure about when the startup script gets executed.
+I needed to wait for the network, then wait for DNS, and sometimes it would just fail.
+I couldn&rsquo;t figure out a way to access the logs during the build process either.
+At one point, a server appeared to have been built and completed successfully, but the startup script was stuck in a loop, waiting for something.
+I couldn&rsquo;t access the server though, and my Terraform was stuck, for 15+ minutes.</p>
+<h2 id="interesting-side-note-regarding-the-stuck-server">
+  Interesting Side Note Regarding The Stuck Server
+  <a class="heading-link" href="#interesting-side-note-regarding-the-stuck-server">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I opened a ticket, asking for the server to be destroyed, for two reasons.
+When I cancelled the stuck Terraform <code>apply</code> my local state didn&rsquo;t show the server, so I couldn&rsquo;t Terraform <code>destroy</code> it.
+In the Kamatera console, the task was showing completed, but the server didn&rsquo;t show up in my server list, so I couldn&rsquo;t delete it from there either.</p>
+<p>The response was quick, less than 30 minutes, but confusing.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Unfortunately, we do not provide support for Terraform.
+</span></span></code></pre></div><p>The <a href="https://github.com/Kamatera/terraform-provider-kamatera"  class="external-link" target="_blank" rel="noopener">Terraform Provider</a> that I&rsquo;m using, appears to be created by <code>Kamatera</code> and shows up in the <a href="https://registry.terraform.io/providers/Kamatera/kamatera/latest"  class="external-link" target="_blank" rel="noopener">Terraform Registry</a>.
+Therefore, I can only assume that the 30-day support is not going to troubleshoot Terraform related issues.</p>
+<p>I later realized that every server creation and destroy sends out an email receipt.
+I did not get a receipt for the server creation, so maybe, hopefully, their system cleaned it up properly, automatically.</p>
+<h2 id="docker-via-remote-exec">
+  Docker via remote-exec
+  <a class="heading-link" href="#docker-via-remote-exec">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I don&rsquo;t recommend this approach.
+Nobody recommends this approach.
+The Terraform documentation states <a href="https://developer.hashicorp.com/terraform/language/resources/provisioners/remote-exec"  class="external-link" target="_blank" rel="noopener">Use provisioners as a last resort.</a>
+It&rsquo;s marked <code>Important</code> and highlighted at the top of the page.</p>
+<p>Well, it is my last resort.
+The purpose of this exercise was to show that getting Spring to production is doable, and Spring Boot makes it really easy.
+Different providers are going to have different pain points, but also, different strengths.</p>
+<p>At this point, I use the <code>remote-exec</code> provisioner to do a few things:</p>
+<ul>
+<li>Download the <code>Docker</code> install script via <code>curl</code></li>
+<li>Execute the install script</li>
+<li>Pull down the <a href="https://hub.docker.com/r/dashaun/spring-boot-native-pi-default"  class="external-link" target="_blank" rel="noopener">image</a></li>
+<li>Run the <a href="https://hub.docker.com/r/dashaun/spring-boot-native-pi-default"  class="external-link" target="_blank" rel="noopener">image</a> on <code>Docker</code></li>
+</ul>
+<p>Using <code>remote-exec</code> required setting up a <code>connection</code> to the host.
+For this example, I chose to use a public/private key pair for access.</p>
+<h2 id="execute">
+  Execute
+  <a class="heading-link" href="#execute">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>In order to take this for a spin yourself:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">#clone the repository</span>
+</span></span><span style="display:flex;"><span>git clone https://github.com/dashaun/spring-to-production-kamatera
+</span></span><span style="display:flex;"><span><span style="color:#007020">cd</span> spring-to-production-kamatera
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># configure Terraform with your credentials</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">KAMATERA_API_CLIENT</span><span style="color:#666">=</span>...
+</span></span><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">KAMATERA_API_SECRET</span><span style="color:#666">=</span>...
+</span></span><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">TF_VAR_ssh_public_key</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;</span><span style="color:#007020;font-weight:bold">$(</span>cat ~/.ssh/id_rsa.pub<span style="color:#007020;font-weight:bold">)</span><span style="color:#4070a0">&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">TF_VAR_ssh_private_key</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;</span><span style="color:#007020;font-weight:bold">$(</span>cat ~/.ssh/id_rsa<span style="color:#007020;font-weight:bold">)</span><span style="color:#4070a0">&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Initialize Terraform to pull down the provider</span>
+</span></span><span style="display:flex;"><span>terraform init
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Validate your credentials config by using the plan</span>
+</span></span><span style="display:flex;"><span>terraform plan
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Apply the Terraform, ETC &lt; 5min</span>
+</span></span><span style="display:flex;"><span>terraform apply -auto-approve
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Access the Spring Boot application using the newly created server</span>
+</span></span><span style="display:flex;"><span>curl <span style="color:#007020;font-weight:bold">$(</span>terraform output -raw public_ips<span style="color:#007020;font-weight:bold">)</span>:8080/actuator/health | jq .
+</span></span></code></pre></div><p>When you are done, clean up behind yourself:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Destroy the Terraform, ETC &lt; 1min</span>
+</span></span><span style="display:flex;"><span>terraform destroy -auto-approve
+</span></span></code></pre></div><h2 id="summary">
+  Summary
+  <a class="heading-link" href="#summary">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>While exploring multi-cloud architectures, I really wanted to get outside my comfort zone.
+Things like <code>Terraform</code> and <code>Spring Boot</code> make getting applications up and available really simple.
+I am going to continue to explore and experiment with other cloud providers.
+Soon, I will deploy a reference architecture, with different Spring Boot services, each deployed to different cloud providers.
+My theory is that you don&rsquo;t have to be a certified Azure|GCP|AWS cloud architect to be productive with Spring Boot.</p>
+<h2 id="feedback">
+  Feedback
+  <a class="heading-link" href="#feedback">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I did not harden this deployment, and I wouldn&rsquo;t call it production ready.
+If you would like to see me expand and harden this example, please let me know, via the <a href="https://github.com/dashaun/spring-boot-kamatera-terraform"  class="external-link" target="_blank" rel="noopener">GitHub repository</a>.</p>
+
+      </div>
+
+
+      <footer>
+        
+
+<section class="see-also">
+  
+    
+    
+    
+  
+</section>
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

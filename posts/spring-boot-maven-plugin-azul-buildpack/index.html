@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Spring Boot Maven Plugin Azul Buildpack · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="Spring Boot Maven Plugin using the Azul Buildpack from Paketo">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://dashaun.com/posts/spring-boot-maven-plugin-azul-buildpack/images/feature.png">
+  <meta name="twitter:title" content="Spring Boot Maven Plugin Azul Buildpack">
+  <meta name="twitter:description" content="Spring Boot Maven Plugin using the Azul Buildpack from Paketo">
+
+<meta property="og:url" content="https://dashaun.com/posts/spring-boot-maven-plugin-azul-buildpack/">
+  <meta property="og:site_name" content="DaShaun">
+  <meta property="og:title" content="Spring Boot Maven Plugin Azul Buildpack">
+  <meta property="og:description" content="Spring Boot Maven Plugin using the Azul Buildpack from Paketo">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-06-30T18:51:10-05:00">
+    <meta property="article:modified_time" content="2025-02-24T16:16:50-06:00">
+    <meta property="article:tag" content="Springboot">
+    <meta property="article:tag" content="Buildpacks">
+    <meta property="article:tag" content="Azul">
+    <meta property="article:tag" content="Zulu">
+    <meta property="article:tag" content="Paketo">
+    <meta property="og:image" content="https://dashaun.com/posts/spring-boot-maven-plugin-azul-buildpack/images/feature.png">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/spring-boot-maven-plugin-azul-buildpack/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Follow me on Twitch</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/spring-boot-maven-plugin-azul-buildpack/">
+              Spring Boot Maven Plugin Azul Buildpack
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2023-06-30T18:51:10-05:00'>
+                June 30, 2023
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2023-06-30T18:51:10-05:00'>
+                February 24, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              4-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='images/feature.png' alt="Featured image"/>
+        
+        <h1 id="spring-boot-maven-plugin-using-the-azul-buildpack-from-paketo">
+  Spring Boot Maven Plugin using the Azul Buildpack from Paketo
+  <a class="heading-link" href="#spring-boot-maven-plugin-using-the-azul-buildpack-from-paketo">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<p>It&rsquo;s a great day to be a Spring Developer. This morning, my good friend Frank Delporte from Azul reached out with some questions about the Spring Boot Maven Plugin and the use of Azul Zulu JDK. It felt like a great opportunity to help out an amazing member of the community. At the end of the day, I spent some time creating a demo to help him out. I thought it would be a good idea to share it with you all as well.</p>
+<h2 id="initializr-plusplus">
+  Initializr-plusplus
+  <a class="heading-link" href="#initializr-plusplus">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I do believe this is a great candidate for the <a href="https://github.com/spring-projects-experimental/spring-cli"  class="external-link" target="_blank" rel="noopener">Spring-CLI</a> project, but for now, I have <a href="https://github.com/dashaun/initializr-plusplus"  class="external-link" target="_blank" rel="noopener">Initializr-plusplus</a> a much simpler Spring Shell project that I use personally. Since I already had an option for using my <a href="https://github.com/dashaun/paketo-arm64"  class="external-link" target="_blank" rel="noopener">multi-architecture buildpack</a> it was a simple matter of copying and pasting with a couple of small edits.  The resulting <code>initializer-plusplus zulu-builder</code> command is available in <a href="https://github.com/dashaun/initializr-plusplus/releases/tag/v0.0.34"  class="external-link" target="_blank" rel="noopener">v0.0.34</a> of the project.</p>
+<h2 id="the-questions">
+  The Questions
+  <a class="heading-link" href="#the-questions">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li>How to switch from default <code>paketobuildpacks/builder</code> to <code>paketobuildpacks/azul-zulu</code></li>
+<li>How to add options to the JVM command line like <code>-Xlog:gc:gc.log</code></li>
+<li>Can it be done <code>simply</code>?</li>
+</ul>
+<h2 id="the-demo">
+  The Demo
+  <a class="heading-link" href="#the-demo">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I can&rsquo;t think of an easier way to switch between buildpacks than using the <code>initializer-plusplus</code> project. Creating a Spring Shell CLI to manage Maven <code>pom</code> files or other project features, consistently, feels like a cheat code.</p>
+<p>In the demo, I switch to the Azul Zulu JDK for the entire demo, even though it isn&rsquo;t required, because the JDK is included in the buildpack. I tried to make things pretty and showed the <code>java -version</code> output before creating the Spring Boot project.</p>
+<p>I used <code>curl</code> to create the Spring Boot project and added dependencies for <code>web</code> and <code>actuator</code> in order to get a simple project that is easy to test.  Of course, I also select Java 17 as the JDK version.</p>
+<p>I run the <code>git init</code> command to initialize a new git repository. With that, I can easily show the import <code>diff</code> that I&rsquo;m generating with the <code>initializer-plusplus zulu-builder</code> command.  I show the new section of the <code>pom.xml</code> and move on to creating the image with the Spring Boot Maven Plugin.</p>
+<h2 id="building-the-image">
+  Building the Image
+  <a class="heading-link" href="#building-the-image">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Our mission is accomplished once the Zulu build pack is incorporated. As long as we put the <code>Azul Zulu</code> buildpack in front of the Java buildpack, we will get the <code>Azul Zulu</code> buildpack instead of the default <code>Liberica</code> version. The image is built successfully, and we pull in all other stuff from the Java build pack.</p>
+<h2 id="running-and-validating-the-image">
+  Running and Validating the Image
+  <a class="heading-link" href="#running-and-validating-the-image">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>The demo image is run after assigning a unique name to it and exposing Port 8080. I verify the image&rsquo;s status and validate the endpoint&rsquo;s health. A thorough check inside the image confirms the inclusion of the &lsquo;GC log&rsquo; command, one of the options chosen for the demo.</p>
+<h2 id="wrapping-up-the-demo">
+  Wrapping Up the Demo
+  <a class="heading-link" href="#wrapping-up-the-demo">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>The entire process concludes with a peek into the GC log. And voila! We&rsquo;ve accomplished our mission. The entire process was wrapped up in less than 5 minutes, and all the steps were integrated into a repository for you to experiment and tweak as you please.</p>
+<h2 id="afterthoughts-and-tips">
+  Afterthoughts and Tips
+  <a class="heading-link" href="#afterthoughts-and-tips">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>An important concept I wish to emphasize is the flexibility in switching between the buildpacks. It&rsquo;s essential to acknowledge that not all tasks need to follow the same path to production. It is prudent to evaluate as different workloads may have varying requirements, and different JVMs might perform better or worse.</p>
+<p>So, don&rsquo;t hesitate to put in those 5 minutes to conduct an experiment. Validate your assumptions by testing if an application benefits from using a different JVM or a different garbage collection method. After all, we&rsquo;re dealing with applications that could potentially go into production hundreds or even thousands of times.</p>
+<ul>
+<li><a href="https://www.youtube.com/live/6FfP3v40il8"  class="external-link" target="_blank" rel="noopener">Watch the demo on YouTube</a></li>
+<li><a href="https://github.com/dashaun/spring-boot-maven-plugin-azul-buildpack-example"  class="external-link" target="_blank" rel="noopener">The demo repository</a></li>
+</ul>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

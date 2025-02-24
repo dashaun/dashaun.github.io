@@ -1,0 +1,524 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Java Native Builder Multiarch on DaShaun</title>
+        <link>https://dashaun.com/series/java-native-builder-multiarch/</link>
+        <description>Recent content in Java Native Builder Multiarch on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Thu, 12 Dec 2024 10:15:30 -0600</lastBuildDate><atom:link href="https://dashaun.com/series/java-native-builder-multiarch/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Multi-Architecture Spring OCI from anywhere with Paketo</title>
+            <link>https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/</link>
+            <pubDate>Thu, 12 Dec 2024 10:15:30 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/</guid>
+            <description>&lt;h2 id=&#34;multi-architecture-spring-oci-from-anywhere-with-paketo&#34;&gt;
+  Multi-Architecture Spring OCI from anywhere with Paketo
+  &lt;a class=&#34;heading-link&#34; href=&#34;#multi-architecture-spring-oci-from-anywhere-with-paketo&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;My favorite feature of Spring Boot 3.4.0 is the adoption of multi-architecture buildpacks.
+This feature empowers you to construct native images and traditional JVM-based applications for both AMD64 and ARM64, from a unified build process.
+The fact that OCI images will also be smaller because of the new default buildpack is a bonus.&lt;/p&gt;
+&lt;h3 id=&#34;emotionally-invested&#34;&gt;
+  Emotionally Invested
+  &lt;a class=&#34;heading-link&#34; href=&#34;#emotionally-invested&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;I&amp;rsquo;ve been building native images for ARM64 since 2021, because I&amp;rsquo;m a Raspberry Pi enthusiast and passionate about Spring Boot.
+Since that time, I&amp;rsquo;ve created dozens of solutions, to put production-ready, enterprise-grade, Spring Boot on Raspberry Pi ARM64 devices with only 512MB of RAM.
+I no longer have to support my own solution.&lt;/p&gt;
+&lt;h3 id=&#34;getting-started&#34;&gt;
+  Getting Started
+  &lt;a class=&#34;heading-link&#34; href=&#34;#getting-started&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Prerequisites:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;At least Java 17&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Docker&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;docker-desktop-configuration&#34;&gt;
+  Docker Desktop Configuration
+  &lt;a class=&#34;heading-link&#34; href=&#34;#docker-desktop-configuration&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Docker Desktop comes with built-in QEMU support for multi-architecture builds. However, if you need to install QEMU manually, you have two options:&lt;/p&gt;
+&lt;h4 id=&#34;option-1-using-tonistiigibinfmt&#34;&gt;
+  Option 1: Using tonistiigi/binfmt
+  &lt;a class=&#34;heading-link&#34; href=&#34;#option-1-using-tonistiigibinfmt&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h4&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Install QEMU support for all architectures&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run --privileged --rm tonistiigi/binfmt --install all
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;This command was found here: &lt;a href=&#34;https://docs.docker.com/build/building/multi-platform/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://docs.docker.com/build/building/multi-platform/&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h4 id=&#34;option-2-using-multiarchqemu-user-static&#34;&gt;
+  Option 2: Using multiarch/qemu-user-static
+  &lt;a class=&#34;heading-link&#34; href=&#34;#option-2-using-multiarchqemu-user-static&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h4&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Install and configure QEMU&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker run --privileged --rm multiarch/qemu-user-static --reset -p yes
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;More information can be found here: &lt;a href=&#34;https://github.com/multiarch/qemu-user-static&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/multiarch/qemu-user-static&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h3 id=&#34;spring-boot-340-application&#34;&gt;
+  Spring Boot 3.4.0 application
+  &lt;a class=&#34;heading-link&#34; href=&#34;#spring-boot-340-application&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;First, let&amp;rsquo;s create a new Spring Boot application:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mkdir mydemo
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;cd&lt;/span&gt; mydemo
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl https://start.spring.io/starter.tgz -d &lt;span style=&#34;color:#bb60d5&#34;&gt;dependencies&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;web,actuator -d &lt;span style=&#34;color:#bb60d5&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;maven-project | tar -xvzf -
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;You could also use &lt;a href=&#34;https://start.spring.io/#!type=maven-project&amp;amp;language=java&amp;amp;platformVersion=3.4.0&amp;amp;packaging=jar&amp;amp;jvmVersion=23&amp;amp;groupId=com.example&amp;amp;artifactId=demo&amp;amp;name=demo&amp;amp;description=Demo%20project%20for%20Spring%20Boot&amp;amp;packageName=com.example.demo&amp;amp;dependencies=web,actuator&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://start.spring.io&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h3 id=&#34;create-a-multi-architecture-oci-image&#34;&gt;
+  Create a multi-architecture OCI Image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#create-a-multi-architecture-oci-image&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Here&amp;rsquo;s the step-by-step process to build and publish multi-architecture images:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Build ARM64 image&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./mvnw spring-boot:build-image -Dspring-boot.build-image.imagePlatform&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;linux/arm64 -Dspring-boot.build-image.imageName&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;dashaun/blog-3-4-0:arm64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker push dashaun/blog-3-4-0:arm64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Build AMD64 image&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./mvnw spring-boot:build-image -Dspring-boot.build-image.imagePlatform&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;linux/amd64 -Dspring-boot.build-image.imageName&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;dashaun/blog-3-4-0:amd64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker push dashaun/blog-3-4-0:amd64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Create and push multi-architecture manifest&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker manifest create dashaun/blog-3-4-0:multiarch --amend dashaun/blog-3-4-0:arm64 --amend dashaun/blog-3-4-0:amd64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker manifest push dashaun/blog-3-4-0:multiarch
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;inspect&#34;&gt;
+  Inspect
+  &lt;a class=&#34;heading-link&#34; href=&#34;#inspect&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;Inspect the multi-architecture manifest:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker manifest inspect dashaun/blog-3-4-0:multiarch
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Inspect the manifest, results below.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;schemaVersion&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#40a070&#34;&gt;2&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;mediaType&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;application/vnd.docker.distribution.manifest.list.v2+json&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;manifests&amp;#34;&lt;/span&gt;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;mediaType&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;application/vnd.docker.distribution.manifest.v2+json&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;size&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#40a070&#34;&gt;2407&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;digest&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;sha256:96d95eed9308f86a8055156913ed8710c25917bdf0389bd6d5cf2ab0a79c77fc&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;platform&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;architecture&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;amd64&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;os&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;linux&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    },
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;mediaType&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;application/vnd.docker.distribution.manifest.v2+json&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;size&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#40a070&#34;&gt;2406&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;digest&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;sha256:4c42eebe412f56a03d840d2660b9defde3820ce1c5e510ffba0067be0ae11c8e&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;platform&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;architecture&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;arm64&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;        &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;os&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;linux&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  ]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;The manifest shows both platforms &lt;code&gt;linux/amd64&lt;/code&gt; and &lt;code&gt;linux\arm64&lt;/code&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;Looking at the &lt;a href=&#34;https://hub.docker.com/r/dashaun/blog-3-4-0/tags&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Docker Hub tags&lt;/a&gt; &lt;code&gt;Digest&lt;/code&gt; sections, notice that the &lt;code&gt;sha&lt;/code&gt; values for the &lt;code&gt;arm64&lt;/code&gt; and &lt;code&gt;amd64&lt;/code&gt; tags match the &lt;code&gt;multiarch&lt;/code&gt; tag&amp;rsquo;s values.&lt;/p&gt;
+&lt;p&gt;The new default buildpack, &lt;a href=&#34;https://github.com/paketo-buildpacks/builder-jammy-java-tiny&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;builder-jammy-java-tiny&lt;/a&gt; also results in much smaller images.  Both of the images we created here are under 275mb.
+Switching to Spring Boot 3.3.6 and the previous default buildpack &lt;a href=&#34;https://github.com/paketo-buildpacks/builder-jammy-base&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paketobuildpacks/builder-jammy-base&lt;/a&gt; results in a ~350mb image.&lt;/p&gt;
+&lt;h3 id=&#34;building-native-images&#34;&gt;
+  Building Native Images
+  &lt;a class=&#34;heading-link&#34; href=&#34;#building-native-images&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;The process for building native images is similar, with the addition of GraalVM support:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;mkdir my-native-demo
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;cd&lt;/span&gt; my-native-demo
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl https://start.spring.io/starter.tgz -d &lt;span style=&#34;color:#bb60d5&#34;&gt;dependencies&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;web,actuator,native -d &lt;span style=&#34;color:#bb60d5&#34;&gt;type&lt;/span&gt;&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;maven-project | tar -xvzf -
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;You could also use &lt;a href=&#34;https://start.spring.io/#!type=maven-project&amp;amp;language=java&amp;amp;platformVersion=3.4.0&amp;amp;packaging=jar&amp;amp;jvmVersion=23&amp;amp;groupId=com.example&amp;amp;artifactId=demo&amp;amp;name=demo&amp;amp;description=Demo%20project%20for%20Spring%20Boot&amp;amp;packageName=com.example.demo&amp;amp;dependencies=web,actuator,native&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://start.spring.io&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h3 id=&#34;building-multi-architecture-native-images&#34;&gt;
+  Building Multi-Architecture Native Images
+  &lt;a class=&#34;heading-link&#34; href=&#34;#building-multi-architecture-native-images&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;p&gt;When the buildpack see&amp;rsquo;s the &lt;code&gt;native-maven-plugin&lt;/code&gt; in the project, it creates native images with GraalVM. Our steps won&amp;rsquo;t change, we will just use different tags.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Build ARM64 native image&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./mvnw spring-boot:build-image -Dspring-boot.build-image.imagePlatform&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;linux/arm64 -Dspring-boot.build-image.imageName&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;dashaun/blog-3-4-0:native-arm64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker push dashaun/blog-3-4-0:native-arm64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;#Build AMD64 native image&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;./mvnw spring-boot:build-image -Dspring-boot.build-image.imagePlatform&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;linux/amd64 -Dspring-boot.build-image.imageName&lt;span style=&#34;color:#666&#34;&gt;=&lt;/span&gt;dashaun/blog-3-4-0:native-amd64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker push dashaun/blog-3-4-0:native-amd64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#60a0b0;font-style:italic&#34;&gt;# Create and push multi-architecture manifest&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker manifest create dashaun/blog-3-4-0:native-multiarch --amend dashaun/blog-3-4-0:native-arm64 --amend dashaun/blog-3-4-0:native-amd64
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker manifest push dashaun/blog-3-4-0:native-multiarch
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;inspect-native&#34;&gt;
+  Inspect Native
+  &lt;a class=&#34;heading-link&#34; href=&#34;#inspect-native&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker manifest inspect dashaun/blog-3-4-0:native-multiarch
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Inspect the manifest, results below.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;schemaVersion&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#40a070&#34;&gt;2&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;mediaType&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;application/vnd.docker.distribution.manifest.list.v2+json&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;manifests&amp;#34;&lt;/span&gt;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;mediaType&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;application/vnd.docker.distribution.manifest.v2+json&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;size&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#40a070&#34;&gt;2407&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;digest&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;sha256:70311015a28ff9ebbaa0ef0552e91bd85d2220716b69a8444ecf18ae542fa3f1&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;platform&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;architecture&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;amd64&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;os&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;linux&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      },
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;mediaType&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;application/vnd.docker.distribution.manifest.v2+json&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;size&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#40a070&#34;&gt;2406&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;digest&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;sha256:4b9243d946a61f5fd8c9762f9e8a5ef107ba5a51a3679faa54b5a3cd96e4147c&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;platform&amp;#34;&lt;/span&gt;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;architecture&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;arm64&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;            &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;&amp;#34;os&amp;#34;&lt;/span&gt;: &lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#34;linux&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;         }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;      }
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;   ]
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;The manifest shows both platforms &lt;code&gt;linux/amd64&lt;/code&gt; and &lt;code&gt;linux/arm64&lt;/code&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;Take a look at these image sizes!&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dashaun/blog-3-3-6                         latest           0e61fed5cf4a   &lt;span style=&#34;color:#40a070&#34;&gt;44&lt;/span&gt; years ago   348MB
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dashaun/blog-3-4-0                         amd64            6ce61c588eba   &lt;span style=&#34;color:#40a070&#34;&gt;44&lt;/span&gt; years ago   268MB
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dashaun/blog-3-4-0                         native-amd64     9f63e381e26c   &lt;span style=&#34;color:#40a070&#34;&gt;44&lt;/span&gt; years ago   117MB
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dashaun/blog-3-4-0                         native-arm64     7a9b08bf964a   &lt;span style=&#34;color:#40a070&#34;&gt;44&lt;/span&gt; years ago   111MB
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;dashaun/blog-3-4-0                         arm64            0d07d6f15c86   &lt;span style=&#34;color:#40a070&#34;&gt;44&lt;/span&gt; years ago   259MB
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;I did this experiment on MacOS with ARM64 (M3 chip), but these exact same steps can be used on either ARM64 or AMD64 machines.&lt;/p&gt;
+&lt;h2 id=&#34;conclusion&#34;&gt;
+  Conclusion
+  &lt;a class=&#34;heading-link&#34; href=&#34;#conclusion&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Spring Boot 3.4.0&amp;rsquo;s multi-architecture support with Paketo buildpacks revolutionizes how we build and deploy applications across different architectures. Whether you&amp;rsquo;re targeting cloud platforms or edge devices like Raspberry Pi, you can now build and deploy with confidence.&lt;/p&gt;
+&lt;p&gt;The combination of:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Multi-architecture support&lt;/li&gt;
+&lt;li&gt;Smaller image sizes&lt;/li&gt;
+&lt;li&gt;Native image capabilities&lt;/li&gt;
+&lt;li&gt;Simplified build process&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Makes Spring Boot 3.4.0 a compelling choice for modern cloud-native and edge-native applications.&lt;/p&gt;
+&lt;h2 id=&#34;keep-learning&#34;&gt;
+  Keep Learning
+  &lt;a class=&#34;heading-link&#34; href=&#34;#keep-learning&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.4-Release-Notes&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Boot 3.4 Release Notes&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/live/fdyj_b-Mj4c?si=MA9azUhPg1tw09Kv&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;YouTube with Karanbir Singh&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://neuw.medium.com/multi-architecture-oci-images-spring-boot-3-4-x-d8f2a0f7d6e6&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Karanbir Singh&amp;rsquo;s Blog&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/paketo-buildpacks/builder-jammy-java-tiny&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paketobuildpacks/builder-jammy-java-tiny&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Five Months in the making, multi-architecture builder</title>
+            <link>https://dashaun.com/posts/five-months-in-the-making-multi-arch-builder/</link>
+            <pubDate>Sun, 17 Sep 2023 14:42:19 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/five-months-in-the-making-multi-arch-builder/</guid>
+            <description>&lt;h2 id=&#34;five-months-in-the-making-multi-architecture-builder&#34;&gt;
+  Five months in the making, multi-architecture builder
+  &lt;a class=&#34;heading-link&#34; href=&#34;#five-months-in-the-making-multi-architecture-builder&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;If you have been following along, you are probably asking &amp;ldquo;What took so long?&amp;rdquo; and I totally understand.
+I had no idea what was wrong before today.
+My scripts had been working for over a year, then just stopped.
+I had removed a bunch of the debug info from the logs, which didn&amp;rsquo;t help the situation at all.&lt;/p&gt;
+&lt;h2 id=&#34;upstream-progress&#34;&gt;
+  Upstream progress
+  &lt;a class=&#34;heading-link&#34; href=&#34;#upstream-progress&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The Paketo team continues to put a high priority on ARM64 and multi-architecture tools/buildpacks.
+I had created several ARM64 workarounds over the years.
+The Paketo team continued improving their tools to support ARM64 as well.
+I was not doing a good job of pulling the tooling changes from upstream.
+So my workarounds were breaking the build.&lt;/p&gt;
+&lt;h2 id=&#34;several-failed-attempts&#34;&gt;
+  Several failed attempts
+  &lt;a class=&#34;heading-link&#34; href=&#34;#several-failed-attempts&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I had made several solid attempts at resolving the issues.
+I just kept getting distracted with other priorities.
+I have had this process working on multiple environments.
+Every version of my pipeline seemed to be broken in a slightly different way.
+They were, because of my workarounds.
+I had different workarounds for different environments.&lt;/p&gt;
+&lt;h2 id=&#34;motivation&#34;&gt;
+  Motivation
+  &lt;a class=&#34;heading-link&#34; href=&#34;#motivation&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;This year, I&amp;rsquo;ve been traveling more than ever.
+In fact, I&amp;rsquo;m on my way to Oracle Cloud World 2023, right now.
+The laptop that I was using for work, wasn&amp;rsquo;t keeping up with what I was needing to deliver, to the community.
+My conference sessions were having issues, my customer sessions were also having issues.
+Watching for over 4-minutes, for a native compile, isn&amp;rsquo;t great for anyone.
+So I requested a new M1 laptop.
+When I got home on Friday, my new laptop had arrived.
+Since I&amp;rsquo;m going to be working on an M1 from now on, I needed to have all the fast builds.
+I needed to make sure all of my demos work on the new hardware.
+I also needed to be ready to use Java 21 when it comes out in 2 days.
+In addition to my new laptop from work, my Ampere Dev Kit server also arrived.
+The server had been stuck in US Customs for a couple of months, after arriving from China.
+It was my first time working with US Customs.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;M1&lt;/li&gt;
+&lt;li&gt;Ampere Dev Kit&lt;/li&gt;
+&lt;li&gt;Java 21&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;the-work&#34;&gt;
+  The work
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-work&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;On my new M1, I simply started adding in debug info to the scripts.
+It felt good to get back into the process and remind myself how it all worked.
+When things work, you don&amp;rsquo;t need to keep the details in your mental cache.
+The upstream builder added a few buildpacks.
+Packaging the newer buildpacks is where the problems were.
+Moments ago, I was getting ready to board when my tests passed.
+The KC Chiefs were playing Jacksonville at the same time.
+When I shouted with excitement, the people around me assumed that I was watching the game.
+I love my job.
+I love what I do.
+I could hear the Chiefs game, but getting this build to work was even more exciting that watching the Chiefs win the Super Bowl, twice.&lt;/p&gt;
+&lt;h2 id=&#34;a-huge-surprise&#34;&gt;
+  A huge surprise
+  &lt;a class=&#34;heading-link&#34; href=&#34;#a-huge-surprise&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I don&amp;rsquo;t remember what the number was, from the last time I looked at the stats on Docker Hub.
+When I went to look today, I was hoping for it to be over 2000.
+Maybe 3000?  Is 5000 possible?
+My goosebumps hit when I saw that it was over 8500!
+I am so excited that people are using it.&lt;/p&gt;
+&lt;h2 id=&#34;next-steps&#34;&gt;
+  Next steps
+  &lt;a class=&#34;heading-link&#34; href=&#34;#next-steps&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I am going to try to move away from my scripts, towards what the Paketo team is doing.
+I want to get my version moved over to the &lt;a href=&#34;https://github.com/paketo-community&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paketo-community&lt;/a&gt; repository.
+Hopefully, from there, it will be even closer to being merged upstream.&lt;/p&gt;
+&lt;p&gt;Stay tuned!&lt;/p&gt;
+&lt;h2 id=&#34;feedback-welcome&#34;&gt;
+  Feedback welcome
+  &lt;a class=&#34;heading-link&#34; href=&#34;#feedback-welcome&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Please let me know how it is working for you, all of &lt;a href=&#34;https://dashaun.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;my socials/contact info can be found here&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;links&#34;&gt;
+  Links
+  &lt;a class=&#34;heading-link&#34; href=&#34;#links&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/dashaun/paketo-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://youtu.be/BuqNJl4QrUw&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;YouTube.com/@dashaun&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Paketo Steering Committee Candidacy</title>
+            <link>https://dashaun.com/posts/paketo-steering-committee-candidacy/</link>
+            <pubDate>Sat, 29 Apr 2023 01:05:13 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/paketo-steering-committee-candidacy/</guid>
+            <description>&lt;h2 id=&#34;the-news&#34;&gt;
+  The news
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-news&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I first heard about the upcoming election on the Paketo Slack.&lt;/p&gt;
+&lt;p&gt;It wasn&amp;rsquo;t clear to me, how I was supposed to throw my name in the hat, after reading about &lt;a href=&#34;https://github.com/paketo-buildpacks/rfcs/blob/main/text/0054-steering-committee-elections.md&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;the election process&lt;/a&gt;.  So, I had some fun with it.&lt;/p&gt;
+&lt;h2 id=&#34;the-announcement&#34;&gt;
+  The announcement
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-announcement&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;First on the Paketo Slack, then LinkedIn, Twitter and Mastodon, I made an announcement like this:&lt;/p&gt;
+&lt;p&gt;Steering Committee Electors and Paketo community!&lt;/p&gt;
+&lt;p&gt;My name is DaShaun Carter and I would appreciate your consideration for membership in the steering committee, in the upcoming election!&lt;/p&gt;
+&lt;p&gt;You might have heard me say &amp;ldquo;Friends don&amp;rsquo;t let friends use Dockerfiles, use buildpacks&amp;rdquo; during &lt;a href=&#34;https://springofficehours.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring Office Hours&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Perhaps you have seen my work with &lt;a href=&#34;https://cloudnativecobol.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cloud Native Cobol&lt;/a&gt; and the &lt;a href=&#34;https://cloudnativecobol.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cobol Buildpack&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Maybe you have seen or used the &lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;multi-architecture buildpack&lt;/a&gt;, that I have been &lt;a href=&#34;https://hub.docker.com/r/dashaun/builder&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;delivering&lt;/a&gt; for the ARM64 community, with Daniel Mikusa.&lt;/p&gt;
+&lt;p&gt;You can get to know me by visiting &lt;a href=&#34;https://dashaun.com&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://dashaun.com&lt;/a&gt; where you will find my blog posts, links to all of my socials, and an &amp;ldquo;About&amp;rdquo; page with links to videos that I am proud of.&lt;/p&gt;
+&lt;p&gt;Thank you for your consideration.&lt;/p&gt;
+&lt;h2 id=&#34;what-happens-next&#34;&gt;
+  What happens next
+  &lt;a class=&#34;heading-link&#34; href=&#34;#what-happens-next&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;m not sure if anyone else even wants the role, but I&amp;rsquo;m excited to see what happens next.  I&amp;rsquo;ve been passionate about buildpacks for a long time, and I will continue to be, regardless of the outcome of this election.  I&amp;rsquo;m going to do my best to make sure that the people that are voting, know who I am and what I stand for.  The things that I have been working on and the feedback I have received, have been very encouraging.  I&amp;rsquo;m looking forward to the next few weeks.  Stay tuned for more updates on my &lt;code&gt;campaign&lt;/code&gt; and don&amp;rsquo;t hesitate to reach out with any questions or suggestions.&lt;/p&gt;
+&lt;h2 id=&#34;campaign-slogan&#34;&gt;
+  Campaign Slogan?
+  &lt;a class=&#34;heading-link&#34; href=&#34;#campaign-slogan&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&amp;#34;Embracing Multi-Architecture Buildpacks for a Brighter, Inclusive Future&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+        </item>
+        
+        <item>
+            <title>Multi-architecture stacks and buildpacks</title>
+            <link>https://dashaun.com/posts/multi-architecture-stacks-and-buildpacks/</link>
+            <pubDate>Fri, 28 Apr 2023 13:47:28 -0500</pubDate>
+            
+            <guid>https://dashaun.com/posts/multi-architecture-stacks-and-buildpacks/</guid>
+            <description>&lt;h2 id=&#34;several-failed-attempts&#34;&gt;
+  Several failed attempts
+  &lt;a class=&#34;heading-link&#34; href=&#34;#several-failed-attempts&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The community had been experiencing issues with broken images in recent releases, which led many users to manually switch to older tags that worked. I realize now, that I should have been deleting the broken, publicly available versions. Over the last two weeks, I&amp;rsquo;ve focused on resolving these issues and have successfully deleted all broken versions from my Docker Hub repository.&lt;/p&gt;
+&lt;h2 id=&#34;multi-architecture-stacks&#34;&gt;
+  Multi-architecture stacks
+  &lt;a class=&#34;heading-link&#34; href=&#34;#multi-architecture-stacks&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The latest release of the multi-architecture buildpack is built upon a multi-architecture stack created by Daniel Mikusa. This update is a significant step towards having a multi-architecture buildpack officially supported by the Paketo team.  Hopefully, this multi-architecture stack gets merged into the Paketo project soon.&lt;/p&gt;
+&lt;h2 id=&#34;next-steps&#34;&gt;
+  Next Steps
+  &lt;a class=&#34;heading-link&#34; href=&#34;#next-steps&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The release of the new multi-architecture buildpack marks a crucial milestone in our journey towards an officially supported Paketo buildpack. As development continues, I look forward to sharing more updates and working together to create a more efficient and seamless developer experience on ARM64 and AMD64. Full transparency, I&amp;rsquo;ve already started working on a RISC-V version as well. Feel free to reach out with any questions or suggestions as we move forward.&lt;/p&gt;
+&lt;h2 id=&#34;simplified&#34;&gt;
+  Simplified
+  &lt;a class=&#34;heading-link&#34; href=&#34;#simplified&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I am no longer creating a separate stack, and will continue to use the multi-architecture stack that Daniel Mikusa has created. This will simplify the process of creating and maintaining the buildpack, and will allow me to focus on the buildpack itself. I&amp;rsquo;ve simplified the scripts used for building and releasing the buildpack.  I&amp;rsquo;ve also removed the related GitHub actions.  All of the work is being done via CircleCI.&lt;/p&gt;
+&lt;h2 id=&#34;keep-learning&#34;&gt;
+  Keep Learning
+  &lt;a class=&#34;heading-link&#34; href=&#34;#keep-learning&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dashaun/paketo-arm64&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://paketo.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Paketo&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://buildpacks.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cloud Native Buildpacks&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/cobol-buildpack&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cobol Buildpack&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>First Impression CircleCI ARM64</title>
+            <link>https://dashaun.com/posts/circleci-arm64-first-impression/</link>
+            <pubDate>Sat, 25 Feb 2023 15:37:47 -0600</pubDate>
+            
+            <guid>https://dashaun.com/posts/circleci-arm64-first-impression/</guid>
+            <description>&lt;p&gt;For the past two years, I&amp;rsquo;ve been using my own self-hosted ARM64 infrastructure to create a &lt;a href=&#34;https://buildpacks.io/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Cloud Native Buildpack&lt;/a&gt; for Java that works on ARM64. I started with a cluster of Raspberry Pi 4 devices.  After ramping up with &amp;ldquo;spring-native&amp;rdquo; I switched to a free-tier ARM64 VM in Oracle Cloud. While this setup worked well, I realized that I could streamline my workflow, and perhaps, get my work moved up to &lt;a href=&#34;https://paketo.io&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Paketo&lt;/a&gt; if I used a modern, and accessible, CI/CD platform.&lt;/p&gt;
+&lt;p&gt;After some research, I decided to try out CircleCI, since it offered ARM64 workflow support. Although I have been a fan of CircleCI for some time, this was my first impression with authoring workflows on CircleCI.&lt;/p&gt;
+&lt;p&gt;The process of setting up my account and migrating my GitHub actions was surprisingly easy. I provided CircleCI with access to my public GitHub repositories, and started with a &amp;ldquo;hello world&amp;rdquo; template that worked right out of the gate.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;orbs&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;go&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;circleci/go@1.7.2&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Orbs&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;From there, I consulted the CircleCI documentation on using ARM, and made some simple edits to the template. The biggest takeaway for me was that CircleCI &amp;ldquo;orbs&amp;rdquo; map to GitHub &amp;ldquo;actions&amp;rdquo;, which made the transition even smoother.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;&#34;&gt;&lt;code class=&#34;language-yaml&#34; data-lang=&#34;yaml&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;machine&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;ubuntu-2004:latest&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;image&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;ubuntu-2004:latest&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;&lt;/span&gt;&lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;resource_class&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;arm.medium&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#bbb&#34;&gt;  &lt;/span&gt;- &lt;span style=&#34;color:#062873;font-weight:bold&#34;&gt;run&lt;/span&gt;:&lt;span style=&#34;color:#bbb&#34;&gt; &lt;/span&gt;echo &amp;#34;Hello, Arm!&amp;#34;&lt;span style=&#34;color:#bbb&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://circleci.com/docs/using-arm/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://circleci.com/docs/using-arm/&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;I live-streamed the process of converting my existing workflows to a CircleCI workflows, and encountered a few minor issues along the way. However, these were quickly resolved, and I was able to release everything from my &lt;a href=&#34;https://github.com/dashaun/paketo-arm64&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paketo-arm64&lt;/a&gt; repository without using any self-hosted infrastructure!&lt;/p&gt;
+&lt;p&gt;Overall, I&amp;rsquo;m thrilled with my first impression of authoring workflows on CircleCI. If I had made the jump sooner, I could have saved myself a lot of headaches. I highly recommend CircleCI to anyone looking for a modern, streamlined CI/CD platform that supports ARM64 workflows.&lt;/p&gt;
+&lt;p&gt;Watch:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/live/n6esDV0Kpn8&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;First Impression authoring CircleCI workflows&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.youtube.com/live/2_yrpI74_ss&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Migrating from GitHub Actions to CircleCI&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Update 2023-02-27:&lt;/p&gt;
+&lt;p&gt;I have successfully &lt;code&gt;terraform destroyed&lt;/code&gt; the &lt;a href=&#34;https://github.com/dashaun/tf-oci-arm&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Oracle OCI ARM64&lt;/a&gt; infrastructure that was being used as a self-hosted runner.&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

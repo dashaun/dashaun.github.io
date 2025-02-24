@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Multi-Architecture Spring OCI from anywhere with Paketo · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="Learn how to build multi-architecture Spring Boot 3.4.0 OCI images for both AMD64 and ARM64 using Paketo buildpacks. Includes step-by-step guide for JVM and native images with 60% smaller footprint.">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/images/feature.jpg">
+  <meta name="twitter:title" content="Multi-Architecture Spring OCI from anywhere with Paketo">
+  <meta name="twitter:description" content="Learn how to build multi-architecture Spring Boot 3.4.0 OCI images for both AMD64 and ARM64 using Paketo buildpacks. Includes step-by-step guide for JVM and native images with 60% smaller footprint.">
+
+<meta property="og:url" content="https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/">
+  <meta property="og:site_name" content="DaShaun">
+  <meta property="og:title" content="Multi-Architecture Spring OCI from anywhere with Paketo">
+  <meta property="og:description" content="Learn how to build multi-architecture Spring Boot 3.4.0 OCI images for both AMD64 and ARM64 using Paketo buildpacks. Includes step-by-step guide for JVM and native images with 60% smaller footprint.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2024-12-12T10:15:30-06:00">
+    <meta property="article:modified_time" content="2025-02-24T16:16:50-06:00">
+    <meta property="article:tag" content="Spring-Boot-3-4">
+    <meta property="article:tag" content="Paketo">
+    <meta property="article:tag" content="Buildpacks">
+    <meta property="article:tag" content="Multiarch">
+    <meta property="article:tag" content="Arm64">
+    <meta property="article:tag" content="Amd64">
+    <meta property="og:image" content="https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/images/feature.jpg">
+      <meta property="og:see_also" content="https://dashaun.com/posts/five-months-in-the-making-multi-arch-builder/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/paketo-steering-committee-candidacy/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/multi-architecture-stacks-and-buildpacks/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/circleci-arm64-first-impression/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/better-late-than-never-video/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/builder-20230203/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/spring-cloud-gateway-4-0-0-rc2-native-example-with-testcontainers/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/spring-boot-3-buildpacks-with-testcontainers-cloud/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/korifi-v0_14_0-on-raspberry-pi/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/korifi-on-raspberry-pi/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/spring-boot-stackpath-terraform/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/spring-boot-kamatera-terraform/">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Follow me on Twitch</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/">
+              Multi-Architecture Spring OCI from anywhere with Paketo
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2024-12-12T10:15:30-06:00'>
+                December 12, 2024
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2024-12-12T10:15:30-06:00'>
+                February 24, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              4-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='images/feature.jpg' alt="Featured image"/>
+        
+        <h2 id="multi-architecture-spring-oci-from-anywhere-with-paketo">
+  Multi-Architecture Spring OCI from anywhere with Paketo
+  <a class="heading-link" href="#multi-architecture-spring-oci-from-anywhere-with-paketo">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>My favorite feature of Spring Boot 3.4.0 is the adoption of multi-architecture buildpacks.
+This feature empowers you to construct native images and traditional JVM-based applications for both AMD64 and ARM64, from a unified build process.
+The fact that OCI images will also be smaller because of the new default buildpack is a bonus.</p>
+<h3 id="emotionally-invested">
+  Emotionally Invested
+  <a class="heading-link" href="#emotionally-invested">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>I&rsquo;ve been building native images for ARM64 since 2021, because I&rsquo;m a Raspberry Pi enthusiast and passionate about Spring Boot.
+Since that time, I&rsquo;ve created dozens of solutions, to put production-ready, enterprise-grade, Spring Boot on Raspberry Pi ARM64 devices with only 512MB of RAM.
+I no longer have to support my own solution.</p>
+<h3 id="getting-started">
+  Getting Started
+  <a class="heading-link" href="#getting-started">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p><strong>Prerequisites:</strong></p>
+<ul>
+<li><strong>At least Java 17</strong></li>
+<li><strong>Docker</strong></li>
+</ul>
+<h3 id="docker-desktop-configuration">
+  Docker Desktop Configuration
+  <a class="heading-link" href="#docker-desktop-configuration">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Docker Desktop comes with built-in QEMU support for multi-architecture builds. However, if you need to install QEMU manually, you have two options:</p>
+<h4 id="option-1-using-tonistiigibinfmt">
+  Option 1: Using tonistiigi/binfmt
+  <a class="heading-link" href="#option-1-using-tonistiigibinfmt">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Install QEMU support for all architectures</span>
+</span></span><span style="display:flex;"><span>docker run --privileged --rm tonistiigi/binfmt --install all
+</span></span></code></pre></div><blockquote>
+<p>This command was found here: <a href="https://docs.docker.com/build/building/multi-platform/"  class="external-link" target="_blank" rel="noopener">https://docs.docker.com/build/building/multi-platform/</a></p></blockquote>
+<h4 id="option-2-using-multiarchqemu-user-static">
+  Option 2: Using multiarch/qemu-user-static
+  <a class="heading-link" href="#option-2-using-multiarchqemu-user-static">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Install and configure QEMU</span>
+</span></span><span style="display:flex;"><span>docker run --privileged --rm multiarch/qemu-user-static --reset -p yes
+</span></span></code></pre></div><blockquote>
+<p>More information can be found here: <a href="https://github.com/multiarch/qemu-user-static"  class="external-link" target="_blank" rel="noopener">https://github.com/multiarch/qemu-user-static</a></p></blockquote>
+<h3 id="spring-boot-340-application">
+  Spring Boot 3.4.0 application
+  <a class="heading-link" href="#spring-boot-340-application">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>First, let&rsquo;s create a new Spring Boot application:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir mydemo
+</span></span><span style="display:flex;"><span><span style="color:#007020">cd</span> mydemo
+</span></span><span style="display:flex;"><span>curl https://start.spring.io/starter.tgz -d <span style="color:#bb60d5">dependencies</span><span style="color:#666">=</span>web,actuator -d <span style="color:#bb60d5">type</span><span style="color:#666">=</span>maven-project | tar -xvzf -
+</span></span></code></pre></div><blockquote>
+<p>You could also use <a href="https://start.spring.io/#!type=maven-project&amp;language=java&amp;platformVersion=3.4.0&amp;packaging=jar&amp;jvmVersion=23&amp;groupId=com.example&amp;artifactId=demo&amp;name=demo&amp;description=Demo%20project%20for%20Spring%20Boot&amp;packageName=com.example.demo&amp;dependencies=web,actuator"  class="external-link" target="_blank" rel="noopener">https://start.spring.io</a></p></blockquote>
+<h3 id="create-a-multi-architecture-oci-image">
+  Create a multi-architecture OCI Image
+  <a class="heading-link" href="#create-a-multi-architecture-oci-image">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Here&rsquo;s the step-by-step process to build and publish multi-architecture images:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Build ARM64 image</span>
+</span></span><span style="display:flex;"><span>./mvnw spring-boot:build-image -Dspring-boot.build-image.imagePlatform<span style="color:#666">=</span>linux/arm64 -Dspring-boot.build-image.imageName<span style="color:#666">=</span>dashaun/blog-3-4-0:arm64
+</span></span><span style="display:flex;"><span>docker push dashaun/blog-3-4-0:arm64
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Build AMD64 image</span>
+</span></span><span style="display:flex;"><span>./mvnw spring-boot:build-image -Dspring-boot.build-image.imagePlatform<span style="color:#666">=</span>linux/amd64 -Dspring-boot.build-image.imageName<span style="color:#666">=</span>dashaun/blog-3-4-0:amd64
+</span></span><span style="display:flex;"><span>docker push dashaun/blog-3-4-0:amd64
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Create and push multi-architecture manifest</span>
+</span></span><span style="display:flex;"><span>docker manifest create dashaun/blog-3-4-0:multiarch --amend dashaun/blog-3-4-0:arm64 --amend dashaun/blog-3-4-0:amd64
+</span></span><span style="display:flex;"><span>docker manifest push dashaun/blog-3-4-0:multiarch
+</span></span></code></pre></div><h3 id="inspect">
+  Inspect
+  <a class="heading-link" href="#inspect">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Inspect the multi-architecture manifest:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker manifest inspect dashaun/blog-3-4-0:multiarch
+</span></span></code></pre></div><blockquote>
+<p>Inspect the manifest, results below.</p></blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>  <span style="color:#062873;font-weight:bold">&#34;schemaVersion&#34;</span>: <span style="color:#40a070">2</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#062873;font-weight:bold">&#34;mediaType&#34;</span>: <span style="color:#4070a0">&#34;application/vnd.docker.distribution.manifest.list.v2+json&#34;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#062873;font-weight:bold">&#34;manifests&#34;</span>: [
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#062873;font-weight:bold">&#34;mediaType&#34;</span>: <span style="color:#4070a0">&#34;application/vnd.docker.distribution.manifest.v2+json&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#062873;font-weight:bold">&#34;size&#34;</span>: <span style="color:#40a070">2407</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#062873;font-weight:bold">&#34;digest&#34;</span>: <span style="color:#4070a0">&#34;sha256:96d95eed9308f86a8055156913ed8710c25917bdf0389bd6d5cf2ab0a79c77fc&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#062873;font-weight:bold">&#34;platform&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&#34;architecture&#34;</span>: <span style="color:#4070a0">&#34;amd64&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&#34;os&#34;</span>: <span style="color:#4070a0">&#34;linux&#34;</span>
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      <span style="color:#062873;font-weight:bold">&#34;mediaType&#34;</span>: <span style="color:#4070a0">&#34;application/vnd.docker.distribution.manifest.v2+json&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#062873;font-weight:bold">&#34;size&#34;</span>: <span style="color:#40a070">2406</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#062873;font-weight:bold">&#34;digest&#34;</span>: <span style="color:#4070a0">&#34;sha256:4c42eebe412f56a03d840d2660b9defde3820ce1c5e510ffba0067be0ae11c8e&#34;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#062873;font-weight:bold">&#34;platform&#34;</span>: {
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&#34;architecture&#34;</span>: <span style="color:#4070a0">&#34;arm64&#34;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#062873;font-weight:bold">&#34;os&#34;</span>: <span style="color:#4070a0">&#34;linux&#34;</span>
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  ]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
+<p>The manifest shows both platforms <code>linux/amd64</code> and <code>linux\arm64</code></p></blockquote>
+<p>Looking at the <a href="https://hub.docker.com/r/dashaun/blog-3-4-0/tags"  class="external-link" target="_blank" rel="noopener">Docker Hub tags</a> <code>Digest</code> sections, notice that the <code>sha</code> values for the <code>arm64</code> and <code>amd64</code> tags match the <code>multiarch</code> tag&rsquo;s values.</p>
+<p>The new default buildpack, <a href="https://github.com/paketo-buildpacks/builder-jammy-java-tiny"  class="external-link" target="_blank" rel="noopener">builder-jammy-java-tiny</a> also results in much smaller images.  Both of the images we created here are under 275mb.
+Switching to Spring Boot 3.3.6 and the previous default buildpack <a href="https://github.com/paketo-buildpacks/builder-jammy-base"  class="external-link" target="_blank" rel="noopener">paketobuildpacks/builder-jammy-base</a> results in a ~350mb image.</p>
+<h3 id="building-native-images">
+  Building Native Images
+  <a class="heading-link" href="#building-native-images">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>The process for building native images is similar, with the addition of GraalVM support:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>mkdir my-native-demo
+</span></span><span style="display:flex;"><span><span style="color:#007020">cd</span> my-native-demo
+</span></span><span style="display:flex;"><span>curl https://start.spring.io/starter.tgz -d <span style="color:#bb60d5">dependencies</span><span style="color:#666">=</span>web,actuator,native -d <span style="color:#bb60d5">type</span><span style="color:#666">=</span>maven-project | tar -xvzf -
+</span></span></code></pre></div><blockquote>
+<p>You could also use <a href="https://start.spring.io/#!type=maven-project&amp;language=java&amp;platformVersion=3.4.0&amp;packaging=jar&amp;jvmVersion=23&amp;groupId=com.example&amp;artifactId=demo&amp;name=demo&amp;description=Demo%20project%20for%20Spring%20Boot&amp;packageName=com.example.demo&amp;dependencies=web,actuator,native"  class="external-link" target="_blank" rel="noopener">https://start.spring.io</a></p></blockquote>
+<h3 id="building-multi-architecture-native-images">
+  Building Multi-Architecture Native Images
+  <a class="heading-link" href="#building-multi-architecture-native-images">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>When the buildpack see&rsquo;s the <code>native-maven-plugin</code> in the project, it creates native images with GraalVM. Our steps won&rsquo;t change, we will just use different tags.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Build ARM64 native image</span>
+</span></span><span style="display:flex;"><span>./mvnw spring-boot:build-image -Dspring-boot.build-image.imagePlatform<span style="color:#666">=</span>linux/arm64 -Dspring-boot.build-image.imageName<span style="color:#666">=</span>dashaun/blog-3-4-0:native-arm64
+</span></span><span style="display:flex;"><span>docker push dashaun/blog-3-4-0:native-arm64
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">#Build AMD64 native image</span>
+</span></span><span style="display:flex;"><span>./mvnw spring-boot:build-image -Dspring-boot.build-image.imagePlatform<span style="color:#666">=</span>linux/amd64 -Dspring-boot.build-image.imageName<span style="color:#666">=</span>dashaun/blog-3-4-0:native-amd64
+</span></span><span style="display:flex;"><span>docker push dashaun/blog-3-4-0:native-amd64
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Create and push multi-architecture manifest</span>
+</span></span><span style="display:flex;"><span>docker manifest create dashaun/blog-3-4-0:native-multiarch --amend dashaun/blog-3-4-0:native-arm64 --amend dashaun/blog-3-4-0:native-amd64
+</span></span><span style="display:flex;"><span>docker manifest push dashaun/blog-3-4-0:native-multiarch
+</span></span></code></pre></div><h3 id="inspect-native">
+  Inspect Native
+  <a class="heading-link" href="#inspect-native">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker manifest inspect dashaun/blog-3-4-0:native-multiarch
+</span></span></code></pre></div><blockquote>
+<p>Inspect the manifest, results below.</p></blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>   <span style="color:#062873;font-weight:bold">&#34;schemaVersion&#34;</span>: <span style="color:#40a070">2</span>,
+</span></span><span style="display:flex;"><span>   <span style="color:#062873;font-weight:bold">&#34;mediaType&#34;</span>: <span style="color:#4070a0">&#34;application/vnd.docker.distribution.manifest.list.v2+json&#34;</span>,
+</span></span><span style="display:flex;"><span>   <span style="color:#062873;font-weight:bold">&#34;manifests&#34;</span>: [
+</span></span><span style="display:flex;"><span>      {
+</span></span><span style="display:flex;"><span>         <span style="color:#062873;font-weight:bold">&#34;mediaType&#34;</span>: <span style="color:#4070a0">&#34;application/vnd.docker.distribution.manifest.v2+json&#34;</span>,
+</span></span><span style="display:flex;"><span>         <span style="color:#062873;font-weight:bold">&#34;size&#34;</span>: <span style="color:#40a070">2407</span>,
+</span></span><span style="display:flex;"><span>         <span style="color:#062873;font-weight:bold">&#34;digest&#34;</span>: <span style="color:#4070a0">&#34;sha256:70311015a28ff9ebbaa0ef0552e91bd85d2220716b69a8444ecf18ae542fa3f1&#34;</span>,
+</span></span><span style="display:flex;"><span>         <span style="color:#062873;font-weight:bold">&#34;platform&#34;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#062873;font-weight:bold">&#34;architecture&#34;</span>: <span style="color:#4070a0">&#34;amd64&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#062873;font-weight:bold">&#34;os&#34;</span>: <span style="color:#4070a0">&#34;linux&#34;</span>
+</span></span><span style="display:flex;"><span>         }
+</span></span><span style="display:flex;"><span>      },
+</span></span><span style="display:flex;"><span>      {
+</span></span><span style="display:flex;"><span>         <span style="color:#062873;font-weight:bold">&#34;mediaType&#34;</span>: <span style="color:#4070a0">&#34;application/vnd.docker.distribution.manifest.v2+json&#34;</span>,
+</span></span><span style="display:flex;"><span>         <span style="color:#062873;font-weight:bold">&#34;size&#34;</span>: <span style="color:#40a070">2406</span>,
+</span></span><span style="display:flex;"><span>         <span style="color:#062873;font-weight:bold">&#34;digest&#34;</span>: <span style="color:#4070a0">&#34;sha256:4b9243d946a61f5fd8c9762f9e8a5ef107ba5a51a3679faa54b5a3cd96e4147c&#34;</span>,
+</span></span><span style="display:flex;"><span>         <span style="color:#062873;font-weight:bold">&#34;platform&#34;</span>: {
+</span></span><span style="display:flex;"><span>            <span style="color:#062873;font-weight:bold">&#34;architecture&#34;</span>: <span style="color:#4070a0">&#34;arm64&#34;</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#062873;font-weight:bold">&#34;os&#34;</span>: <span style="color:#4070a0">&#34;linux&#34;</span>
+</span></span><span style="display:flex;"><span>         }
+</span></span><span style="display:flex;"><span>      }
+</span></span><span style="display:flex;"><span>   ]
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><blockquote>
+<p>The manifest shows both platforms <code>linux/amd64</code> and <code>linux/arm64</code></p></blockquote>
+<p>Take a look at these image sizes!</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>dashaun/blog-3-3-6                         latest           0e61fed5cf4a   <span style="color:#40a070">44</span> years ago   348MB
+</span></span><span style="display:flex;"><span>dashaun/blog-3-4-0                         amd64            6ce61c588eba   <span style="color:#40a070">44</span> years ago   268MB
+</span></span><span style="display:flex;"><span>dashaun/blog-3-4-0                         native-amd64     9f63e381e26c   <span style="color:#40a070">44</span> years ago   117MB
+</span></span><span style="display:flex;"><span>dashaun/blog-3-4-0                         native-arm64     7a9b08bf964a   <span style="color:#40a070">44</span> years ago   111MB
+</span></span><span style="display:flex;"><span>dashaun/blog-3-4-0                         arm64            0d07d6f15c86   <span style="color:#40a070">44</span> years ago   259MB
+</span></span></code></pre></div><p>I did this experiment on MacOS with ARM64 (M3 chip), but these exact same steps can be used on either ARM64 or AMD64 machines.</p>
+<h2 id="conclusion">
+  Conclusion
+  <a class="heading-link" href="#conclusion">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Spring Boot 3.4.0&rsquo;s multi-architecture support with Paketo buildpacks revolutionizes how we build and deploy applications across different architectures. Whether you&rsquo;re targeting cloud platforms or edge devices like Raspberry Pi, you can now build and deploy with confidence.</p>
+<p>The combination of:</p>
+<ul>
+<li>Multi-architecture support</li>
+<li>Smaller image sizes</li>
+<li>Native image capabilities</li>
+<li>Simplified build process</li>
+</ul>
+<p>Makes Spring Boot 3.4.0 a compelling choice for modern cloud-native and edge-native applications.</p>
+<h2 id="keep-learning">
+  Keep Learning
+  <a class="heading-link" href="#keep-learning">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><a href="https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.4-Release-Notes"  class="external-link" target="_blank" rel="noopener">Spring Boot 3.4 Release Notes</a></li>
+<li><a href="https://www.youtube.com/live/fdyj_b-Mj4c?si=MA9azUhPg1tw09Kv"  class="external-link" target="_blank" rel="noopener">YouTube with Karanbir Singh</a></li>
+<li><a href="https://neuw.medium.com/multi-architecture-oci-images-spring-boot-3-4-x-d8f2a0f7d6e6"  class="external-link" target="_blank" rel="noopener">Karanbir Singh&rsquo;s Blog</a></li>
+<li><a href="https://github.com/paketo-buildpacks/builder-jammy-java-tiny"  class="external-link" target="_blank" rel="noopener">paketobuildpacks/builder-jammy-java-tiny</a></li>
+</ul>
+
+      </div>
+
+
+      <footer>
+        
+
+<section class="see-also">
+  
+    
+    
+    
+  
+    
+    
+    
+  
+    
+    
+    
+  
+</section>
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

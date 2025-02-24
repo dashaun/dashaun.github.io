@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Spring Boot Stackpath Terraform · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="An exciting Terraform experience for your Spring Boot apps">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://dashaun.com/images/avatar.png">
+  <meta name="twitter:title" content="Spring Boot Stackpath Terraform">
+  <meta name="twitter:description" content="An exciting Terraform experience for your Spring Boot apps">
+
+<meta property="og:url" content="https://dashaun.com/posts/spring-boot-stackpath-terraform/">
+  <meta property="og:site_name" content="DaShaun">
+  <meta property="og:title" content="Spring Boot Stackpath Terraform">
+  <meta property="og:description" content="An exciting Terraform experience for your Spring Boot apps">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-10-25T11:19:03-05:00">
+    <meta property="article:modified_time" content="2025-02-24T16:16:50-06:00">
+    <meta property="article:tag" content="Spring">
+    <meta property="article:tag" content="Terraform">
+    <meta property="article:tag" content="Docker">
+    <meta property="og:image" content="https://dashaun.com/images/avatar.png">
+      <meta property="og:see_also" content="https://dashaun.com/posts/korifi-v0_14_0-on-raspberry-pi/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/korifi-on-raspberry-pi/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/spring-boot-kamatera-terraform/">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/spring-boot-stackpath-terraform/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Follow me on Twitch</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/spring-boot-stackpath-terraform/">
+              Spring Boot Stackpath Terraform
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2022-10-25T11:19:03-05:00'>
+                October 25, 2022
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2022-10-25T11:19:03-05:00'>
+                February 24, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              3-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='validate.png' alt="Featured image"/>
+        
+        <p>This is another article based on recent <a href="https://bit.ly/spring-office-hours"  class="external-link" target="_blank" rel="noopener">Spring Office Hours</a> sessions.
+Spring Boot provides several effective ways to deliver applications, to production, efficiently.
+There are many situations
+where one of the <code>hyperscale</code> cloud providers
+is not an option, or the best choice.</p>
+<p><a href="https://dashaun.com/posts/spring-boot-kamatera-terraform/" >Previously, I looked at Kamatera.</a>
+This time, I&rsquo;m going to use <a href="https://stackpath.com"  class="external-link" target="_blank" rel="noopener">StackPath</a>.</p>
+<p><a href="https://youtu.be/kWVv0U1Bvq0"  class="external-link" target="_blank" rel="noopener">I did the work during a live stream, so you can see exactly how easy and exciting this was.</a></p>
+<h2 id="initial-thoughts">
+  Initial Thoughts
+  <a class="heading-link" href="#initial-thoughts">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I figured that going down this path would get easier with each provider.
+So far that has been true.
+I&rsquo;m learning more about Terraform and getting more comfortable.
+I&rsquo;m able to map the different concepts and building blocks a little easier with each rep.</p>
+<h2 id="getting-an-account">
+  Getting an account
+  <a class="heading-link" href="#getting-an-account">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>As you would expect, nothing out of the ordinary when trying to setup an account.
+I couldn&rsquo;t find a free tier or discount code, but I didn&rsquo;t look very hard.
+<a href="https://dashaun.com"  class="external-link" target="_blank" rel="noopener">Reach out to me</a> if you know of something that I can share.
+Billing info is required.</p>
+<h2 id="stackpath-terraform-provider">
+  Stackpath Terraform Provider
+  <a class="heading-link" href="#stackpath-terraform-provider">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Having a Terraform Provider is what I have set as the bare minimum for this exercise.
+The <a href="https://registry.terraform.io/providers/stackpath/stackpath/latest/docs"  class="external-link" target="_blank" rel="noopener">StackPath Provider</a> was surprising.
+I consider myself a slightly above average Terraform user.
+I have never experienced this as the <code>default</code> behavior for a <code>Provider</code> and I am impressed.</p>
+<p>The provider only required three arguments for configuration.
+I decided to use the environment variable approach rather than passing in variables.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>STACKPATH_STACK_ID
+</span></span><span style="display:flex;"><span>STACKPATH_CLIENT_ID
+</span></span><span style="display:flex;"><span>STACKPATH_CLIENT_SECRET
+</span></span></code></pre></div><p>For the <code>STACKPATH_STACK_ID</code> I used the <code>stack slug</code> from the <code>DASHBOARD</code>.
+I created the <code>STACKPATH_CLIENT_ID</code> and <code>STACKPATH_CLIENT_SECRET</code> from the <code>API ACCESS</code> option of the dashboard.</p>
+<p>When I ran the <code>terraform plan</code> and <code>terraform apply</code> they were so fast I thought it was broken.
+I had guessed at the value to use for <code>STACKPATH_STACK_ID</code> and figured that I must be doing something wrong.
+Nope.
+Their platform API defaults to an <code>async</code> behavior that doesn&rsquo;t wait for object creation to be completed.
+Instead, your actions complete, and you can run <code>terraform refresh</code> to get the status of its creation.</p>
+<p>I&rsquo;ve used other <code>Providers</code> that provide this as an option.
+In this case, while I was learning and iterating frequently, it felt amazing.</p>
+
+
+ <script id="asciicast-JqexvsUYphyGVpSuEOADpfbnM" src="https://asciinema.org/a/JqexvsUYphyGVpSuEOADpfbnM.js" async data-autoplay="true" data-startAt="03"></script>
+
+<p>To check on the status I used <code>terraform refresh</code> and in this mode, it felt like the right way to do things.</p>
+
+
+ <script id="asciicast-jUlDDHoeox4SXBpfFHzPPPD37" src="https://asciinema.org/a/jUlDDHoeox4SXBpfFHzPPPD37.js" async data-autoplay="true"></script>
+
+<p>Accessing the service felt snappy.</p>
+
+
+ <script id="asciicast-LHmJDSfJXSG9WTRDOXoYtDBc9" src="https://asciinema.org/a/LHmJDSfJXSG9WTRDOXoYtDBc9.js" async data-autoplay="true" data-startAt="2"></script>
+
+<p>Cleaning up, was just as fast, so iterating through the struggles was relatively painless.</p>
+
+
+ <script id="asciicast-dK1ARCkLHZNp2UQaPozfFgNo0" src="https://asciinema.org/a/dK1ARCkLHZNp2UQaPozfFgNo0.js" async data-autoplay="true"></script>
+
+<h2 id="struggle">
+  Struggle
+  <a class="heading-link" href="#struggle">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I spent a bunch of time not realizing that I needed the <code>stackpath_compute_network_policy</code> to allow public traffic.
+On this platform, ports are not exposed to the public by default.
+Even though I struggled, this made me feel a little more secure.
+Simply because I am forced to be specific about what I&rsquo;m allowing.
+Additionally, the container doesn&rsquo;t have remote access enabled by default.</p>
+<h2 id="differences">
+  Differences
+  <a class="heading-link" href="#differences">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Deploying a VM that can run Docker is one thing.
+Deploying a <code>container</code> to a <code>platform</code> is a different pattern.
+While I was wondering through the documentation, I was very interested.
+There are some very advanced and mature capabilities available.
+This is clearly a platform that is designed to support short-lived and very dynamic workloads.</p>
+<h2 id="summary">
+  Summary
+  <a class="heading-link" href="#summary">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I only scratched the service here, but it worked, and it worked quickly.
+There are some very interesting architectures that can be accomplished with <code>StackPath</code> and I&rsquo;m excited to go further.
+I didn&rsquo;t know what to expect on this journey.
+I can say that <code>StackPath</code> his raised the bar for my expectations going forward.</p>
+<h2 id="your-turn">
+  Your Turn
+  <a class="heading-link" href="#your-turn">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Take the <a href="https://github.com/dashaun/spring-boot-stackpath-terraform"  class="external-link" target="_blank" rel="noopener">repository</a> for a spin and try it out for yourself.
+Let me know what you think.</p>
+<h2 id="links">
+  Links
+  <a class="heading-link" href="#links">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><a href="https://github.com/dashaun/spring-boot-stackpath-terraform"  class="external-link" target="_blank" rel="noopener">https://github.com/dashaun/spring-boot-stackpath-terraform</a></li>
+<li><a href="https://youtu.be/kWVv0U1Bvq0"  class="external-link" target="_blank" rel="noopener">YouTube Video</a></li>
+<li><a href="https://twitch.tv/javagrunt"  class="external-link" target="_blank" rel="noopener">Javagrunt on Twitch</a></li>
+</ul>
+
+      </div>
+
+
+      <footer>
+        
+
+<section class="see-also">
+  
+    
+    
+    
+  
+</section>
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

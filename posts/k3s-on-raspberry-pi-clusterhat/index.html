@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  K3s on Raspberry Pi and ClusterHat · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="Learn how to deploy k3s to a Raspberry Pi cluster with ClusterHat and ClusterCTRL.">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://dashaun.com/images/avatar.png">
+  <meta name="twitter:title" content="K3s on Raspberry Pi and ClusterHat">
+  <meta name="twitter:description" content="Learn how to deploy k3s to a Raspberry Pi cluster with ClusterHat and ClusterCTRL.">
+
+<meta property="og:url" content="https://dashaun.com/posts/k3s-on-raspberry-pi-clusterhat/">
+  <meta property="og:site_name" content="DaShaun">
+  <meta property="og:title" content="K3s on Raspberry Pi and ClusterHat">
+  <meta property="og:description" content="Learn how to deploy k3s to a Raspberry Pi cluster with ClusterHat and ClusterCTRL.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-07-22T16:42:08-05:00">
+    <meta property="article:modified_time" content="2025-02-24T16:16:50-06:00">
+    <meta property="article:tag" content="Raspberrypi">
+    <meta property="article:tag" content="Kubernetes">
+    <meta property="article:tag" content="ClusterHat">
+    <meta property="og:image" content="https://dashaun.com/images/avatar.png">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/k3s-on-raspberry-pi-clusterhat/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Follow me on Twitch</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/k3s-on-raspberry-pi-clusterhat/">
+              K3s on Raspberry Pi and ClusterHat
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2022-07-22T16:42:08-05:00'>
+                July 22, 2022
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2022-07-22T16:42:08-05:00'>
+                February 24, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              4-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='devto.png' alt="Featured image"/>
+        
+        <h2 id="learn-how-to-deploy-k3s-to-a-raspberry-pi-cluster-with-clusterhat-and-clusterctrl">
+  Learn how to deploy <a href="https://k3s.io"  class="external-link" target="_blank" rel="noopener">k3s</a> to a Raspberry Pi cluster with <a href="https://clusterhat.com/"  class="external-link" target="_blank" rel="noopener">ClusterHat</a> and <a href="https://clusterctrl.com/"  class="external-link" target="_blank" rel="noopener">ClusterCTRL</a>.
+  <a class="heading-link" href="#learn-how-to-deploy-k3s-to-a-raspberry-pi-cluster-with-clusterhat-and-clusterctrl">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<h3 id="hardware">
+  Hardware
+  <a class="heading-link" href="#hardware">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>1 x 8GB Raspberry Pi 4</li>
+<li>4 x Raspberry Pi Zero 2 W</li>
+<li>1 x ClusterHat v2.5</li>
+<li>5 x <a href="https://www.sdcard.org/"  class="external-link" target="_blank" rel="noopener">SD Card</a></li>
+</ul>
+<h3 id="custom-os-images">
+  Custom OS Images
+  <a class="heading-link" href="#custom-os-images">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Because you are using a ClusterHat, you will want to use <a href="https://clusterctrl.com/setup-software"  class="external-link" target="_blank" rel="noopener">custom OS images</a>.
+For this guide you will be using the 64-bit versions of each and the <code>CNAT Lite</code> version for the controller.
+Enable SSH for each of the images.
+The username does not have to be <code>pi</code> but the username needs to be the same, across each of the nodes, for this guide.
+As you burn each of the SD Cards, place each one into their respective device, to keep them organized.
+The P1 node is the slot that is on the same side as the ethernet controller.
+The nodes increase, in order, to P4, which is on the same side as the power and HDMI connectors.
+You can refer to <a href="https://dashaun.com/posts/sping-native-edge-rpi/"  class="external-link" target="_blank" rel="noopener">an earlier post</a>, for detailed steps using <a href="https://www.raspberrypi.org/software/"  class="external-link" target="_blank" rel="noopener">Raspberry Pi Imager</a> to create the SD Cards.</p>
+<h3 id="first-boot">
+  First Boot
+  <a class="heading-link" href="#first-boot">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>With each SD card inserted into their respective nodes, you can turn on the control node.
+The ClusterHat will provide power and networking to the additional nodes.
+Power for each of the nodes can be controlled independently.
+You can connect to the device over SSH via WIFI, or via ethernet, depending on what you enabled in the previous step.</p>
+<p>Connect to the control node and power on P1:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pi@control-node:~ $ clusterctrl on p1
+</span></span></code></pre></div><blockquote>
+<p>You will see the green LED light up and the node will begin booting up.</p></blockquote>
+<p>Power up the other nodes:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pi@control-node:~ $ clusterctrl on p2 <span style="color:#666">&amp;&amp;</span> clusterctrl on P3 <span style="color:#666">&amp;&amp;</span> clusterctrl on p4
+</span></span></code></pre></div><h3 id="update-the-os-images">
+  Update the OS Images
+  <a class="heading-link" href="#update-the-os-images">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Update each of the images, from the upstream repositories, to get any of the changes made since the OS image was released.</p>
+<p>Start with the control node:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pi@control-node:~ $ sudo apt update <span style="color:#666">&amp;&amp;</span> sudo apt dist-upgrade -y
+</span></span></code></pre></div><p>Optionally, add the following lines to /etc/hosts, on the control node:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>172.19.181.1	p1
+</span></span><span style="display:flex;"><span>172.19.181.2	p2
+</span></span><span style="display:flex;"><span>172.19.181.3	p3
+</span></span><span style="display:flex;"><span>172.19.181.4	p4
+</span></span></code></pre></div><blockquote>
+<p>You can also use the IP address directly.</p></blockquote>
+<p>Update each of the additional nodes via ssh:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pi@control-node:~ $ ssh p1 <span style="color:#4070a0">&#39;sudo apt update &amp;&amp; sudo apt dist-upgrade -y&#39;</span>
+</span></span><span style="display:flex;"><span>pi@control-node:~ $ ssh p2 <span style="color:#4070a0">&#39;sudo apt update &amp;&amp; sudo apt dist-upgrade -y&#39;</span>
+</span></span><span style="display:flex;"><span>pi@control-node:~ $ ssh p3 <span style="color:#4070a0">&#39;sudo apt update &amp;&amp; sudo apt dist-upgrade -y&#39;</span>
+</span></span><span style="display:flex;"><span>pi@control-node:~ $ ssh p4 <span style="color:#4070a0">&#39;sudo apt update &amp;&amp; sudo apt dist-upgrade -y&#39;</span>
+</span></span></code></pre></div><p>At the time of writing this article, an additional change is required for the base OS on each node.
+This change is needed in order to run containers, as the defaults for cgroups has changed recently.</p>
+<p>Add the following configuration to <code>/boot/cmdline.txt</code> on each node and then reboot:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>cgroup_memory=1 cgroup_enable=memory
+</span></span></code></pre></div><h3 id="ready-for-k3s">
+  Ready for k3s
+  <a class="heading-link" href="#ready-for-k3s">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>The documentation for <a href="https://k3s.io/"  class="external-link" target="_blank" rel="noopener">k3s</a> is incredible.
+For this guide, you will use another tool called <code>k3sup</code> to deploy the k3s cluster.</p>
+<p>First install k3sup:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pi@control-node:~ $ sudo curl -sLS https://get.k3sup.dev | sh
+</span></span></code></pre></div><p>Install the control node of k3sup:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pi@control-node:~ $ k3sup install --ip 172.19.181.254 --user <span style="color:#007020;font-weight:bold">$(</span>whoami<span style="color:#007020;font-weight:bold">)</span>
+</span></span></code></pre></div><p>That process will end with output similar to this:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>Saving file to: /home/pi/kubeconfig
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span># Test your cluster with:
+</span></span><span style="display:flex;"><span>export KUBECONFIG=/home/pi/kubeconfig
+</span></span><span style="display:flex;"><span>kubectl config set-context default
+</span></span><span style="display:flex;"><span>kubectl get node -o wide
+</span></span><span style="display:flex;"><span>pi@control-node:~ $
+</span></span></code></pre></div><p>After setting up your context and verifying your control node is ready, add the other nodes to the cluster.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pi@control-node:~ $ k3sup join --ip 172.19.181.1 --server-ip 172.19.181.254 --user <span style="color:#007020;font-weight:bold">$(</span>whoami<span style="color:#007020;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>pi@control-node:~ $ k3sup join --ip 172.19.181.2 --server-ip 172.19.181.254 --user <span style="color:#007020;font-weight:bold">$(</span>whoami<span style="color:#007020;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>pi@control-node:~ $ k3sup join --ip 172.19.181.3 --server-ip 172.19.181.254 --user <span style="color:#007020;font-weight:bold">$(</span>whoami<span style="color:#007020;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>pi@control-node:~ $ k3sup join --ip 172.19.181.4 --server-ip 172.19.181.254 --user <span style="color:#007020;font-weight:bold">$(</span>whoami<span style="color:#007020;font-weight:bold">)</span>
+</span></span></code></pre></div><p>You now have a kubernetes cluster, deployed to about $100 of hardware.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pi@control-node:~ $ kubectl get node
+</span></span><span style="display:flex;"><span>NAME         STATUS ROLES                AGE VERSION
+</span></span><span style="display:flex;"><span>control-node Ready  control-plane,master 25m v1.24.3+k3s1
+</span></span><span style="display:flex;"><span>p1           Ready  &lt;none&gt;               20m v1.24.3+k3s1
+</span></span><span style="display:flex;"><span>p2           Ready  &lt;none&gt;               20m v1.24.3+k3s1
+</span></span><span style="display:flex;"><span>p3           Ready  &lt;none&gt;               22m v1.24.3+k3s1
+</span></span><span style="display:flex;"><span>p4           Ready  &lt;none&gt;               19m v1.24.3+k3s1
+</span></span><span style="display:flex;"><span>pi@control-node:~ $
+</span></span></code></pre></div><h3 id="test-deployment">
+  Test deployment
+  <a class="heading-link" href="#test-deployment">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Deploy <a href="https://dashaun.com/posts/springboot-arm64-image/"  class="external-link" target="_blank" rel="noopener">an ARM64 native Spring Boot application</a> to the cluster:</p>
+<p>Create a file, spring-boot-native-pi.yaml</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>apiVersion: apps/v1
+</span></span><span style="display:flex;"><span>kind: Deployment
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  name: spring-boot-native-pi
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  selector:
+</span></span><span style="display:flex;"><span>    matchLabels:
+</span></span><span style="display:flex;"><span>      app: springbootnativepi
+</span></span><span style="display:flex;"><span>  replicas: 4
+</span></span><span style="display:flex;"><span>  template:
+</span></span><span style="display:flex;"><span>    metadata:
+</span></span><span style="display:flex;"><span>      labels:
+</span></span><span style="display:flex;"><span>        app: springbootnativepi
+</span></span><span style="display:flex;"><span>    spec:
+</span></span><span style="display:flex;"><span>      containers:
+</span></span><span style="display:flex;"><span>      - name: springbootnativepi
+</span></span><span style="display:flex;"><span>        image: dashaun/spring-pi-native:focal-arm64
+</span></span><span style="display:flex;"><span>        ports:
+</span></span><span style="display:flex;"><span>        - containerPort: 8080
+</span></span><span style="display:flex;"><span>---
+</span></span><span style="display:flex;"><span>apiVersion: v1
+</span></span><span style="display:flex;"><span>kind: Service
+</span></span><span style="display:flex;"><span>metadata:
+</span></span><span style="display:flex;"><span>  name: web-service
+</span></span><span style="display:flex;"><span>spec:
+</span></span><span style="display:flex;"><span>  selector:
+</span></span><span style="display:flex;"><span>    app: springbootnativepi
+</span></span><span style="display:flex;"><span>  ports:
+</span></span><span style="display:flex;"><span>    - protocol: TCP
+</span></span><span style="display:flex;"><span>      port: 8080
+</span></span></code></pre></div><p>Verify:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pi@control-node:~ <span style="color:#bb60d5">$kubectl</span> get pods
+</span></span><span style="display:flex;"><span>NAME                                     READY   STATUS    RESTARTS   AGE
+</span></span><span style="display:flex;"><span>spring-boot-native-pi-59f7d7659c-hvlp8   1/1     Running   <span style="color:#40a070">0</span>          42m
+</span></span><span style="display:flex;"><span>spring-boot-native-pi-59f7d7659c-dp7nn   1/1     Running   <span style="color:#40a070">0</span>          42m
+</span></span><span style="display:flex;"><span>spring-boot-native-pi-59f7d7659c-sf899   1/1     Running   <span style="color:#40a070">0</span>          42m
+</span></span><span style="display:flex;"><span>spring-boot-native-pi-59f7d7659c-99vfq   1/1     Running   <span style="color:#40a070">0</span>          42m
+</span></span><span style="display:flex;"><span>pi@control-node:~ $
+</span></span></code></pre></div><h3 id="summary">
+  Summary
+  <a class="heading-link" href="#summary">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>In this guide, you learned how to deploy k3s on top of the custom OS images provided by ClusterHat, with Raspberry Pi.</p>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  builder version 20230204 · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="New release of multi-architecture cloud native builder for Java">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://dashaun.com/posts/builder-20230203/images/feature.png">
+  <meta name="twitter:title" content="builder version 20230204">
+  <meta name="twitter:description" content="New release of multi-architecture cloud native builder for Java">
+
+<meta property="og:url" content="https://dashaun.com/posts/builder-20230203/">
+  <meta property="og:site_name" content="DaShaun">
+  <meta property="og:title" content="builder version 20230204">
+  <meta property="og:description" content="New release of multi-architecture cloud native builder for Java">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2023-02-03T22:18:38-06:00">
+    <meta property="article:modified_time" content="2025-02-24T16:16:50-06:00">
+    <meta property="article:tag" content="Arm64">
+    <meta property="article:tag" content="Multiarch">
+    <meta property="article:tag" content="Buildpacks">
+    <meta property="article:tag" content="Spring">
+    <meta property="og:image" content="https://dashaun.com/posts/builder-20230203/images/feature.png">
+      <meta property="og:see_also" content="https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/five-months-in-the-making-multi-arch-builder/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/paketo-steering-committee-candidacy/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/multi-architecture-stacks-and-buildpacks/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/circleci-arm64-first-impression/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/better-late-than-never-video/">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/builder-20230203/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Follow me on Twitch</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/builder-20230203/">
+              builder version 20230204
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2023-02-03T22:18:38-06:00'>
+                February 3, 2023
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2023-02-03T22:18:38-06:00'>
+                February 24, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              12-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='images/feature.png' alt="Featured image"/>
+        
+        <p>It has been super busy since the last release.
+There was a request from someone on Twitter, for a different approach to versioning.
+I had a hard time trying to figure out the best approach since I wanted to be as close to upstream as possible.</p>
+<p>I&rsquo;m happy to share that I have pushed a new version of the multi-architecture builder.
+This release has 2 tags:</p>
+<ul>
+<li><code>dashaun/builder:20230204</code> for repeatable builds</li>
+<li><code>dashaun/builder:tiny</code> to align with the upstream</li>
+</ul>
+<p><a href="https://hub.docker.com/r/dashaun/builder"  class="external-link" target="_blank" rel="noopener">https://hub.docker.com/r/dashaun/builder</a></p>
+<p>I&rsquo;m still super excited to see how much support was put behind ARM64 support on the Paketo 2023 roadmap.
+I will be focusing some time on this project for the next couple of weeks.</p>
+<p>I&rsquo;ve seen some reports of things not working.
+I&rsquo;m hoping this new release fixes things.</p>
+<p>As always, feedback is welcome.</p>
+<h2 id="tests">
+  Tests
+  <a class="heading-link" href="#tests">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Output from testing the new building on my local M1 is below.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>./mvnw -Pnative spring-boot:build-image -DskipTests
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>[INFO] Scanning for projects...
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO] --------------------------&lt; com.example:demo &gt;--------------------------
+</span></span><span style="display:flex;"><span>[INFO] Building demo 0.0.1-SNAPSHOT
+</span></span><span style="display:flex;"><span>[INFO] --------------------------------[ jar ]---------------------------------
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO] &gt;&gt;&gt; spring-boot-maven-plugin:3.0.0:build-image (default-cli) &gt; package @ demo &gt;&gt;&gt;
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO] --- native-maven-plugin:0.9.18:add-reachability-metadata (add-reachability-metadata) @ demo ---
+</span></span><span style="display:flex;"><span>[INFO] [graalvm reachability metadata repository for ch.qos.logback:logback-classic:1.4.5]: Configuration directory not found. Trying latest version.
+</span></span><span style="display:flex;"><span>[INFO] [graalvm reachability metadata repository for ch.qos.logback:logback-classic:1.4.5]: Configuration directory is ch.qos.logback/logback-classic/1.4.1
+</span></span><span style="display:flex;"><span>[INFO] [graalvm reachability metadata repository for org.hdrhistogram:HdrHistogram:2.1.12]: Configuration directory is org.hdrhistogram/HdrHistogram/2.1.12
+</span></span><span style="display:flex;"><span>[INFO] [graalvm reachability metadata repository for org.apache.tomcat.embed:tomcat-embed-core:10.1.1]: Configuration directory not found. Trying latest version.
+</span></span><span style="display:flex;"><span>[INFO] [graalvm reachability metadata repository for org.apache.tomcat.embed:tomcat-embed-core:10.1.1]: Configuration directory is org.apache.tomcat.embed/tomcat-embed-core/10.0.20
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO] --- maven-resources-plugin:3.3.0:resources (default-resources) @ demo ---
+</span></span><span style="display:flex;"><span>[INFO] Copying 1 resource
+</span></span><span style="display:flex;"><span>[INFO] Copying 0 resource
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO] --- maven-compiler-plugin:3.10.1:compile (default-compile) @ demo ---
+</span></span><span style="display:flex;"><span>[INFO] Nothing to compile - all classes are up to date
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO] --- maven-resources-plugin:3.3.0:testResources (default-testResources) @ demo ---
+</span></span><span style="display:flex;"><span>[INFO] skip non existing resourceDirectory /Users/dashaun/fun/arm64-validate/src/test/resources
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO] --- maven-compiler-plugin:3.10.1:testCompile (default-testCompile) @ demo ---
+</span></span><span style="display:flex;"><span>[INFO] Nothing to compile - all classes are up to date
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO] --- maven-surefire-plugin:2.22.2:test (default-test) @ demo ---
+</span></span><span style="display:flex;"><span>[INFO] Tests are skipped.
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO] --- spring-boot-maven-plugin:3.0.0:process-aot (process-aot) @ demo ---
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  .   ____          _            __ _ _
+</span></span><span style="display:flex;"><span> /\\ / ___&#39;_ __ _ _(_)_ __  __ _ \ \ \ \
+</span></span><span style="display:flex;"><span>( ( )\___ | &#39;_ | &#39;_| | &#39;_ \/ _` | \ \ \ \
+</span></span><span style="display:flex;"><span> \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+</span></span><span style="display:flex;"><span>  &#39;  |____| .__|_| |_|_| |_\__, | / / / /
+</span></span><span style="display:flex;"><span> =========|_|==============|___/=/_/_/_/
+</span></span><span style="display:flex;"><span> :: Spring Boot ::                (v3.0.0)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>2023-02-03T22:52:31.443-06:00  INFO 82408 --- [           main] com.example.demo.DemoApplication         : Starting DemoApplication using Java 17.0.5 with PID 82408 (/Users/dashaun/fun/arm64-validate/target/classes started by dashaun in /Users/dashaun/fun/arm64-validate)
+</span></span><span style="display:flex;"><span>2023-02-03T22:52:31.446-06:00  INFO 82408 --- [           main] com.example.demo.DemoApplication         : No active profile set, falling back to 1 default profile: &#34;default&#34;
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO] --- maven-jar-plugin:3.3.0:jar (default-jar) @ demo ---
+</span></span><span style="display:flex;"><span>[INFO] Building jar: /Users/dashaun/fun/arm64-validate/target/demo-0.0.1-SNAPSHOT.jar
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO] --- spring-boot-maven-plugin:3.0.0:repackage (repackage) @ demo ---
+</span></span><span style="display:flex;"><span>[INFO] Replacing main artifact with repackaged archive
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO] &lt;&lt;&lt; spring-boot-maven-plugin:3.0.0:build-image (default-cli) &lt; package @ demo &lt;&lt;&lt;
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO] --- spring-boot-maven-plugin:3.0.0:build-image (default-cli) @ demo ---
+</span></span><span style="display:flex;"><span>[INFO] Building image &#39;docker.io/library/demo:0.0.1-SNAPSHOT&#39;
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO]  &gt; Pulling builder image &#39;docker.io/dashaun/builder:20230204&#39; 2%
+</span></span><span style="display:flex;"><span>[INFO]  &gt; Pulling builder image &#39;docker.io/dashaun/builder:20230204&#39; 9%
+</span></span><span style="display:flex;"><span>[INFO]  &gt; Pulling builder image &#39;docker.io/dashaun/builder:20230204&#39; 13%
+</span></span><span style="display:flex;"><span>[INFO]  &gt; Pulling builder image &#39;docker.io/dashaun/builder:20230204&#39; 19%
+</span></span><span style="display:flex;"><span>[INFO]  &gt; Pulling builder image &#39;docker.io/dashaun/builder:20230204&#39; 24%
+</span></span><span style="display:flex;"><span>[INFO]  &gt; Pulling builder image &#39;docker.io/dashaun/builder:20230204&#39; 52%
+</span></span><span style="display:flex;"><span>[INFO]  &gt; Pulling builder image &#39;docker.io/dashaun/builder:20230204&#39; 100%
+</span></span><span style="display:flex;"><span>[INFO]  &gt; Pulled builder image &#39;dashaun/builder@sha256:ca2a857e716b369a77c8c8e7442a7dc6488f2188e0c13c1adc6bf61fe0a61e62&#39;
+</span></span><span style="display:flex;"><span>[INFO]  &gt; Pulling run image &#39;docker.io/dashaun/jammy-run:tiny&#39; 100%
+</span></span><span style="display:flex;"><span>[INFO]  &gt; Pulled run image &#39;dashaun/jammy-run@sha256:9cd92927ddd52a742108507fd58140dc1a87a30fdf560e96ebe658ee0873b902&#39;
+</span></span><span style="display:flex;"><span>[INFO]  &gt; Executing lifecycle version v0.15.3
+</span></span><span style="display:flex;"><span>[INFO]  &gt; Using build cache volume &#39;pack-cache-5cbe5692dbc4.build&#39;
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO]  &gt; Running creator
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     ===&gt; ANALYZING
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Previous image with name &#34;docker.io/library/demo:0.0.1-SNAPSHOT&#34; not found
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     ===&gt; DETECTING
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     6 of 14 buildpacks participating
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     paketo-buildpacks/ca-certificates   3.5.1
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     paketo-buildpacks/bellsoft-liberica 9.10.3
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     paketo-buildpacks/syft              1.23.0
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     paketo-buildpacks/executable-jar    6.5.0
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     paketo-buildpacks/spring-boot       5.22.1
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     paketo-buildpacks/native-image      5.8.0
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     ===&gt; RESTORING
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     ===&gt; BUILDING
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Paketo Buildpack for CA Certificates 3.5.1
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       https://github.com/paketo-buildpacks/ca-certificates
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       Launch Helper: Contributing to layer
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         Creating /layers/paketo-buildpacks_ca-certificates/helper/exec.d/ca-certificates-helper
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Paketo Buildpack for BellSoft Liberica 9.10.3
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       https://github.com/paketo-buildpacks/bellsoft-liberica
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       Build Configuration:
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BP_JVM_JLINK_ARGS           --no-man-pages --no-header-files --strip-debug --compress=1  configure custom link arguments (--output must be omitted)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BP_JVM_JLINK_ENABLED        false                                                        enables running jlink tool to generate custom JRE
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BP_JVM_TYPE                 JRE                                                          the JVM type - JDK or JRE
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BP_JVM_VERSION              11                                                           the Java version
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       Launch Configuration:
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BPL_DEBUG_ENABLED           false                                                        enables Java remote debugging support
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BPL_DEBUG_PORT              8000                                                         configure the remote debugging port
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BPL_DEBUG_SUSPEND           false                                                        configure whether to suspend execution until a debugger has attached
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BPL_HEAP_DUMP_PATH                                                                       write heap dumps on error to this path
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BPL_JAVA_NMT_ENABLED        true                                                         enables Java Native Memory Tracking (NMT)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BPL_JAVA_NMT_LEVEL          summary                                                      configure level of NMT, summary or detail
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BPL_JFR_ARGS                                                                             configure custom Java Flight Recording (JFR) arguments
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BPL_JFR_ENABLED             false                                                        enables Java Flight Recording (JFR)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BPL_JMX_ENABLED             false                                                        enables Java Management Extensions (JMX)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BPL_JMX_PORT                5000                                                         configure the JMX port
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BPL_JVM_HEAD_ROOM           0                                                            the headroom in memory calculation
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BPL_JVM_LOADED_CLASS_COUNT  35% of classes                                               the number of loaded classes in memory calculation
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BPL_JVM_THREAD_COUNT        250                                                          the number of threads in memory calculation
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $JAVA_TOOL_OPTIONS                                                                        the JVM launch flags
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         Using Java version 17 extracted from MANIFEST.MF
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       BellSoft Liberica NIK 17.0.6: Contributing to layer
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         Downloading from https://download.bell-sw.com/vm/22.3.1/bellsoft-liberica-vm-core-openjdk17.0.6+10-22.3.1+1-linux-aarch64.tar.gz
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         Verifying checksum
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         Expanding to /layers/paketo-buildpacks_bellsoft-liberica/native-image-svm
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         Adding 124 container CA certificates to JVM truststore
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         Writing env.build/JAVA_HOME.override
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         Writing env.build/JDK_HOME.override
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Paketo Buildpack for Syft 1.23.0
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       https://github.com/paketo-buildpacks/syft
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         Downloading from https://github.com/anchore/syft/releases/download/v0.62.1/syft_0.62.1_linux_arm64.tar.gz
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         Verifying checksum
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         Writing env.build/SYFT_CHECK_FOR_APP_UPDATE.default
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Paketo Buildpack for Executable JAR 6.5.0
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       https://github.com/paketo-buildpacks/executable-jar
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       Class Path: Contributing to layer
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         Writing env.build/CLASSPATH.delim
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         Writing env.build/CLASSPATH.prepend
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Paketo Buildpack for Spring Boot 5.22.1
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       https://github.com/paketo-buildpacks/spring-boot
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       Build Configuration:
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BP_SPRING_CLOUD_BINDINGS_DISABLED   false  whether to contribute Spring Boot cloud bindings support
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       Launch Configuration:
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BPL_SPRING_CLOUD_BINDINGS_DISABLED  false  whether to auto-configure Spring Boot environment properties from bindings
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BPL_SPRING_CLOUD_BINDINGS_ENABLED   true   Deprecated - whether to auto-configure Spring Boot environment properties from bindings
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       Class Path: Contributing to layer
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         Writing env.build/CLASSPATH.append
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         Writing env.build/CLASSPATH.delim
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       Image labels:
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         org.opencontainers.image.title
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         org.opencontainers.image.version
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         org.springframework.boot.version
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Warning: BOM table is deprecated in this buildpack api version, though it remains supported for backwards compatibility. Buildpack authors should write BOM information to &lt;layer&gt;.sbom.&lt;ext&gt;, launch.sbom.&lt;ext&gt;, or build.sbom.&lt;ext&gt;.
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Paketo Buildpack for Native Image 5.8.0
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       https://github.com/paketo-buildpacks/native-image
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       Build Configuration:
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BP_BINARY_COMPRESSION_METHOD                Compression mechanism used to reduce binary size. Options: `none` (default), `upx` or `gzexe`
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BP_NATIVE_IMAGE                       true  enable native image build
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BP_NATIVE_IMAGE_BUILD_ARGUMENTS             arguments to pass to the native-image command
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BP_NATIVE_IMAGE_BUILD_ARGUMENTS_FILE        a file with arguments to pass to the native-image command
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         $BP_NATIVE_IMAGE_BUILT_ARTIFACT              the built application artifact explicitly, required if building from a JAR
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       Native Image: Contributing to layer
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         Executing native-image -H:+StaticExecutableWithDynamicLibC -H:Name=/layers/paketo-buildpacks_native-image/native-image/com.example.demo.DemoApplication -cp /workspace:/workspace/BOOT-INF/classes:/workspace/BOOT-INF/lib/spring-boot-3.0.0.jar:/workspace/BOOT-INF/lib/spring-boot-autoconfigure-3.0.0.jar:/workspace/BOOT-INF/lib/logback-classic-1.4.5.jar:/workspace/BOOT-INF/lib/logback-core-1.4.5.jar:/workspace/BOOT-INF/lib/log4j-to-slf4j-2.19.0.jar:/workspace/BOOT-INF/lib/log4j-api-2.19.0.jar:/workspace/BOOT-INF/lib/jul-to-slf4j-2.0.4.jar:/workspace/BOOT-INF/lib/jakarta.annotation-api-2.1.1.jar:/workspace/BOOT-INF/lib/snakeyaml-1.33.jar:/workspace/BOOT-INF/lib/spring-boot-actuator-autoconfigure-3.0.0.jar:/workspace/BOOT-INF/lib/spring-boot-actuator-3.0.0.jar:/workspace/BOOT-INF/lib/jackson-databind-2.14.1.jar:/workspace/BOOT-INF/lib/jackson-annotations-2.14.1.jar:/workspace/BOOT-INF/lib/jackson-core-2.14.1.jar:/workspace/BOOT-INF/lib/jackson-datatype-jsr310-2.14.1.jar:/workspace/BOOT-INF/lib/micrometer-observation-1.10.2.jar:/workspace/BOOT-INF/lib/micrometer-commons-1.10.2.jar:/workspace/BOOT-INF/lib/micrometer-core-1.10.2.jar:/workspace/BOOT-INF/lib/HdrHistogram-2.1.12.jar:/workspace/BOOT-INF/lib/LatencyUtils-2.0.3.jar:/workspace/BOOT-INF/lib/jackson-datatype-jdk8-2.14.1.jar:/workspace/BOOT-INF/lib/jackson-module-parameter-names-2.14.1.jar:/workspace/BOOT-INF/lib/tomcat-embed-core-10.1.1.jar:/workspace/BOOT-INF/lib/tomcat-embed-el-10.1.1.jar:/workspace/BOOT-INF/lib/tomcat-embed-websocket-10.1.1.jar:/workspace/BOOT-INF/lib/spring-web-6.0.2.jar:/workspace/BOOT-INF/lib/spring-beans-6.0.2.jar:/workspace/BOOT-INF/lib/spring-webmvc-6.0.2.jar:/workspace/BOOT-INF/lib/spring-aop-6.0.2.jar:/workspace/BOOT-INF/lib/spring-context-6.0.2.jar:/workspace/BOOT-INF/lib/spring-expression-6.0.2.jar:/workspace/BOOT-INF/lib/slf4j-api-2.0.4.jar:/workspace/BOOT-INF/lib/spring-core-6.0.2.jar:/workspace/BOOT-INF/lib/spring-jcl-6.0.2.jar:/workspace/BOOT-INF/lib/spring-boot-jarmode-layertools-3.0.0.jar com.example.demo.DemoApplication
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     ================================================================================
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     GraalVM Native Image: Generating &#39;/layers/paketo-buildpacks_native-image/native-image/com.example.demo.DemoApplication&#39; (static executable)...
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     ================================================================================
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     [1/7] Initializing...                                            (4.7s @ 0.21GB)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]      Version info: &#39;GraalVM 22.3.1 Java 17 CE&#39;
+</span></span><span style="display:flex;"><span>[INFO]     [creator]      Java version info: &#39;17.0.6+10-LTS&#39;
+</span></span><span style="display:flex;"><span>[INFO]     [creator]      C compiler: gcc (linux, aarch64, 11.3.0)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]      Garbage collector: Serial GC
+</span></span><span style="display:flex;"><span>[INFO]     [creator]      1 user-specific feature(s)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]      - org.springframework.aot.nativex.feature.PreComputeFieldFeature
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     The bundle named: org.apache.el.Messages, has not been found. If the bundle is part of a module, verify the bundle name is a fully qualified class name. Otherwise verify the bundle path is accessible in the classpath.
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.apache.commons.logging.LogAdapter#log4jSpiPresent set to true at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.apache.commons.logging.LogAdapter#log4jSlf4jProviderPresent set to true at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.apache.commons.logging.LogAdapter#slf4jSpiPresent set to true at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.apache.commons.logging.LogAdapter#slf4jApiPresent set to true at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.core.NativeDetector#imageCode set to true at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.core.KotlinDetector#kotlinPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.core.KotlinDetector#kotlinReflectPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.format.support.DefaultFormattingConversionService#jsr354Present set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.cglib.core.AbstractClassGenerator#imageCode set to true at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#romePresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#jaxb2Present set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#jackson2Present set to true at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#jackson2XmlPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#jackson2SmilePresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#jackson2CborPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#gsonPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#jsonbPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#kotlinSerializationCborPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#kotlinSerializationJsonPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport#kotlinSerializationProtobufPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.boot.logging.logback.LogbackLoggingSystem$Factory#PRESENT set to true at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.boot.logging.log4j2.Log4J2LoggingSystem$Factory#PRESENT set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.boot.logging.java.JavaLoggingSystem$Factory#PRESENT set to true at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.context.support.StandardServletEnvironment#jndiPresent set to true at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.context.support.WebApplicationContextUtils#jsfPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.context.request.RequestContextHolder#jsfPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.servlet.view.InternalResourceViewResolver#jstlPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.boot.logging.logback.LogbackLoggingSystemProperties#JBOSS_LOGGING_PRESENT set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter#jaxb2Present set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter#jackson2Present set to true at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter#jackson2XmlPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter#jackson2SmilePresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter#gsonPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter#jsonbPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter#kotlinSerializationCborPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter#kotlinSerializationJsonPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter#kotlinSerializationProtobufPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.context.event.ApplicationListenerMethodAdapter#reactiveStreamsPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.core.ReactiveAdapterRegistry#reactorPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.core.ReactiveAdapterRegistry#rxjava3Present set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.core.ReactiveAdapterRegistry#kotlinCoroutinesPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.core.ReactiveAdapterRegistry#mutinyPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.boot.actuate.endpoint.web.annotation.DiscoveredWebOperation#REACTIVE_STREAMS_PRESENT set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.boot.actuate.endpoint.invoke.reflect.OperationMethodParameter#jsr305Present set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     SLF4J: No SLF4J providers were found.
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     SLF4J: Defaulting to no-operation (NOP) logger implementation
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     SLF4J: See https://www.slf4j.org/codes.html#noProviders for further details.
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.servlet.mvc.method.annotation.ReactiveTypeHandler#isContextPropagationPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.boot.autoconfigure.web.format.WebConversionService#JSR_354_PRESENT set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#romePresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#jaxb2Present set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#jackson2Present set to true at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#jackson2XmlPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#jackson2SmilePresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#jackson2CborPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#gsonPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#jsonbPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#kotlinSerializationCborPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#kotlinSerializationJsonPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.client.RestTemplate#kotlinSerializationProtobufPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvoker#IS_REACTOR_PRESENT set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Field org.springframework.web.servlet.support.RequestContext#jstlPresent set to false at build time
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     [2/7] Performing analysis...  [**********]                      (36.2s @ 1.29GB)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       16,489 (92.66%) of 17,796 classes reachable
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       26,202 (67.89%) of 38,595 fields reachable
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       77,345 (62.52%) of 123,718 methods reachable
+</span></span><span style="display:flex;"><span>[INFO]     [creator]          884 classes,   188 fields, and 3,869 methods registered for reflection
+</span></span><span style="display:flex;"><span>[INFO]     [creator]           64 classes,    70 fields, and    55 methods registered for JNI access
+</span></span><span style="display:flex;"><span>[INFO]     [creator]            4 native libraries: dl, pthread, rt, z
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     [3/7] Building universe...                                       (4.1s @ 2.81GB)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     [4/7] Parsing methods...      [**]                               (3.0s @ 2.15GB)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     [5/7] Inlining methods...     [***]                              (1.9s @ 1.89GB)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     [6/7] Compiling methods...    [*****]                           (25.9s @ 2.86GB)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     [7/7] Creating image...                                          (5.4s @ 1.86GB)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       35.49MB (47.58%) for code area:    50,542 compilation units
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       36.29MB (48.64%) for image heap:  374,831 objects and 423 resources
+</span></span><span style="display:flex;"><span>[INFO]     [creator]        2.82MB ( 3.78%) for other data
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       74.60MB in total
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     --------------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Top 10 packages in code area:           Top 10 object types in image heap:
+</span></span><span style="display:flex;"><span>[INFO]     [creator]        1.65MB sun.security.ssl                 7.53MB byte[] for code metadata
+</span></span><span style="display:flex;"><span>[INFO]     [creator]        1.10MB java.util                        4.75MB byte[] for embedded resources
+</span></span><span style="display:flex;"><span>[INFO]     [creator]      844.20KB java.lang.invoke                 3.91MB java.lang.Class
+</span></span><span style="display:flex;"><span>[INFO]     [creator]      713.52KB com.sun.crypto.provider          3.53MB java.lang.String
+</span></span><span style="display:flex;"><span>[INFO]     [creator]      569.07KB org.apache.catalina.core         3.14MB byte[] for general heap data
+</span></span><span style="display:flex;"><span>[INFO]     [creator]      509.20KB org.apache.tomcat.util.net       2.99MB byte[] for java.lang.String
+</span></span><span style="display:flex;"><span>[INFO]     [creator]      503.81KB java.lang                        1.38MB c.o.s.c.h.DynamicHubCompanion
+</span></span><span style="display:flex;"><span>[INFO]     [creator]      495.12KB c.s.o.a.x.i.i.xs.traversers    878.04KB byte[] for reflection metadata
+</span></span><span style="display:flex;"><span>[INFO]     [creator]      465.84KB org.apache.coyote.http2        686.15KB java.lang.String[]
+</span></span><span style="display:flex;"><span>[INFO]     [creator]      464.48KB java.util.concurrent           582.56KB java.util.HashMap$Node
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       28.00MB for 699 more packages            5.86MB for 3326 more object types
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     --------------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         7.4s (8.6% of total time) in 79 GCs | Peak RSS: 4.66GB | CPU load: 3.96
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     --------------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Produced artifacts:
+</span></span><span style="display:flex;"><span>[INFO]     [creator]      /layers/paketo-buildpacks_native-image/native-image/com.example.demo.DemoApplication (executable)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]      /layers/paketo-buildpacks_native-image/native-image/com.example.demo.DemoApplication.build_artifacts.txt (txt)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     ================================================================================
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Finished generating &#39;/layers/paketo-buildpacks_native-image/native-image/com.example.demo.DemoApplication&#39; in 1m 25s.
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       Removing bytecode
+</span></span><span style="display:flex;"><span>[INFO]     [creator]       Process types:
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         native-image: /workspace/com.example.demo.DemoApplication (direct)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         task:         /workspace/com.example.demo.DemoApplication (direct)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]         web:          /workspace/com.example.demo.DemoApplication (direct)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     ===&gt; EXPORTING
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Adding layer &#39;paketo-buildpacks/ca-certificates:helper&#39;
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Adding layer &#39;launch.sbom&#39;
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Adding 1/1 app layer(s)
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Adding layer &#39;launcher&#39;
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Adding layer &#39;config&#39;
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Adding layer &#39;process-types&#39;
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Adding label &#39;io.buildpacks.lifecycle.metadata&#39;
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Adding label &#39;io.buildpacks.build.metadata&#39;
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Adding label &#39;io.buildpacks.project.metadata&#39;
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Adding label &#39;org.opencontainers.image.title&#39;
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Adding label &#39;org.opencontainers.image.version&#39;
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Adding label &#39;org.springframework.boot.version&#39;
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Setting default process type &#39;web&#39;
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Saving docker.io/library/demo:0.0.1-SNAPSHOT...
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     *** Images (086b5a91c2ec):
+</span></span><span style="display:flex;"><span>[INFO]     [creator]           docker.io/library/demo:0.0.1-SNAPSHOT
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Adding cache layer &#39;paketo-buildpacks/bellsoft-liberica:native-image-svm&#39;
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Adding cache layer &#39;paketo-buildpacks/syft:syft&#39;
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Adding cache layer &#39;paketo-buildpacks/native-image:native-image&#39;
+</span></span><span style="display:flex;"><span>[INFO]     [creator]     Adding cache layer &#39;cache.sbom&#39;
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO] Successfully built image &#39;docker.io/library/demo:0.0.1-SNAPSHOT&#39;
+</span></span><span style="display:flex;"><span>[INFO] 
+</span></span><span style="display:flex;"><span>[INFO] ------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>[INFO] BUILD SUCCESS
+</span></span><span style="display:flex;"><span>[INFO] ------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>[INFO] Total time:  02:09 min
+</span></span><span style="display:flex;"><span>[INFO] Finished at: 2023-02-03T22:54:40-06:00
+</span></span><span style="display:flex;"><span>[INFO] ------------------------------------------------------------------------
+</span></span></code></pre></div><p>Run the image:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker run --rm -d -p 8080:8080 demo:0.0.1-SNAPSHOT
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>2b984961cacdb92296914c1297439b2f8ca8b90d7d8f9ce41e99830f456702de
+</span></span></code></pre></div><p>Test the image:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>http :8080/actuator/health
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>HTTP/1.1 200 
+</span></span><span style="display:flex;"><span>Connection: keep-alive
+</span></span><span style="display:flex;"><span>Content-Type: application/vnd.spring-boot.actuator.v3+json
+</span></span><span style="display:flex;"><span>Date: Sat, 04 Feb 2023 05:04:36 GMT
+</span></span><span style="display:flex;"><span>Keep-Alive: timeout=60
+</span></span><span style="display:flex;"><span>Transfer-Encoding: chunked
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    &#34;status&#34;: &#34;UP&#34;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="momentum">
+  Momentum
+  <a class="heading-link" href="#momentum">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I was so happy to get this release out the door, that I actually recorded a video too.</p>
+<p><a href="https://www.youtube.com/watch?v=BuqNJl4QrUw"  class="external-link" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/BuqNJl4QrUw/0.jpg" alt="Builder Over and Test"></a></p>
+
+      </div>
+
+
+      <footer>
+        
+
+<section class="see-also">
+  
+    
+    
+    
+  
+</section>
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

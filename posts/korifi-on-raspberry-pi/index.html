@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  How to Deploy Korifi on K3s with Ubuntu Raspberry Pi 5 Cluster (Step-by-Step) · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="Learn how to set up Korifi on a multi-node K3s Kubernetes cluster using Raspberry Pi 5 devices and Ubuntu 24.10. Step-by-step guide with troubleshooting tips.">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://dashaun.com/posts/korifi-on-raspberry-pi/images/feature.png">
+  <meta name="twitter:title" content="How to Deploy Korifi on K3s with Ubuntu Raspberry Pi 5 Cluster (Step-by-Step)">
+  <meta name="twitter:description" content="Learn how to set up Korifi on a multi-node K3s Kubernetes cluster using Raspberry Pi 5 devices and Ubuntu 24.10. Step-by-step guide with troubleshooting tips.">
+
+<meta property="og:url" content="https://dashaun.com/posts/korifi-on-raspberry-pi/">
+  <meta property="og:site_name" content="DaShaun">
+  <meta property="og:title" content="How to Deploy Korifi on K3s with Ubuntu Raspberry Pi 5 Cluster (Step-by-Step)">
+  <meta property="og:description" content="Learn how to set up Korifi on a multi-node K3s Kubernetes cluster using Raspberry Pi 5 devices and Ubuntu 24.10. Step-by-step guide with troubleshooting tips.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2025-01-13T10:32:38-06:00">
+    <meta property="article:modified_time" content="2025-02-24T16:16:50-06:00">
+    <meta property="article:tag" content="Spring-Boot-3-4">
+    <meta property="article:tag" content="Paketo">
+    <meta property="article:tag" content="Korifi">
+    <meta property="article:tag" content="K3s">
+    <meta property="article:tag" content="Kubernetes">
+    <meta property="article:tag" content="Kpack">
+    <meta property="og:image" content="https://dashaun.com/posts/korifi-on-raspberry-pi/images/feature.png">
+      <meta property="og:see_also" content="https://dashaun.com/posts/korifi-v0_14_0-on-raspberry-pi/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/spring-boot-stackpath-terraform/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/spring-boot-kamatera-terraform/">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/korifi-on-raspberry-pi/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Follow me on Twitch</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/korifi-on-raspberry-pi/">
+              How to Deploy Korifi on K3s with Ubuntu Raspberry Pi 5 Cluster (Step-by-Step)
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2025-01-13T10:32:38-06:00'>
+                January 13, 2025
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2025-01-13T10:32:38-06:00'>
+                February 24, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              13-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='images/feature.png' alt="Featured image"/>
+        
+        <h2 id="overview-of-korifi-deployment-on-raspberry-pi">
+  Overview of Korifi Deployment on Raspberry Pi
+  <a class="heading-link" href="#overview-of-korifi-deployment-on-raspberry-pi">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>A simple question, the week before the holiday, has turned into a wonderful ride. I now have <a href="https://github.com/cloudfoundry/korifi"  class="external-link" target="_blank" rel="noopener">Cloud Foundry Korifi</a> running on, at least one, 4-node, k3s cluster, of Raspberry Pi 5 (8gb) devices running Ubuntu 24.10.</p>
+<p>Here are the details, both technical and non.</p>
+<h2 id="bill-of-materials-for-the-raspberry-pi-cluster">
+  Bill of Materials for the Raspberry Pi Cluster
+  <a class="heading-link" href="#bill-of-materials-for-the-raspberry-pi-cluster">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I have about 100 Raspberry Pi devices at home, but honestly, I&rsquo;ve lost track.
+Buying a few more couldn&rsquo;t hurt.
+During a family trip to Dallas, I made a trip to MicroCenter with my son.
+I purchased 4 Raspberry Pi 5 (8gb), a case, some usb-c cables and some Cat-6 ethernet.
+I brought a switch with me, so I had enough to get started.
+When I got home I made some changes, but here is the entire BOM for this project.</p>
+<ul>
+<li>(4) Raspberry Pi 5 (8gb)</li>
+<li>(4) MicroCenter 128gb micro-SDCard</li>
+<li>(4) USB-C, right-angle, &ldquo;HotNow&rdquo; brand cables</li>
+<li>(5) 1-foot CAT6 flat ethernet cables</li>
+<li>(1) Ubiquiti Flex Mini switch</li>
+<li>(1) Anker 60W, 6-port charging station</li>
+<li>(1) 4-level, Acrylic Raspberry Pi rack with fans.</li>
+</ul>
+<p>That&rsquo;s everything.  I power the switch and the 4 devices from the same charging station.
+That IS NOT the right way to power these Raspberry Pi 5 devices.
+It DOES NOT provide enough power to operate the USB drives properly.
+I&rsquo;m not connecting anything else to these devices, other than the fans.
+However, I didn&rsquo;t need the USB drives for this project.
+I&rsquo;m booting and running with the SDcards.</p>
+<h2 id="installing-ubuntu-2410-on-raspberry-pi-devices">
+  Installing Ubuntu 24.10 on Raspberry Pi Devices
+  <a class="heading-link" href="#installing-ubuntu-2410-on-raspberry-pi-devices">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>For each device, I first installed Ubuntu Server 24.10, using Raspberry Pi Imager.
+It&rsquo;s such a cool tool.
+It allows you to edit the config for each device, before image creation.
+For each of the four machines I used the settings:</p>
+<ul>
+<li>Configure the hostname</li>
+<li>Set country</li>
+<li>Add user (dashaun)</li>
+<li>Enable SSH server on boot</li>
+<li>Add public key for SSH auth</li>
+</ul>
+<p>After the creating that first image and booting each of the devices, I update and patch everything.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># On each Raspberry Pi</span>
+</span></span><span style="display:flex;"><span>sudo apt update
+</span></span><span style="display:flex;"><span>sudo apt upgrade -y
+</span></span><span style="display:flex;"><span>sudo shutdown -r now
+</span></span></code></pre></div><blockquote>
+<p>That&rsquo;s the most time-consuming part of this entire project.</p></blockquote>
+<p>In the past, I needed to update <code>/boot/firmware/cmdline.txt</code> by adding <code>cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1</code>.
+This time, I looked to see if I still need to do that step.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cat /proc/cgroups
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>#subsys_name    hierarchy   num_cgroups   enabled
+</span></span><span style="display:flex;"><span>cpuset          0           313           1
+</span></span><span style="display:flex;"><span>cpu             0           313           1
+</span></span><span style="display:flex;"><span>cpuacct         0           313           1
+</span></span><span style="display:flex;"><span>blkio           0           313           1
+</span></span><span style="display:flex;"><span>memory          0           313           1
+</span></span><span style="display:flex;"><span>devices         0           313           1
+</span></span><span style="display:flex;"><span>freezer         0           313           1
+</span></span><span style="display:flex;"><span>net_cls         0           313           1
+</span></span><span style="display:flex;"><span>perf_event      0           313           1
+</span></span><span style="display:flex;"><span>net_prio        0           313           1
+</span></span><span style="display:flex;"><span>hugetlb         0           313           1
+</span></span><span style="display:flex;"><span>pids            0           313           1
+</span></span><span style="display:flex;"><span>rdma            0           313           1
+</span></span><span style="display:flex;"><span>misc            0           313           1
+</span></span></code></pre></div><blockquote>
+<p>Everything appears to be enabled already. Thanks Ubuntu.</p></blockquote>
+<p>Now I have 4 computers, patched and ready for Kubernetes:</p>
+<ul>
+<li>10.0.0.20</li>
+<li>10.0.0.21</li>
+<li>10.0.0.22</li>
+<li>10.0.0.23</li>
+</ul>
+<p>You will probably get different IP addresses, just replace them below.</p>
+<h2 id="setting-up-k3s-with-k3sup-on-raspberry-pi">
+  Setting Up K3s with K3sup on Raspberry Pi
+  <a class="heading-link" href="#setting-up-k3s-with-k3sup-on-raspberry-pi">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I deploy Kubernetes about once a week.
+My default flavor is k3s.
+I&rsquo;ve really enjoyed using <code>k3sup</code> for years now.
+Watch how easy it is.</p>
+<p>From my laptop, not from one of the Raspberry Pi devices.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>k3sup install --ip 10.0.0.20 --user dashaun --k3s-extra-args <span style="color:#4070a0">&#39;--disable traefik&#39;</span> --merge --local-path ~/.kube/config --context coffeesoftware
+</span></span></code></pre></div><p>The &ndash;user is the same user that I configured with public key for ssh via Raspbery Pi Imager above.
+I add <code>--k3s-extra-args '--disable traefik'</code> because Korifi provides Contour for ingress.
+I <code>--merge</code> into my local <code>~/.kube/config</code> so I can use kubectl/kubectx.
+I named this cluster context <code>coffeesoftware</code> but you can choose whatever you like.</p>
+<p>After a few seconds, you have have a single-node cluster of k3s.</p>
+<p>Now add three more nodes.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>k3sup join --ip 10.0.0.21 --server-ip 10.0.0.20 --user dashaun
+</span></span><span style="display:flex;"><span>k3sup join --ip 10.0.0.22 --server-ip 10.0.0.20 --user dashaun
+</span></span><span style="display:flex;"><span>k3sup join --ip 10.0.0.23 --server-ip 10.0.0.20 --user dashaun
+</span></span></code></pre></div><blockquote>
+<p>It&rsquo;s so simple!</p></blockquote>
+<p>Let&rsquo;s take a look at our cluster now!</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl get nodes -o wide
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>NAME          STATUS   ROLES                  AGE    VERSION        INTERNAL-IP   EXTERNAL-IP   OS-IMAGE       KERNEL-VERSION      CONTAINER-RUNTIME
+</span></span><span style="display:flex;"><span>coffeesoft0   Ready    control-plane,master   1d6h   v1.31.4+k3s1   10.0.0.20     &lt;none&gt;        Ubuntu 24.10   6.11.0-1006-raspi   containerd://1.7.23-k3s2
+</span></span><span style="display:flex;"><span>coffeesoft1   Ready    &lt;none&gt;                 1d6h   v1.31.4+k3s1   10.0.0.21     &lt;none&gt;        Ubuntu 24.10   6.11.0-1006-raspi   containerd://1.7.23-k3s2
+</span></span><span style="display:flex;"><span>coffeesoft2   Ready    &lt;none&gt;                 1d6h   v1.31.4+k3s1   10.0.0.22     &lt;none&gt;        Ubuntu 24.10   6.11.0-1006-raspi   containerd://1.7.23-k3s2
+</span></span><span style="display:flex;"><span>coffeesoft3   Ready    &lt;none&gt;                 1d6h   v1.31.4+k3s1   10.0.0.22     &lt;none&gt;        Ubuntu 24.10   6.11.0-1006-raspi   containerd://1.7.23-k3s2
+</span></span></code></pre></div><blockquote>
+<p>4-node Kubernetes cluster</p></blockquote>
+<h2 id="installing-and-configuring-korifi-on-kubernetes">
+  Installing and Configuring Korifi on Kubernetes
+  <a class="heading-link" href="#installing-and-configuring-korifi-on-kubernetes">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>The Korifi install documentation is great.  I followed the documentation, but I&rsquo;m documenting exactly the steps I took, here.</p>
+<p>I configured my properties with a .envrc file for <code>direnv</code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">ROOT_NAMESPACE</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;cf&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">KORIFI_NAMESPACE</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;korifi&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">ADMIN_USERNAME</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;cf-admin&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">BASE_DOMAIN</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;korifi.cc&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">GATEWAY_CLASS_NAME</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;contour&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">DOCKERHUB_USERNAME</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;dashaun&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">DOCKERHUB_PASSWORD</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;*******&#34;</span>
+</span></span></code></pre></div><p>Install Cert-Manager</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.16.2/cert-manager.yaml
+</span></span></code></pre></div><p>Install Kpack</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl apply -f https://github.com/buildpacks-community/kpack/releases/download/v0.15.0/release-0.15.0.yaml
+</span></span></code></pre></div><p>This is where we run into problems!  Kpack doesn&rsquo;t deliver ARM64 images yet.  &ldquo;Crash Loop Backoff&rdquo;
+This is where I always got stuck before.
+This time is different.  I&rsquo;ve been running Korifi on Apple Silicon for at least a year now.
+MacOS comes with AMD64 emulation enabled by default.  So it always just worked.
+I needed to get emulation installed for each node of the cluster, in order to make this work.
+Of all the workarounds I&rsquo;ve done in the past, this is the one I like the most.</p>
+<p>I deploy the <code>qemu</code> emulation to each node of the cluster, using a <code>daemonset</code> with the <code>tonistiigi/binfmt</code> image.
+I got this approach from <a href="https://rolandsdev.blog/posts/how-to-install-and-run-qemu-on-k8s-nodes/"  class="external-link" target="_blank" rel="noopener">here</a>.
+My modernized <code>binfmt-daemonset.yaml</code> below.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>apps/v1<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>DaemonSet<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">metadata</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>binfmt<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">labels</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">app</span>:<span style="color:#bbb"> </span>binfmt-setup<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb"></span><span style="color:#062873;font-weight:bold">spec</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">selector</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">matchLabels</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span><span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>binfmt<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">template</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">metadata</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span><span style="color:#062873;font-weight:bold">labels</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>binfmt<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">spec</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span><span style="color:#062873;font-weight:bold">tolerations</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>- <span style="color:#062873;font-weight:bold">key</span>:<span style="color:#bbb"> </span>node-role.kubernetes.io/master<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">          </span><span style="color:#062873;font-weight:bold">effect</span>:<span style="color:#bbb"> </span>NoSchedule<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span><span style="color:#062873;font-weight:bold">initContainers</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>- <span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>binfmt<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">          </span><span style="color:#062873;font-weight:bold">image</span>:<span style="color:#bbb"> </span>tonistiigi/binfmt<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">          </span><span style="color:#062873;font-weight:bold">args</span>:<span style="color:#bbb"> </span>[<span style="color:#4070a0">&#34;--install&#34;</span>,<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;all&#34;</span>]<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">          </span><span style="color:#062873;font-weight:bold">securityContext</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#062873;font-weight:bold">privileged</span>:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">true</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span><span style="color:#062873;font-weight:bold">containers</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>- <span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>pause<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">          </span><span style="color:#062873;font-weight:bold">image</span>:<span style="color:#bbb"> </span>busybox:stable<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">          </span><span style="color:#062873;font-weight:bold">command</span>:<span style="color:#bbb"> </span>[<span style="color:#4070a0">&#34;sleep&#34;</span>,<span style="color:#4070a0">&#34;infinity&#34;</span>]<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">          </span><span style="color:#062873;font-weight:bold">resources</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#062873;font-weight:bold">requests</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">              </span><span style="color:#062873;font-weight:bold">memory</span>:<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;1Mi&#34;</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">              </span><span style="color:#062873;font-weight:bold">cpu</span>:<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;1m&#34;</span><span style="color:#bbb">
+</span></span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl apply -f ./binfmt-daemonset.yaml
+</span></span></code></pre></div><p>That&rsquo;s it!  That&rsquo;s the trick that gets Korifi working on Raspberry Pi.  Kpack status will now get to <code>Running</code> and we are smiling.</p>
+<p>I decided to do the dynamic provisioning of <code>Contour</code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl apply -f https://raw.githubusercontent.com/projectcontour/contour/release-1.30/examples/render/contour-gateway-provisioner.yaml
+</span></span><span style="display:flex;"><span>kubectl apply -f - <span style="color:#4070a0">&lt;&lt;EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">kind: GatewayClass
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">apiVersion: gateway.networking.k8s.io/v1beta1
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">  name: $GATEWAY_CLASS_NAME
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">spec:
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">  controllerName: projectcontour.io/gateway-controller
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">EOF</span>
+</span></span></code></pre></div><p>The Kubernetes <code>Metrics Server</code> got installed with <code>k3s</code> so we are moving along.</p>
+<p>Deploy the <code>Service Bindings Controller</code>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl apply -f https://github.com/servicebinding/runtime/releases/download/v1.0.0/servicebinding-runtime-v1.0.0.yaml
+</span></span></code></pre></div><p>Create namespaces:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cat <span style="color:#4070a0">&lt;&lt;EOF | kubectl apply -f -
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">apiVersion: v1
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">kind: Namespace
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">  name: $ROOT_NAMESPACE
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">  labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">    pod-security.kubernetes.io/audit: restricted
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">    pod-security.kubernetes.io/enforce: restricted
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>cat <span style="color:#4070a0">&lt;&lt;EOF | kubectl apply -f -
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">apiVersion: v1
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">kind: Namespace
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">  name: $KORIFI_NAMESPACE
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">  labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">    pod-security.kubernetes.io/audit: restricted
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">    pod-security.kubernetes.io/enforce: restricted
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">EOF</span>
+</span></span></code></pre></div><p>Add container registry credentials:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl --namespace <span style="color:#4070a0">&#34;</span><span style="color:#bb60d5">$ROOT_NAMESPACE</span><span style="color:#4070a0">&#34;</span> create secret docker-registry image-registry-credentials <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold"></span>    --docker-username<span style="color:#666">=</span><span style="color:#4070a0">&#34;</span><span style="color:#bb60d5">$DOCKERHUB_USERNAME</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold"></span>    --docker-password<span style="color:#666">=</span><span style="color:#4070a0">&#34;</span><span style="color:#bb60d5">$DOCKERHUB_PASSWORD</span><span style="color:#4070a0">&#34;</span>
+</span></span></code></pre></div><blockquote>
+<p>I&rsquo;m using DockerHub</p></blockquote>
+<p>I&rsquo;m cool with self-signed certificates for now.</p>
+<p>Install Korifi via the <code>helm</code> chart. These are my values, update <code>containerRepositoryPrefix</code> and <code>kpackImageBuilder.builderRepository</code> with your values.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>helm install korifi https://github.com/cloudfoundry/korifi/releases/download/v0.13.0/korifi-0.13.0.tgz <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold"></span>    --namespace<span style="color:#666">=</span><span style="color:#4070a0">&#34;</span><span style="color:#bb60d5">$KORIFI_NAMESPACE</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold"></span>    --set<span style="color:#666">=</span><span style="color:#bb60d5">generateIngressCertificates</span><span style="color:#666">=</span><span style="color:#007020">true</span> <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold"></span>    --set<span style="color:#666">=</span><span style="color:#bb60d5">rootNamespace</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;</span><span style="color:#bb60d5">$ROOT_NAMESPACE</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold"></span>    --set<span style="color:#666">=</span><span style="color:#bb60d5">adminUserName</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;</span><span style="color:#bb60d5">$ADMIN_USERNAME</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold"></span>    --set<span style="color:#666">=</span>api.apiServer.url<span style="color:#666">=</span><span style="color:#4070a0">&#34;api.</span><span style="color:#bb60d5">$BASE_DOMAIN</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold"></span>    --set<span style="color:#666">=</span><span style="color:#bb60d5">defaultAppDomainName</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;apps.</span><span style="color:#bb60d5">$BASE_DOMAIN</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold"></span>    --set<span style="color:#666">=</span><span style="color:#bb60d5">containerRepositoryPrefix</span><span style="color:#666">=</span>index.docker.io/dashaun/ <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold"></span>    --set<span style="color:#666">=</span>kpackImageBuilder.builderRepository<span style="color:#666">=</span>index.docker.io/dashaun/kpack-builder <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold"></span>    --set<span style="color:#666">=</span>networking.gatewayClass<span style="color:#666">=</span><span style="color:#bb60d5">$GATEWAY_CLASS_NAME</span> <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold"></span>    --wait
+</span></span></code></pre></div><h3 id="post-install-config">
+  Post-Install Config
+  <a class="heading-link" href="#post-install-config">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>I&rsquo;m running locally, not public.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl get service envoy-korifi -n korifi-gateway -ojsonpath<span style="color:#666">=</span><span style="color:#4070a0">&#39;{.status.loadBalancer.ingress[0]}&#39;</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>{&#34;ip&#34;:&#34;10.0.0.21&#34;,&#34;ipMode&#34;:&#34;VIP&#34;}
+</span></span></code></pre></div><p>I added that IP address to my <code>/etc/hosts</code> for <code>api.korifi.cc</code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>127.0.0.1       localhost
+</span></span><span style="display:flex;"><span>255.255.255.255 broadcasthost
+</span></span><span style="display:flex;"><span>::1             localhost
+</span></span><span style="display:flex;"><span>10.0.0.21       api.korifi.cc
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cf api https://api.<span style="color:#bb60d5">$BASE_DOMAIN</span> --skip-ssl-validation
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>Setting API endpoint to https://api.korifi.cc...
+</span></span><span style="display:flex;"><span>OK
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>API endpoint:   https://api.korifi.cc
+</span></span><span style="display:flex;"><span>API version:    3.117.0+cf-k8s
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Not logged in. Use &#39;cf login&#39; or &#39;cf login --sso&#39; to log in.
+</span></span></code></pre></div><p>So far, so good!</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cf login
+</span></span></code></pre></div><p>I&rsquo;m presented with a list of all of the users in my <code>~/.kube/config</code> and I choose the entry in the list associated to $ADMIN_USERNAME</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>API endpoint: https://api.korifi.cc
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>1. korifi-v0-12
+</span></span><span style="display:flex;"><span>2. k3d-thunder
+</span></span><span style="display:flex;"><span>3. bootiful
+</span></span><span style="display:flex;"><span>4. concourse
+</span></span><span style="display:flex;"><span>5. cf-admin
+</span></span><span style="display:flex;"><span>6. clusterhat00
+</span></span><span style="display:flex;"><span>7. coffeesoftware
+</span></span><span style="display:flex;"><span>8. javagruntjr
+</span></span><span style="display:flex;"><span>9. kind-bcn
+</span></span><span style="display:flex;"><span>10. korifi-sandbox
+</span></span><span style="display:flex;"><span>11. tanzuplatform
+</span></span><span style="display:flex;"><span>12. mgmt
+</span></span><span style="display:flex;"><span>13. nucs
+</span></span><span style="display:flex;"><span>14. chaos-engr
+</span></span><span style="display:flex;"><span>15. redis-enterprise
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Choose your Kubernetes authentication info (enter to skip): 5
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Authenticating...
+</span></span><span style="display:flex;"><span>OK
+</span></span></code></pre></div><p>This is working!</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cf create-org org1
+</span></span><span style="display:flex;"><span>cf create-space -o org1 space1
+</span></span><span style="display:flex;"><span>cf target -o org1 -s space1
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>API endpoint:   https://api.korifi.cc
+</span></span><span style="display:flex;"><span>API version:    3.117.0+cf-k8s
+</span></span><span style="display:flex;"><span>user:           cf-admin
+</span></span><span style="display:flex;"><span>org:            org1
+</span></span><span style="display:flex;"><span>space:          space1
+</span></span></code></pre></div><h2 id="validating-everything-with-cf-push">
+  Validating everything with cf push
+  <a class="heading-link" href="#validating-everything-with-cf-push">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I created a simple project to test this out.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/dashaun/pikorifi-demo.git
+</span></span><span style="display:flex;"><span><span style="color:#007020">cd</span> pikorifi-demo
+</span></span><span style="display:flex;"><span>cf push demo -t <span style="color:#40a070">120</span>
+</span></span></code></pre></div><blockquote>
+<p>I needed to increase the startup time, because of the kpack emulation, and AMD64 generated image</p></blockquote>
+<p>It took a few minutes to complete.</p>
+<p>My output for comparison:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>Pushing app demo to org org1 / space space1 as cf-admin...
+</span></span><span style="display:flex;"><span>Packaging files to upload...
+</span></span><span style="display:flex;"><span>Uploading files...
+</span></span><span style="display:flex;"><span> 15.51 KiB / 15.51 KiB [====================================================================================================================================================================] 100.00% 11s
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Waiting for API to complete processing files...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Staging app and tracing logs...
+</span></span><span style="display:flex;"><span>   Build reason(s): CONFIG
+</span></span><span style="display:flex;"><span>   CONFIG:
+</span></span><span style="display:flex;"><span>        env:
+</span></span><span style="display:flex;"><span>        - name: VCAP_APPLICATION
+</span></span><span style="display:flex;"><span>          valueFrom:
+</span></span><span style="display:flex;"><span>            secretKeyRef:
+</span></span><span style="display:flex;"><span>              key: VCAP_APPLICATION
+</span></span><span style="display:flex;"><span>              name: f87e070b-6e1b-4049-80ab-d358ea8f27dc-vcap-application
+</span></span><span style="display:flex;"><span>        - name: VCAP_SERVICES
+</span></span><span style="display:flex;"><span>          valueFrom:
+</span></span><span style="display:flex;"><span>            secretKeyRef:
+</span></span><span style="display:flex;"><span>              key: VCAP_SERVICES
+</span></span><span style="display:flex;"><span>              name: f87e070b-6e1b-4049-80ab-d358ea8f27dc-vcap-services
+</span></span><span style="display:flex;"><span>        resources: {}
+</span></span><span style="display:flex;"><span>        source:
+</span></span><span style="display:flex;"><span>          registry:
+</span></span><span style="display:flex;"><span>        -     image: index.docker.io/dashaun/f87e070b-6e1b-4049-80ab-d358ea8f27dc-packages@sha256:8d766ba1f9399952808ff11e5917617ce326bde1046499f670cad9f02ddfb89a
+</span></span><span style="display:flex;"><span>        +     image: index.docker.io/dashaun/f87e070b-6e1b-4049-80ab-d358ea8f27dc-packages@sha256:ca06bf54c3774cd8db9cf81934c62c3bc0c9be8db666b478634339bcb55ec2ce
+</span></span><span style="display:flex;"><span>            imagePullSecrets:
+</span></span><span style="display:flex;"><span>            - name: image-registry-credentials
+</span></span><span style="display:flex;"><span>   Loading registry credentials from service account secrets
+</span></span><span style="display:flex;"><span>   Loading secret for &#34;https://index.docker.io/v1/&#34; from secret &#34;image-registry-credentials&#34; at location &#34;/var/build-secrets/image-registry-credentials&#34;
+</span></span><span style="display:flex;"><span>   Loading cluster credential helpers
+</span></span><span style="display:flex;"><span>   Pulling index.docker.io/dashaun/f87e070b-6e1b-4049-80ab-d358ea8f27dc-packages@sha256:ca06bf54c3774cd8db9cf81934c62c3bc0c9be8db666b478634339bcb55ec2ce...
+</span></span><span style="display:flex;"><span>   Successfully pulled index.docker.io/dashaun/f87e070b-6e1b-4049-80ab-d358ea8f27dc-packages@sha256:ca06bf54c3774cd8db9cf81934c62c3bc0c9be8db666b478634339bcb55ec2ce in path &#34;/workspace&#34;
+</span></span><span style="display:flex;"><span>   Timer: Analyzer started at 2025-01-14T04:18:37Z
+</span></span><span style="display:flex;"><span>   Restoring data for SBOM from previous image
+</span></span><span style="display:flex;"><span>   Timer: Analyzer ran for 3.119875517s and ended at 2025-01-14T04:18:40Z
+</span></span><span style="display:flex;"><span>   
+</span></span><span style="display:flex;"><span>   Paketo Buildpack for CA Certificates 3.9.0
+</span></span><span style="display:flex;"><span>     https://github.com/paketo-buildpacks/ca-certificates
+</span></span><span style="display:flex;"><span>     Build Configuration:
+</span></span><span style="display:flex;"><span>       $BP_EMBED_CERTS                    false  Embed certificates into the image
+</span></span><span style="display:flex;"><span>       $BP_ENABLE_RUNTIME_CERT_BINDING    true   Deprecated: Enable/disable certificate helper layer to add certs at runtime
+</span></span><span style="display:flex;"><span>       $BP_RUNTIME_CERT_BINDING_DISABLED  false  Disable certificate helper layer to add certs at runtime
+</span></span><span style="display:flex;"><span>     Launch Helper: Reusing cached layer
+</span></span><span style="display:flex;"><span>   
+</span></span><span style="display:flex;"><span>   Paketo Buildpack for BellSoft Liberica 11.0.1
+</span></span><span style="display:flex;"><span>     https://github.com/paketo-buildpacks/bellsoft-liberica
+</span></span><span style="display:flex;"><span>     Build Configuration:
+</span></span><span style="display:flex;"><span>       $BP_JVM_JLINK_ARGS           --no-man-pages --no-header-files --strip-debug --compress=1  configure custom link arguments (--output must be omitted)
+</span></span><span style="display:flex;"><span>       $BP_JVM_JLINK_ENABLED        false                                                        enables running jlink tool to generate custom JRE
+</span></span><span style="display:flex;"><span>       $BP_JVM_TYPE                 JRE                                                          the JVM type - JDK or JRE
+</span></span><span style="display:flex;"><span>       $BP_JVM_VERSION              21                                                           the Java version
+</span></span><span style="display:flex;"><span>     Launch Configuration:
+</span></span><span style="display:flex;"><span>       $BPL_DEBUG_ENABLED           false                                                        enables Java remote debugging support
+</span></span><span style="display:flex;"><span>       $BPL_DEBUG_PORT              8000                                                         configure the remote debugging port
+</span></span><span style="display:flex;"><span>       $BPL_DEBUG_SUSPEND           false                                                        configure whether to suspend execution until a debugger has attached
+</span></span><span style="display:flex;"><span>       $BPL_HEAP_DUMP_PATH                                                                       write heap dumps on error to this path
+</span></span><span style="display:flex;"><span>       $BPL_JAVA_NMT_ENABLED        true                                                         enables Java Native Memory Tracking (NMT)
+</span></span><span style="display:flex;"><span>       $BPL_JAVA_NMT_LEVEL          summary                                                      configure level of NMT, summary or detail
+</span></span><span style="display:flex;"><span>       $BPL_JFR_ARGS                                                                             configure custom Java Flight Recording (JFR) arguments
+</span></span><span style="display:flex;"><span>       $BPL_JFR_ENABLED             false                                                        enables Java Flight Recording (JFR)
+</span></span><span style="display:flex;"><span>       $BPL_JMX_ENABLED             false                                                        enables Java Management Extensions (JMX)
+</span></span><span style="display:flex;"><span>       $BPL_JMX_PORT                5000                                                         configure the JMX port
+</span></span><span style="display:flex;"><span>       $BPL_JVM_HEAD_ROOM           0                                                            the headroom in memory calculation
+</span></span><span style="display:flex;"><span>       $BPL_JVM_LOADED_CLASS_COUNT  35% of classes                                               the number of loaded classes in memory calculation
+</span></span><span style="display:flex;"><span>       $BPL_JVM_THREAD_COUNT        250                                                          the number of threads in memory calculation
+</span></span><span style="display:flex;"><span>       $JAVA_TOOL_OPTIONS                                                                        the JVM launch flags
+</span></span><span style="display:flex;"><span>       Using buildpack default Java version 21
+</span></span><span style="display:flex;"><span>     BellSoft Liberica JDK 21.0.5: Contributing to layer
+</span></span><span style="display:flex;"><span>       Downloading from https://github.com/bell-sw/Liberica/releases/download/21.0.5+11/bellsoft-jdk21.0.5+11-linux-amd64.tar.gz
+</span></span><span style="display:flex;"><span>       Verifying checksum
+</span></span><span style="display:flex;"><span>       Expanding to /layers/paketo-buildpacks_bellsoft-liberica/jdk
+</span></span><span style="display:flex;"><span>       Adding 146 container CA certificates to JVM truststore
+</span></span><span style="display:flex;"><span>       Writing env.build/JAVA_HOME.override
+</span></span><span style="display:flex;"><span>       Writing env.build/JDK_HOME.override
+</span></span><span style="display:flex;"><span>     BellSoft Liberica JRE 21.0.5: Reusing cached layer
+</span></span><span style="display:flex;"><span>     Launch Helper: Reusing cached layer
+</span></span><span style="display:flex;"><span>     Java Security Properties: Reusing cached layer
+</span></span><span style="display:flex;"><span>   
+</span></span><span style="display:flex;"><span>   Paketo Buildpack for Syft 2.6.1
+</span></span><span style="display:flex;"><span>     https://github.com/paketo-buildpacks/syft
+</span></span><span style="display:flex;"><span>       Downloading from https://github.com/anchore/syft/releases/download/v1.18.1/syft_1.18.1_linux_amd64.tar.gz
+</span></span><span style="display:flex;"><span>       Verifying checksum
+</span></span><span style="display:flex;"><span>       Writing env.build/SYFT_CHECK_FOR_APP_UPDATE.default
+</span></span><span style="display:flex;"><span>   
+</span></span><span style="display:flex;"><span>   Paketo Buildpack for Maven 6.19.2
+</span></span><span style="display:flex;"><span>     https://github.com/paketo-buildpacks/maven
+</span></span><span style="display:flex;"><span>     Build Configuration:
+</span></span><span style="display:flex;"><span>       $BP_EXCLUDE_FILES                                                                            colon separated list of glob patterns, matched source files are removed
+</span></span><span style="display:flex;"><span>       $BP_INCLUDE_FILES                                                                            colon separated list of glob patterns, matched source files are included
+</span></span><span style="display:flex;"><span>       $BP_JAVA_INSTALL_NODE                 false                                                  whether to install Yarn/Node binaries based on the presence of a package.json or yarn.lock file
+</span></span><span style="display:flex;"><span>       $BP_MAVEN_ACTIVE_PROFILES                                                                    the active profiles (comma separated: such as: p1,!p2,?p3) to pass to Maven
+</span></span><span style="display:flex;"><span>       $BP_MAVEN_ADDITIONAL_BUILD_ARGUMENTS                                                         the additionnal arguments (appended to BP_MAVEN_BUILD_ARGUMENTS) to pass to Maven
+</span></span><span style="display:flex;"><span>       $BP_MAVEN_BUILD_ARGUMENTS             -Dmaven.test.skip=true --no-transfer-progress package  the arguments to pass to Maven
+</span></span><span style="display:flex;"><span>       $BP_MAVEN_BUILT_ARTIFACT              target/*.[ejw]ar                                       the built application artifact explicitly.  Supersedes $BP_MAVEN_BUILT_MODULE
+</span></span><span style="display:flex;"><span>       $BP_MAVEN_BUILT_MODULE                                                                       the module to find application artifact in
+</span></span><span style="display:flex;"><span>       $BP_MAVEN_DAEMON_ENABLED              false                                                  use maven daemon
+</span></span><span style="display:flex;"><span>       $BP_MAVEN_POM_FILE                    pom.xml                                                the location of the main pom.xml file, relative to the application root
+</span></span><span style="display:flex;"><span>       $BP_MAVEN_SETTINGS_PATH                                                                      the path to a Maven settings file
+</span></span><span style="display:flex;"><span>       $BP_MAVEN_VERSION                     3                                                      the Maven version
+</span></span><span style="display:flex;"><span>       $BP_NODE_PROJECT_PATH                                                                        configure a project subdirectory to look for `package.json` and `yarn.lock` files
+</span></span><span style="display:flex;"><span>       Creating cache directory /home/cnb/.m2
+</span></span><span style="display:flex;"><span>     Compiled Application: Contributing to layer
+</span></span><span style="display:flex;"><span>       Executing mvnw --batch-mode -Dmaven.test.skip=true --no-transfer-progress package
+</span></span><span style="display:flex;"><span>         [INFO] Scanning for projects...
+</span></span><span style="display:flex;"><span>         [INFO] 
+</span></span><span style="display:flex;"><span>         [INFO] -----------------------&lt; com.example:korifidemo &gt;-----------------------
+</span></span><span style="display:flex;"><span>         [INFO] Building korifidemo 0.0.1-SNAPSHOT
+</span></span><span style="display:flex;"><span>         [INFO]   from pom.xml
+</span></span><span style="display:flex;"><span>         [INFO] --------------------------------[ jar ]---------------------------------
+</span></span><span style="display:flex;"><span>         [INFO] 
+</span></span><span style="display:flex;"><span>         [INFO] --- resources:3.3.1:resources (default-resources) @ korifidemo ---
+</span></span><span style="display:flex;"><span>         [INFO] Copying 1 resource from src/main/resources to target/classes
+</span></span><span style="display:flex;"><span>         [INFO] Copying 0 resource from src/main/resources to target/classes
+</span></span><span style="display:flex;"><span>         [INFO] 
+</span></span><span style="display:flex;"><span>         [INFO] --- compiler:3.13.0:compile (default-compile) @ korifidemo ---
+</span></span><span style="display:flex;"><span>         [INFO] Recompiling the module because of changed source code.
+</span></span><span style="display:flex;"><span>         [INFO] Compiling 1 source file with javac [debug parameters release 21] to target/classes
+</span></span><span style="display:flex;"><span>         [INFO] 
+</span></span><span style="display:flex;"><span>         [INFO] --- resources:3.3.1:testResources (default-testResources) @ korifidemo ---
+</span></span><span style="display:flex;"><span>         [INFO] Not copying test resources
+</span></span><span style="display:flex;"><span>         [INFO] 
+</span></span><span style="display:flex;"><span>         [INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ korifidemo ---
+</span></span><span style="display:flex;"><span>         [INFO] Not compiling test sources
+</span></span><span style="display:flex;"><span>         [INFO] 
+</span></span><span style="display:flex;"><span>         [INFO] --- surefire:3.5.2:test (default-test) @ korifidemo ---
+</span></span><span style="display:flex;"><span>         [INFO] Tests are skipped.
+</span></span><span style="display:flex;"><span>         [INFO] 
+</span></span><span style="display:flex;"><span>         [INFO] --- jar:3.4.2:jar (default-jar) @ korifidemo ---
+</span></span><span style="display:flex;"><span>         [INFO] Building jar: /workspace/target/korifidemo-0.0.1-SNAPSHOT.jar
+</span></span><span style="display:flex;"><span>         [INFO] 
+</span></span><span style="display:flex;"><span>         [INFO] --- spring-boot:3.4.1:repackage (repackage) @ korifidemo ---
+</span></span><span style="display:flex;"><span>         [INFO] Replacing main artifact /workspace/target/korifidemo-0.0.1-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+</span></span><span style="display:flex;"><span>         [INFO] The original artifact has been renamed to /workspace/target/korifidemo-0.0.1-SNAPSHOT.jar.original
+</span></span><span style="display:flex;"><span>         [INFO] ------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>         [INFO] BUILD SUCCESS
+</span></span><span style="display:flex;"><span>         [INFO] ------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>         [INFO] Total time:  01:22 min
+</span></span><span style="display:flex;"><span>         [INFO] Finished at: 2025-01-14T04:22:52Z
+</span></span><span style="display:flex;"><span>         [INFO] ------------------------------------------------------------------------
+</span></span><span style="display:flex;"><span>         
+</span></span><span style="display:flex;"><span>     Removing source code
+</span></span><span style="display:flex;"><span>     Restoring application artifact
+</span></span><span style="display:flex;"><span>   
+</span></span><span style="display:flex;"><span>   Paketo Buildpack for Executable JAR 6.12.0
+</span></span><span style="display:flex;"><span>     https://github.com/paketo-buildpacks/executable-jar
+</span></span><span style="display:flex;"><span>     Class Path: Contributing to layer
+</span></span><span style="display:flex;"><span>       Writing env/CLASSPATH.delim
+</span></span><span style="display:flex;"><span>       Writing env/CLASSPATH.prepend
+</span></span><span style="display:flex;"><span>     Process types:
+</span></span><span style="display:flex;"><span>       executable-jar: java org.springframework.boot.loader.launch.JarLauncher (direct)
+</span></span><span style="display:flex;"><span>       task:           java org.springframework.boot.loader.launch.JarLauncher (direct)
+</span></span><span style="display:flex;"><span>       web:            java org.springframework.boot.loader.launch.JarLauncher (direct)
+</span></span><span style="display:flex;"><span>   SKIPPED: `Main-Class` found in `META-INF/MANIFEST.MF`, skipping build
+</span></span><span style="display:flex;"><span>   
+</span></span><span style="display:flex;"><span>   Paketo Buildpack for Spring Boot 5.32.0
+</span></span><span style="display:flex;"><span>     https://github.com/paketo-buildpacks/spring-boot
+</span></span><span style="display:flex;"><span>     Build Configuration:
+</span></span><span style="display:flex;"><span>       $BPL_JVM_CDS_ENABLED                 false  whether to enable CDS optimizations at runtime
+</span></span><span style="display:flex;"><span>       $BPL_SPRING_AOT_ENABLED              false  whether to enable Spring AOT at runtime
+</span></span><span style="display:flex;"><span>       $BP_JVM_CDS_ENABLED                  false  whether to enable CDS &amp; perform JVM training run
+</span></span><span style="display:flex;"><span>       $BP_SPRING_AOT_ENABLED               false  whether to enable Spring AOT
+</span></span><span style="display:flex;"><span>       $BP_SPRING_CLOUD_BINDINGS_DISABLED   false  whether to contribute Spring Boot cloud bindings support
+</span></span><span style="display:flex;"><span>       $BP_SPRING_CLOUD_BINDINGS_VERSION    1      default version of Spring Cloud Bindings library to contribute
+</span></span><span style="display:flex;"><span>     Launch Configuration:
+</span></span><span style="display:flex;"><span>       $BPL_SPRING_CLOUD_BINDINGS_DISABLED  false  whether to auto-configure Spring Boot environment properties from bindings
+</span></span><span style="display:flex;"><span>       $BPL_SPRING_CLOUD_BINDINGS_ENABLED   true   Deprecated - whether to auto-configure Spring Boot environment properties from bindings
+</span></span><span style="display:flex;"><span>     Creating slices from layers index
+</span></span><span style="display:flex;"><span>       dependencies (22.0 MB)
+</span></span><span style="display:flex;"><span>       spring-boot-loader (458.8 KB)
+</span></span><span style="display:flex;"><span>       snapshot-dependencies (0.0 B)
+</span></span><span style="display:flex;"><span>       application (40.7 KB)
+</span></span><span style="display:flex;"><span>     Spring Cloud Bindings 2.0.4: Contributing to layer
+</span></span><span style="display:flex;"><span>       Downloading from https://repo1.maven.org/maven2/org/springframework/cloud/spring-cloud-bindings/2.0.4/spring-cloud-bindings-2.0.4.jar
+</span></span><span style="display:flex;"><span>       Verifying checksum
+</span></span><span style="display:flex;"><span>       Copying to /layers/paketo-buildpacks_spring-boot/spring-cloud-bindings
+</span></span><span style="display:flex;"><span>     Web Application Type: Reusing cached layer
+</span></span><span style="display:flex;"><span>     Launch Helper: Reusing cached layer
+</span></span><span style="display:flex;"><span>     4 application slices
+</span></span><span style="display:flex;"><span>     Image labels:
+</span></span><span style="display:flex;"><span>       org.opencontainers.image.title
+</span></span><span style="display:flex;"><span>       org.opencontainers.image.version
+</span></span><span style="display:flex;"><span>       org.springframework.boot.version
+</span></span><span style="display:flex;"><span>   Timer: Builder ran for 5m25.095811025s and ended at 2025-01-14T04:24:18Z
+</span></span><span style="display:flex;"><span>   Reusing layers from image &#39;index.docker.io/dashaun/f87e070b-6e1b-4049-80ab-d358ea8f27dc-droplets@sha256:1d0351c93020b07d54e6d25c1ec7487bc8cd5eb85d4ca13be5a2bb18ea79d562&#39;
+</span></span><span style="display:flex;"><span>   Timer: Exporter started at 2025-01-14T04:24:22Z
+</span></span><span style="display:flex;"><span>   Reusing layer &#39;paketo-buildpacks/ca-certificates:helper&#39;
+</span></span><span style="display:flex;"><span>   Reusing layer &#39;paketo-buildpacks/bellsoft-liberica:helper&#39;
+</span></span><span style="display:flex;"><span>   Reusing layer &#39;paketo-buildpacks/bellsoft-liberica:java-security-properties&#39;
+</span></span><span style="display:flex;"><span>   Reusing layer &#39;paketo-buildpacks/bellsoft-liberica:jre&#39;
+</span></span><span style="display:flex;"><span>   Reusing layer &#39;paketo-buildpacks/executable-jar:classpath&#39;
+</span></span><span style="display:flex;"><span>   Reusing layer &#39;paketo-buildpacks/spring-boot:helper&#39;
+</span></span><span style="display:flex;"><span>   Reusing layer &#39;paketo-buildpacks/spring-boot:spring-cloud-bindings&#39;
+</span></span><span style="display:flex;"><span>   Reusing layer &#39;paketo-buildpacks/spring-boot:web-application-type&#39;
+</span></span><span style="display:flex;"><span>   Reusing layer &#39;buildpacksio/lifecycle:launch.sbom&#39;
+</span></span><span style="display:flex;"><span>   Reusing 5/5 app layer(s)
+</span></span><span style="display:flex;"><span>   Reusing layer &#39;buildpacksio/lifecycle:launcher&#39;
+</span></span><span style="display:flex;"><span>   Reusing layer &#39;buildpacksio/lifecycle:config&#39;
+</span></span><span style="display:flex;"><span>   Reusing layer &#39;buildpacksio/lifecycle:process-types&#39;
+</span></span><span style="display:flex;"><span>   Adding label &#39;io.buildpacks.lifecycle.metadata&#39;
+</span></span><span style="display:flex;"><span>   Adding label &#39;io.buildpacks.build.metadata&#39;
+</span></span><span style="display:flex;"><span>   Adding label &#39;io.buildpacks.project.metadata&#39;
+</span></span><span style="display:flex;"><span>   Adding label &#39;org.opencontainers.image.title&#39;
+</span></span><span style="display:flex;"><span>   Adding label &#39;org.opencontainers.image.version&#39;
+</span></span><span style="display:flex;"><span>   Adding label &#39;org.springframework.boot.version&#39;
+</span></span><span style="display:flex;"><span>   Setting default process type &#39;web&#39;
+</span></span><span style="display:flex;"><span>   Timer: Saving index.docker.io/dashaun/f87e070b-6e1b-4049-80ab-d358ea8f27dc-droplets... started at 2025-01-14T04:24:24Z
+</span></span><span style="display:flex;"><span>   *** Images (sha256:9965d3e5185b11b1ec1a00e24978c66792ee60f3affc5a1f4373ee760feb8e4d):
+</span></span><span style="display:flex;"><span>         index.docker.io/dashaun/f87e070b-6e1b-4049-80ab-d358ea8f27dc-droplets
+</span></span><span style="display:flex;"><span>         index.docker.io/dashaun/f87e070b-6e1b-4049-80ab-d358ea8f27dc-droplets:b2.20250114.041625
+</span></span><span style="display:flex;"><span>   Timer: Saving index.docker.io/dashaun/f87e070b-6e1b-4049-80ab-d358ea8f27dc-droplets... ran for 3.598362133s and ended at 2025-01-14T04:24:28Z
+</span></span><span style="display:flex;"><span>   Timer: Exporter ran for 6.488099245s and ended at 2025-01-14T04:24:28Z
+</span></span><span style="display:flex;"><span>   Timer: Cache started at 2025-01-14T04:24:28Z
+</span></span><span style="display:flex;"><span>   Adding cache layer &#39;paketo-buildpacks/bellsoft-liberica:jdk&#39;
+</span></span><span style="display:flex;"><span>   Adding cache layer &#39;paketo-buildpacks/syft:syft&#39;
+</span></span><span style="display:flex;"><span>   Adding cache layer &#39;paketo-buildpacks/maven:application&#39;
+</span></span><span style="display:flex;"><span>   Adding cache layer &#39;paketo-buildpacks/maven:cache&#39;
+</span></span><span style="display:flex;"><span>   Adding cache layer &#39;paketo-buildpacks/spring-boot:spring-cloud-bindings&#39;
+</span></span><span style="display:flex;"><span>   Adding cache layer &#39;buildpacksio/lifecycle:cache.sbom&#39;
+</span></span><span style="display:flex;"><span>   Timer: Cache ran for 26.643969709s and ended at 2025-01-14T04:24:55Z
+</span></span><span style="display:flex;"><span>   Build successful
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Waiting for app demo to start...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>Instances starting...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>name:              demo
+</span></span><span style="display:flex;"><span>requested state:   started
+</span></span><span style="display:flex;"><span>routes:            demo.apps.korifi.cc, demo.pikorifi.cc
+</span></span><span style="display:flex;"><span>last uploaded:     Mon 13 Jan 22:16:15 CST 2025
+</span></span><span style="display:flex;"><span>stack:             io.buildpacks.stacks.jammy
+</span></span><span style="display:flex;"><span>buildpacks:        
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>type:            web
+</span></span><span style="display:flex;"><span>sidecars:        
+</span></span><span style="display:flex;"><span>instances:       1/1
+</span></span><span style="display:flex;"><span>memory usage:    1024M
+</span></span><span style="display:flex;"><span>start command:   java &#34;org.springframework.boot.loader.launch.JarLauncher&#34;
+</span></span><span style="display:flex;"><span>     state     since                  cpu      memory         disk       logging        cpu entitlement   details
+</span></span><span style="display:flex;"><span>#0   running   2025-01-14T04:28:07Z   198.6%   347.6M of 1G   0B of 1G   0B/s of 0B/s                     
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>type:            executable-jar
+</span></span><span style="display:flex;"><span>sidecars:        
+</span></span><span style="display:flex;"><span>instances:       0/0
+</span></span><span style="display:flex;"><span>memory usage:    1024M
+</span></span><span style="display:flex;"><span>start command:   java &#34;org.springframework.boot.loader.launch.JarLauncher&#34;
+</span></span><span style="display:flex;"><span>There are no running instances of this process.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>type:            task
+</span></span><span style="display:flex;"><span>sidecars:        
+</span></span><span style="display:flex;"><span>instances:       0/0
+</span></span><span style="display:flex;"><span>memory usage:    1024M
+</span></span><span style="display:flex;"><span>start command:   java &#34;org.springframework.boot.loader.launch.JarLauncher&#34;
+</span></span><span style="display:flex;"><span>There are no running instances of this process.
+</span></span></code></pre></div><blockquote>
+<p>No running instances?</p></blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cf apps
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>Getting apps in org org1 / space space1 as cf-admin...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>name             requested state   processes                               routes
+</span></span><span style="display:flex;"><span>demo             started           web:1/1, executable-jar:0/0, task:0/0   demo.apps.korifi.cc
+</span></span></code></pre></div><blockquote>
+<p>That makes me feel better!</p></blockquote>
+<h3 id="production">
+  Production
+  <a class="heading-link" href="#production">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>I added <code>cloudflared</code> to expose my Korifi cluster to the public, with public DNS records.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cf create-shared-domain pikorifi.cc
+</span></span><span style="display:flex;"><span>cf create-route pikorifi.cc --hostname demo
+</span></span><span style="display:flex;"><span>cf map-route demo pikorifi.cc --hostname demo
+</span></span><span style="display:flex;"><span>cf apps
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>Getting apps in org org1 / space space1 as cf-admin...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>name             requested state   processes                               routes
+</span></span><span style="display:flex;"><span>demo             started           web:1/1, executable-jar:0/0, task:0/0   demo.apps.korifi.cc, demo.pikorifi.cc
+</span></span></code></pre></div><p>Take a look for yourself:</p>
+<p><a href="https://demo.pikorifi.cc/actuator/health"  class="external-link" target="_blank" rel="noopener">https://demo.pikorifi.cc/actuator/health</a></p>
+<h3 id="conclusion">
+  Conclusion
+  <a class="heading-link" href="#conclusion">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>I&rsquo;m not done with this project.  I didn&rsquo;t go into too much detail, but I hope this enough for you to replicate my solution.</p>
+<p>As always, your feedback is welcomed.</p>
+<h3 id="links">
+  Links
+  <a class="heading-link" href="#links">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p><a href="https://www.youtube.com/live/3rQpiZLHtpk?si=mTnh80x5ZHbSFjGV"  class="external-link" target="_blank" rel="noopener">Multi-Node Korifi on Raspberry Pi from scratch(YouTube)</a>
+<a href="https://github.com/dashaun/pikorifi-demo"  class="external-link" target="_blank" rel="noopener">pikorifi-demo</a>
+<a href="https://github.com/cloudfoundry/korifi"  class="external-link" target="_blank" rel="noopener">Korifi</a></p>
+
+      </div>
+
+
+      <footer>
+        
+
+<section class="see-also">
+  
+    
+    
+    
+  
+</section>
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

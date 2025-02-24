@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  First attempt at a multi-arch buildpack · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="Packaging for multi-arch might not be too difficult.">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://dashaun.com/images/avatar.png">
+  <meta name="twitter:title" content="First attempt at a multi-arch buildpack">
+  <meta name="twitter:description" content="Packaging for multi-arch might not be too difficult.">
+
+<meta property="og:url" content="https://dashaun.com/posts/multiarch-builder-poc/">
+  <meta property="og:site_name" content="DaShaun">
+  <meta property="og:title" content="First attempt at a multi-arch buildpack">
+  <meta property="og:description" content="Packaging for multi-arch might not be too difficult.">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-11-12T14:58:51+01:00">
+    <meta property="article:modified_time" content="2025-02-24T16:16:50-06:00">
+    <meta property="article:tag" content="Arm64">
+    <meta property="article:tag" content="Multiarch">
+    <meta property="article:tag" content="Buildpacks">
+    <meta property="article:tag" content="Spring">
+    <meta property="og:image" content="https://dashaun.com/images/avatar.png">
+      <meta property="og:see_also" content="https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/five-months-in-the-making-multi-arch-builder/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/paketo-steering-committee-candidacy/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/multi-architecture-stacks-and-buildpacks/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/circleci-arm64-first-impression/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/better-late-than-never-video/">
+      <meta property="og:see_also" content="https://dashaun.com/posts/builder-20230203/">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/multiarch-builder-poc/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Follow me on Twitch</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/multiarch-builder-poc/">
+              First attempt at a multi-arch buildpack
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2022-11-12T14:58:51&#43;01:00'>
+                November 12, 2022
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2022-11-12T14:58:51&#43;01:00'>
+                February 24, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              6-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='images/itsworking.gif' alt="Featured image"/>
+        
+        <p>My <a href="https://dashaun.com/paketo-aarch64-builder-spring-boot-3.rc1" >previous builder</a> generated some fabulous feedback, including <a href="https://github.com/jabrena/101-docker/issues/57"  class="external-link" target="_blank" rel="noopener">an issue in GitHub</a>.
+It also opened the door for some wonderful collaborations while I have been traveling to Barcelona and Tel Aviv.</p>
+<p>On this journey of trying to get ARM64 support into the upstream <a href="https://paketo.io"  class="external-link" target="_blank" rel="noopener">Paketo buildpacks</a> I have learned so much.
+The next step is to prove that we can create the pipelines that can deliver a multi-architecture image.</p>
+<blockquote>
+<p>Skip to the <a href="https://github.com/dashaun/java-native-builder-multiarch"  class="external-link" target="_blank" rel="noopener">Quick Start here</a></p></blockquote>
+<h2 id="docker-manifest">
+  Docker manifest
+  <a class="heading-link" href="#docker-manifest">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>In order to see the architecture of an image, you can use the <code>docker manifest</code> command.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Inspect shows the image architecture</span>
+</span></span><span style="display:flex;"><span>docker manifest inspect --verbose dashaun/java-native-builder-arm64:7.37.0
+</span></span></code></pre></div><blockquote>
+<p>Inspecting the ARM64 builder that was created in earlier article</p></blockquote>
+<h2 id="create-a-new-manifest-list">
+  Create a new manifest list
+  <a class="heading-link" href="#create-a-new-manifest-list">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>The process for slapping docker images together is pretty simple.
+Ideally you should be using the &ldquo;same&rdquo; image, but we are just proving a point here.</p>
+<p>My theory is that if I provide an <code>arm64</code> architecture and an <code>amd64</code> architecture to the same manifest list, that it will work as expected.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># create a new manifest with a name and tag</span>
+</span></span><span style="display:flex;"><span>docker manifest create dashaun/java-native-builder-multiarch:7.37.0 <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold"></span><span style="color:#60a0b0;font-style:italic"># add ARM64 builder</span>
+</span></span><span style="display:flex;"><span>--amend dashaun/java-native-builder-arm64:7.37.0 <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-weight:bold"></span><span style="color:#60a0b0;font-style:italic"># add Paketo tiny builder for AMD64</span>
+</span></span><span style="display:flex;"><span>--amend paketobuildpacks/builder:tiny
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># push the manifest to the repository</span>
+</span></span><span style="display:flex;"><span>docker manifest push dashaun/java-native-builder-multiarch:7.37.0
+</span></span></code></pre></div><blockquote>
+<p>That&rsquo;s it!</p></blockquote>
+<h2 id="inspect-the-manifest-list---the-builder">
+  inspect the manifest list - the builder
+  <a class="heading-link" href="#inspect-the-manifest-list---the-builder">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Now you can inspect the manifest and see that it has packaged ARM64 and AMD64 architectures.
+This capability has been available for years.
+It is also surprisingly simple to accomplish as you can see.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker manifest inspect --verbose dashaun/java-native-builder-multiarch:7.37.0
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>[
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		&#34;Ref&#34;: &#34;docker.io/dashaun/java-native-builder-arm64:7.37.0&#34;,
+</span></span><span style="display:flex;"><span>		&#34;Descriptor&#34;: {
+</span></span><span style="display:flex;"><span>			&#34;mediaType&#34;: &#34;application/vnd.docker.distribution.manifest.v2+json&#34;,
+</span></span><span style="display:flex;"><span>			&#34;digest&#34;: &#34;sha256:80771c9c2efee25020ba60e320c41cc385a333434ad2982ed7326a0a413b9ae7&#34;,
+</span></span><span style="display:flex;"><span>			&#34;size&#34;: 5150,
+</span></span><span style="display:flex;"><span>			&#34;platform&#34;: {
+</span></span><span style="display:flex;"><span>				&#34;architecture&#34;: &#34;arm64&#34;,
+</span></span><span style="display:flex;"><span>				&#34;os&#34;: &#34;linux&#34;
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		},
+</span></span><span style="display:flex;"><span>		&#34;SchemaV2Manifest&#34;: {
+</span></span><span style="display:flex;"><span>			&#34;schemaVersion&#34;: 2,
+</span></span><span style="display:flex;"><span>			&#34;mediaType&#34;: &#34;application/vnd.docker.distribution.manifest.v2+json&#34;,
+</span></span><span style="display:flex;"><span>			&#34;config&#34;: {
+</span></span><span style="display:flex;"><span>				&#34;mediaType&#34;: &#34;application/vnd.docker.container.image.v1+json&#34;,
+</span></span><span style="display:flex;"><span>				&#34;size&#34;: 12587,
+</span></span><span style="display:flex;"><span>				&#34;digest&#34;: &#34;sha256:8cd1ead83689b853055ac2de0cc07c5f3c9d8d087b2ac97e838551fe8e962e00&#34;
+</span></span><span style="display:flex;"><span>			},
+</span></span><span style="display:flex;"><span>			&#34;layers&#34;: [
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 27195998,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:4e7e0215f4adc2c48ad9cb3b3781e21d474b477587f85682c2e2975ae91dce9d&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 4348,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:fc2e670f062f6edbb1b3be6aae88cbc0978a5273314c365bc4e99d861dfb5ff1&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 103281689,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:cba3892e6fcca4b47983803d53b777bc05476639fcfc1a2d4f384eac40363677&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 179,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:f5230b5f167cfc41fb9f96d53de0d9c5832e3b03e3a705052cf42ceada13aea9&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 197,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:357fefdf9bc907107a38600cf8d79c713346dc97370273d1aa79635d97a2f6f9&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 8870380,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:0ab7ccc1e1a42589b53d1397672009a979b296933efc276d79d3a2cdc336656c&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 2498256,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:fa161ac7a0015773c3f6890d6f1824957a6e21cee5a9bbf8ddc60e4e6d30a3ed&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 1806073,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:bdfdd20caee6a7044607d11d9a4f758a007ad2d61399ea5e3db22a7037ab4975&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 3273385,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:bc251569386a8e5fd513c85d9c51e76a258f0e59d0f945e185e101930012c9db&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 1509592,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:caeca36964d2da6c2b88abd998281e4fd5b708cfdd1440486f6acf7bc569292e&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 3191207,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:f840d9ee444653d04a2181d1d99e4f579d01b56349cce9325c6dade9af410998&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 3273637,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:b4f56cede28073295dc750e93678876a55b9fdafd97c940b97dc9a01ae345663&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 2387292,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:cebaf5f7c6e3350f5973f2c77f9ba90138d5a6bb2f1eb9e86084c8cf9f6117c6&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 4208510,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:47be0bf349071cb594970ef2d18f383b91231645ba49f27b5b39b47d9090aedc&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 1818619,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:5844db3d59f2bdc13aa19a6fd09789cf4a12aa87088759840a79c10eb01f93c5&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 1569855,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:89975d6b7daf9b8cf8b1a8350461e9e009b0ffc2a482becb9e1073adc3475153&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 2413551,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:aca3b8db4220fa7d69bf9cbd0bebc048cfa381174929828affb820c5b6b0f505&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 2480839,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:71bd4e702bfc97f1db60e6a5ac364897b2818dc2f92f1bf9d78c2935a1ae125d&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 2521983,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:3e1f506f69017dbcedb2a2b022ff0d6e63d4c0cd44e32fdcf6cc9e39b2416ade&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 2475996,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:f617bf8af0912672e16ed61332d6e7ad1f0ffc4fffe049da45ea670a1c441afd&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 362,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:0e3fabdd36281c4c1c946d09854510dc82ffd61476d62aaa474b3c64d8969ae3&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 151,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:9602e7831cd64261f173d4789e26f9cada67107ba1688409f7781bd737792b58&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 32,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1&#34;
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>			]
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	},
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		&#34;Ref&#34;: &#34;docker.io/paketobuildpacks/builder:tiny&#34;,
+</span></span><span style="display:flex;"><span>		&#34;Descriptor&#34;: {
+</span></span><span style="display:flex;"><span>			&#34;mediaType&#34;: &#34;application/vnd.docker.distribution.manifest.v2+json&#34;,
+</span></span><span style="display:flex;"><span>			&#34;digest&#34;: &#34;sha256:e5b4e4e720598e905baa793a94259ee75827949a6ba22a3d3196eb332e475dd6&#34;,
+</span></span><span style="display:flex;"><span>			&#34;size&#34;: 9773,
+</span></span><span style="display:flex;"><span>			&#34;platform&#34;: {
+</span></span><span style="display:flex;"><span>				&#34;architecture&#34;: &#34;amd64&#34;,
+</span></span><span style="display:flex;"><span>				&#34;os&#34;: &#34;linux&#34;
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>		},
+</span></span><span style="display:flex;"><span>		&#34;SchemaV2Manifest&#34;: {
+</span></span><span style="display:flex;"><span>			&#34;schemaVersion&#34;: 2,
+</span></span><span style="display:flex;"><span>			&#34;mediaType&#34;: &#34;application/vnd.docker.distribution.manifest.v2+json&#34;,
+</span></span><span style="display:flex;"><span>			&#34;config&#34;: {
+</span></span><span style="display:flex;"><span>				&#34;mediaType&#34;: &#34;application/vnd.docker.container.image.v1+json&#34;,
+</span></span><span style="display:flex;"><span>				&#34;size&#34;: 64488,
+</span></span><span style="display:flex;"><span>				&#34;digest&#34;: &#34;sha256:94a3f804e111904682577130709e0cac6e0541e6b1931c1f9aa4f27326c974fc&#34;
+</span></span><span style="display:flex;"><span>			},
+</span></span><span style="display:flex;"><span>			&#34;layers&#34;: [
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 29589398,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:38496a9cab3e2bb43fa8ae1d45c3ddc1d2f89328e1f3973f029949b8cb2dd5fe&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 247,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:2e7826560210e2f0d4249f9ea20651fecd45306c2482767274c8c37289c23788&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 316,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:6013ff26a0374342ff4848b3171ddbe396413d80faa2b1ee67ca9afbfa64cafc&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 106179950,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:87196f2fd40c0ee5587ff771878aad41b42c1d29628c75fff9206b5c0b77f016&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 188,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:d61afba38b8e093dfc46b8e81c141b2d7eddc0903b0fc530b3af36a46a144af7&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 2744757,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:856e5ee7330534a520c3fd1d90260e9a5e99bfc182e0c2c3b18f7fea06f0bb0e&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 807,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:7eededf5887404e40dfc0d1d533fb9db3fe6b725213e4f3edda1ca1f5b1492c4&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 197,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:357fefdf9bc907107a38600cf8d79c713346dc97370273d1aa79635d97a2f6f9&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 9753557,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:d0d113e4e2bd21dbaa2f66e687ec4a23e4e83331b7845b85d0c10de1da05b08d&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 2574003,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:41869a3aefd1a5bf8db003eb401d1af5ef2568c92262c3038f553d38145f36a1&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 2573999,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:053ee41df41d6484ffec64fda64937a6418a1404f602487019fccddbad2958de&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 4641532,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:0fec499a25de5a35aa814bed46943a93c94d0e6785eedc679874ec3da04bc748&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 2525673,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:c7b3308e13d3f30bde70d2293590aefdb95e52784b8bb840e13c587d354604e6&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 8714351,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:51918c870f73c8ceffc527e79041e08d3101beeabd0c0bc44555b6faf1188cdd&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 3197061,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:fbb9179cbbb1aa191e9ec19e77b7e6226b97ba8ac9d382822970ddcc61ce05e2&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 2661004,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:38876f988da32a7ef093d5245f6923bb9b748362834345a3e8995f72ef49e168&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 2547018,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:b847bb2fe3fdc6bd69cd7d690bcef5a1399310ce17bea49bbd1d5fd3641d0140&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 3291941,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:78b11fcb7ca30ba09defc8dcfc1298ea20b970430d9836b4bc7c404840b49a03&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 3255182,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:18ee4cd834fc95727859c15eaedc1f5670c4e9f3f74e3f45a108d5b9167344ab&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 1576728,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:ad443f24b1ed77880e534a0c1aca0ca5a722e866b7611a85e9fd7ef3463dea08&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 1511595,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:a6cd17527f03923a723839bdbe57ec200a008de6c8b35c0c4d900a675adac014&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 2689335,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:cd146e648d04aaf6161526eb8be96d3bf9c8fc22e433c4e6834dc972b4f09830&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 3478686,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:bf32d3cbc5fb2d1c54c54f964b11e10d70c58f340dc17857d45db246807bcca6&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 2639800,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:c505716a4281aec3fc577e417a29d23a19d1ff720f498aef49b9ed362ab53d88&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 3382413,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:17c8e16edff8afd8ef3b3b1d1d061351245287c59c6ab8846c1af94b414e1865&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 555,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:57bf259ba83920a4e2575582423c084670209a37fdb503fbbc7e10d75a5419d0&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 2798929,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:e71af6bec187b3f6627f52f6f2808c6b946b5cc09b7f4a6ee006cc5557254ebc&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 1678930,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:fcf29a1baad8cb3d657d685b47ab630602a5c47b333f7ed9d7cbcae68a300801&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 1826608,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:fad10dc586613d133e71639507d157251d8d533d9c94c3897ed5ae6c557bcdf7&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 2637303,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:bc22ffea56cce18044465269f6958bfb8ef37e182c82c6ab9f2821525c034717&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 1623998,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:63fd16f5b2cc4af356f18b61281870994919fcb17f3a51f490fc09b6cd5e0cfe&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 3091878,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:71dea8ea27aab08e92be2cb1c61ba12693f8dc622575cd9087e689fdabd048fd&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 8496432,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:547d0874d2b5a13d766fc98a54725cce8b5ec50af624d5c21b971ca0e668d7e0&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 2644647,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:27bd211db33f03f1ad558807c8312a3bf537e154b591f7067a7eab8d9364f10b&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 5318,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:3455451f8d3fd909057c5f94d9c34b5618fa6f62db51ed540cd7931c146a5fd6&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 3472177,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:a77b05080df7a983ee586813839673e2dfdb852c87589ddf0900517bc928b779&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 8659224,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:6a58fb7cc75d73d08a6d85d995ad767e5693c4afd8b4f94f89f61018a3925c67&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 5136,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:437d9ac90cf3a6df605fbc9b691455242c3f4d7a3ba89b683daa5885314f1909&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 4385434,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:52814f0ca0c9d85074d817b558ccb3583cdb394d1ec02cf3e45e860b24ef3f7b&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 1838119,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:7e8facf10ccafea1b9688a4a4ba424d36f92e3e4cea1e913577bb45eb5bdc5f9&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 2464280,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:b8531cb5032999225be8589ab8bec5ea275fffb47353863c29d1afcdf7966104&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 3468583,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:55e985d488da8faeaa9772b7cfb3073d458fa626c89a390b292ab879be30f157&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 214,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:7d37e76963e86dbc76a9cbd3a6afa21c127bb790f77415b608da57daa9019f10&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 187,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:3aaaa9c943efae7533b9a28a28a676354866cad58208bcd7988b055c754653f0&#34;
+</span></span><span style="display:flex;"><span>				},
+</span></span><span style="display:flex;"><span>				{
+</span></span><span style="display:flex;"><span>					&#34;mediaType&#34;: &#34;application/vnd.docker.image.rootfs.diff.tar.gzip&#34;,
+</span></span><span style="display:flex;"><span>					&#34;size&#34;: 32,
+</span></span><span style="display:flex;"><span>					&#34;digest&#34;: &#34;sha256:4f4fb700ef54461cfa02571ae0db9a0dc1e0cdb5577484a6d75e68dc38e8acc1&#34;
+</span></span><span style="display:flex;"><span>				}
+</span></span><span style="display:flex;"><span>			]
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>]
+</span></span></code></pre></div><h2 id="validation">
+  validation
+  <a class="heading-link" href="#validation">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Create a Spring Boot 3 application with <code>web</code> and <code>actuator</code> which is enough for a simple test.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Create a Spring Boot 3 application</span>
+</span></span><span style="display:flex;"><span>curl https://start.spring.io/starter.tgz -d <span style="color:#bb60d5">dependencies</span><span style="color:#666">=</span>web,actuator -d <span style="color:#bb60d5">javaVersion</span><span style="color:#666">=</span><span style="color:#40a070">17</span> -d <span style="color:#bb60d5">bootVersion</span><span style="color:#666">=</span>3.0.0-SNAPSHOT -d <span style="color:#bb60d5">type</span><span style="color:#666">=</span>maven-project | tar -xzf -
+</span></span></code></pre></div><blockquote>
+<p>I&rsquo;m using SNAPSHOT, because YOLO, but RC2 is already available!</p></blockquote>
+<p>Add a profile to the pom.xml, that will use the <code>multi-arch</code> builder that we created above.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Remove the last line of the pom.xml file (on Mac OS X)</span>
+</span></span><span style="display:flex;"><span>sed -i <span style="color:#4070a0">&#39;&#39;</span> -e <span style="color:#4070a0">&#39;$ d&#39;</span> pom.xml
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Add the new profile to the end of the pom.xml</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020">echo</span> <span style="color:#4070a0">&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">  &lt;profiles&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">    &lt;profile&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">      &lt;id&gt;dashaun&lt;/id&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">      &lt;build&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">        &lt;plugins&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">          &lt;plugin&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">            &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">            &lt;configuration&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">              &lt;image&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">                &lt;builder&gt;dashaun/java-native-builder-multiarch:7.37.0&lt;/builder&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">              &lt;/image&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">            &lt;/configuration&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">          &lt;/plugin&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">        &lt;/plugins&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">      &lt;/build&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">    &lt;/profile&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">  &lt;/profiles&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">&lt;/project&gt;&#34;</span> &gt;&gt; pom.xml 
+</span></span></code></pre></div><p>Now your project will use the multi-architecture builder that created.</p>
+<h2 id="optional">
+  optional
+  <a class="heading-link" href="#optional">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>To watch, and be amazed, by the correct images being pulled down to your machine, run these commands to remove any unused images from your machine.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker <span style="color:#007020">kill</span> <span style="color:#007020;font-weight:bold">$(</span>docker ps -q<span style="color:#007020;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>docker system prune -a --volumes
+</span></span></code></pre></div><h2 id="build-on-amd64-or-arm64">
+  build on AMD64 or ARM64
+  <a class="heading-link" href="#build-on-amd64-or-arm64">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>The magical moment!
+You can do this from AMD64 or ARM64.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>./mvnw -Pnative,dashaun spring-boot:build-image
+</span></span></code></pre></div><p>You should have an image created.
+One layer of that image, is a statically linked binary for your architecture.</p>
+<h2 id="inspect-the-new-image">
+  inspect the new image.
+  <a class="heading-link" href="#inspect-the-new-image">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># find the local image</span>
+</span></span><span style="display:flex;"><span>docker images | grep demo
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Look at the architecture for the image</span>
+</span></span><span style="display:flex;"><span>docker inspect demo:0.0.1-SNAPSHOT | jq <span style="color:#4070a0">&#39;.[0].Architecture&#39;</span>
+</span></span></code></pre></div><blockquote>
+<p>The <code>| jq.[0].Architecture</code> can be replaced with <code>| grep Architecture</code> if you don&rsquo;t have <code>jq</code> installed</p></blockquote>
+<h2 id="run-and-test-the-image">
+  run and test the image
+  <a class="heading-link" href="#run-and-test-the-image">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Run the OCI image with <code>docker</code> to start up the server.
+It should start quickly!</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Forward the port, run in the background, but see the startup time</span>
+</span></span><span style="display:flex;"><span>docker run -p 8080:8080 demo:0.0.1-SNAPSHOT 
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Check the endpoint to validate</span>
+</span></span><span style="display:flex;"><span>http :8080/actuator/health
+</span></span></code></pre></div><h2 id="links">
+  Links
+  <a class="heading-link" href="#links">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><a href="https://github.com/dashaun/java-native-builder-multiarch"  class="external-link" target="_blank" rel="noopener">GitHub dashaun/java-native-builder-multiarch</a></li>
+<li><a href="https://hub.docker.com/r/dashaun/java-native-builder-multiarch"  class="external-link" target="_blank" rel="noopener">Docker dashaun/java-native-builder-multiarch</a></li>
+<li><a href="https://github.com/dashaun/paketo-arm64"  class="external-link" target="_blank" rel="noopener">dashaun/paketo-arm64</a></li>
+<li><a href="https://dashaun.com/posts/paketo-aarch64-builder-spring-boot-3-rc1/"  class="external-link" target="_blank" rel="noopener">Related Post</a></li>
+</ul>
+<h2 id="thanks">
+  Thanks
+  <a class="heading-link" href="#thanks">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p><a href="https://twitter.com/dashaun/status/1591432189488803840"  class="external-link" target="_blank" rel="noopener"><img src="images/itsworking.png" alt="Its working"></a></p>
+<h2 id="finally">
+  Finally
+  <a class="heading-link" href="#finally">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I want to hear from you!
+All of my social links are <a href="https://dashaun.com"  class="external-link" target="_blank" rel="noopener">here at dashaun.com</a>.</p>
+<p>Issues and feedback can be left in the <a href="https://github.com/dashaun/java-native-builder-multiarch"  class="external-link" target="_blank" rel="noopener">GitHub dashaun/java-native-builder-multiarch</a> repository.</p>
+
+      </div>
+
+
+      <footer>
+        
+
+<section class="see-also">
+  
+    
+    
+    
+  
+</section>
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

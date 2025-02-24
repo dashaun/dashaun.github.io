@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Raspberry Pi Zero W Camera Server · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="This is an overview of a recent project.
+A friend needed:
+
+a camera
+that could be mounted in a conference booth
+remote controlled somehow
+automatically display each snapshot on an attached big screen
+
+After lots of missteps, the solution I landed on is so easy to do.
+There is no programming involved.  Definitely easy enough for beginners.
+
+  Hardware Used
+  
+    
+    Link to heading
+  
+
+
+Raspberry Pi Zero W / Raspberry Pi Zero 2 W
+Raspberry Pi Camera Module v2
+Raspberry Pi Camera Module Cable
+Raspberry Pi Zero Case
+Raspberry Pi Power Adapter
+SDCard (micro sd)
+Raspberry Pi HDMI adapter
+HDMI capable monitor
+
+">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://dashaun.com/images/avatar.png">
+  <meta name="twitter:title" content="Raspberry Pi Zero W Camera Server">
+  <meta name="twitter:description" content="This is an overview of a recent project.
+A friend needed:
+a camera that could be mounted in a conference booth remote controlled somehow automatically display each snapshot on an attached big screen After lots of missteps, the solution I landed on is so easy to do.
+There is no programming involved. Definitely easy enough for beginners.
+Hardware Used Link to heading Raspberry Pi Zero W / Raspberry Pi Zero 2 W Raspberry Pi Camera Module v2 Raspberry Pi Camera Module Cable Raspberry Pi Zero Case Raspberry Pi Power Adapter SDCard (micro sd) Raspberry Pi HDMI adapter HDMI capable monitor">
+
+<meta property="og:url" content="https://dashaun.com/posts/quick-cool-remote-control-camera-zero-w/">
+  <meta property="og:site_name" content="DaShaun">
+  <meta property="og:title" content="Raspberry Pi Zero W Camera Server">
+  <meta property="og:description" content="This is an overview of a recent project.
+A friend needed:
+a camera that could be mounted in a conference booth remote controlled somehow automatically display each snapshot on an attached big screen After lots of missteps, the solution I landed on is so easy to do.
+There is no programming involved. Definitely easy enough for beginners.
+Hardware Used Link to heading Raspberry Pi Zero W / Raspberry Pi Zero 2 W Raspberry Pi Camera Module v2 Raspberry Pi Camera Module Cable Raspberry Pi Zero Case Raspberry Pi Power Adapter SDCard (micro sd) Raspberry Pi HDMI adapter HDMI capable monitor">
+  <meta property="og:locale" content="en_us">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="posts">
+    <meta property="article:published_time" content="2022-07-18T04:22:45-05:00">
+    <meta property="article:modified_time" content="2025-02-24T16:16:50-06:00">
+    <meta property="article:tag" content="Raspberrypi">
+    <meta property="og:image" content="https://dashaun.com/images/avatar.png">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/quick-cool-remote-control-camera-zero-w/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Follow me on Twitch</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/quick-cool-remote-control-camera-zero-w/">
+              Raspberry Pi Zero W Camera Server
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2022-07-18T04:22:45-05:00'>
+                July 18, 2022
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2022-07-18T04:22:45-05:00'>
+                February 24, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              3-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+        <p>This is an overview of a recent project.</p>
+<p>A friend needed:</p>
+<ul>
+<li>a camera</li>
+<li>that could be mounted in a conference booth</li>
+<li>remote controlled <code>somehow</code></li>
+<li>automatically display each snapshot on an attached big screen</li>
+</ul>
+<p>After lots of missteps, the solution I landed on is so easy to do.</p>
+<p>There is no programming involved.  Definitely easy enough for beginners.</p>
+<h3 id="hardware-used">
+  Hardware Used
+  <a class="heading-link" href="#hardware-used">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<ul>
+<li>Raspberry Pi Zero W / Raspberry Pi Zero 2 W</li>
+<li>Raspberry Pi Camera Module v2</li>
+<li>Raspberry Pi Camera Module Cable</li>
+<li>Raspberry Pi Zero Case</li>
+<li>Raspberry Pi Power Adapter</li>
+<li>SDCard (micro sd)</li>
+<li>Raspberry Pi HDMI adapter</li>
+<li>HDMI capable monitor</li>
+</ul>
+<p><img src="https://dashaun.com/images/blog/remote-controlled-photo-booth-pi/hardware-setup.jpg" alt="Hardware setup"></p>
+<h3 id="raspberry-pi-os">
+  Raspberry Pi OS
+  <a class="heading-link" href="#raspberry-pi-os">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Install Raspberry Pi OS Lite (32-bit) <code>Bullseye</code> onto a <a href="https://www.sdcard.org/"  class="external-link" target="_blank" rel="noopener">SD card</a>
+using the <a href="https://www.raspberrypi.org/software/"  class="external-link" target="_blank" rel="noopener">Raspberry Pi Imager</a> (rpi-imager).</p>
+<blockquote>
+<p>This will not work with 64-bit version of Raspberry Pi OS / Bullseye</p></blockquote>
+<p>Use the advanced options gear to set the following before writing:</p>
+<ul>
+<li>hostname</li>
+<li>enable ssh</li>
+<li>ssh-key</li>
+<li>wifi settings</li>
+<li>Leave user as &lsquo;pi&rsquo; but provide a password</li>
+</ul>
+<h3 id="hardware">
+  Hardware
+  <a class="heading-link" href="#hardware">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Plug everything together while your image is burning.</p>
+<h2 id="rpi-cam-web-interface">
+  Rpi Cam Web Interface
+  <a class="heading-link" href="#rpi-cam-web-interface">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Follow the instructions to install <a href="https://github.com/silvanmelchior/RPi_Cam_Web_Interface"  class="external-link" target="_blank" rel="noopener">Rpi Cam Web Interface</a></p>
+<p>My options for the install:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>cam subfolder: &#34;&#34;
+</span></span><span style="display:flex;"><span>autostart: yes
+</span></span><span style="display:flex;"><span>Server: nginx
+</span></span><span style="display:flex;"><span>port: 80
+</span></span></code></pre></div><p>The config options I&rsquo;m using with my Raspberry Pi Camera Module v2:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>image_width 3280
+</span></span><span style="display:flex;"><span>image_height 2464
+</span></span><span style="display:flex;"><span>image_quality 90
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>width 1080
+</span></span></code></pre></div><blockquote>
+<p>/etc/raspimjpeg</p></blockquote>
+<h2 id="hotspot">
+  Hotspot
+  <a class="heading-link" href="#hotspot">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Follow the instructions to install <a href="https://github.com/rudiratlos/hotspot"  class="external-link" target="_blank" rel="noopener">Hotspot</a></p>
+<p>The hotspot configuration uses <code>firewalld</code> so I needed to make one more change.</p>
+<p>In order to access the web cam service, I needed to open port 80.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>pi@localhost:~ $ sudo firewall-cmd --zone<span style="color:#666">=</span>public --list-services 
+</span></span><span style="display:flex;"><span>dhcpv6-client ssh
+</span></span><span style="display:flex;"><span>pi@localhost:~ $ sudo firewall-cmd --zone<span style="color:#666">=</span>public --add-service<span style="color:#666">=</span>http --permanent
+</span></span><span style="display:flex;"><span>success
+</span></span><span style="display:flex;"><span>pi@localhost:~ $ sudo firewall-cmd --zone<span style="color:#666">=</span>public --list-services 
+</span></span><span style="display:flex;"><span>dhcpv6-client http ssh
+</span></span></code></pre></div><blockquote>
+<p>Add http (port 80) permanently to the firewall list of services to allow</p></blockquote>
+<h2 id="output-to-big-screen">
+  Output to Big Screen
+  <a class="heading-link" href="#output-to-big-screen">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I installed <code>fbi</code> the framebuffer interface.</p>
+<p>Then I used this program, to grab the latest snapshot, and push it to the connected display.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007020">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#007020"></span><span style="color:#007020">export</span> <span style="color:#bb60d5">FRAMEBUFFER</span><span style="color:#666">=</span>/dev/fb0
+</span></span><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">DISPLAY</span><span style="color:#666">=</span>:0
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic">#Loop as long as the directory exists</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">while</span> <span style="color:#666">[</span> -d /var/www/media <span style="color:#666">]</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">do</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#60a0b0;font-style:italic">#list the files in the directory sort by timestamp and grab the newest 1</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#bb60d5">JPG</span><span style="color:#666">=</span><span style="color:#007020;font-weight:bold">$(</span>ls -atr /var/www/media/*.jpg | tail -n1<span style="color:#007020;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#60a0b0;font-style:italic">#Push the newest image to the framebuffer with autozoom</span>
+</span></span><span style="display:flex;"><span>    sudo fbi -a --noverbose -T <span style="color:#40a070">1</span> <span style="color:#bb60d5">$JPG</span> &amp;
+</span></span><span style="display:flex;"><span>    <span style="color:#60a0b0;font-style:italic">#Let that image show for 60 seconds    </span>
+</span></span><span style="display:flex;"><span>    sleep <span style="color:#40a070">60</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#60a0b0;font-style:italic">#Kill the framebuffer program and run another loop    </span>
+</span></span><span style="display:flex;"><span>	sudo killall -9 fbi
+</span></span><span style="display:flex;"><span><span style="color:#007020;font-weight:bold">done</span>
+</span></span></code></pre></div><blockquote>
+<p>Start the script by calling it from ~/.bashrc and using raspi-config to autologin with the &lsquo;pi&rsquo; user</p></blockquote>
+<h2 id="testing-complete">
+  Testing Complete
+  <a class="heading-link" href="#testing-complete">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li>Remote Control Web Cam</li>
+<li>Private Hotspot Wi-fi</li>
+<li>Connect via smartphone</li>
+<li>Adjust camera settings</li>
+<li>Take picture</li>
+<li>Picture pushed to display via <code>fbi</code></li>
+</ul>
+<p><img src="https://dashaun.com/images/blog/remote-controlled-photo-booth-pi/hotspotted.jpg" alt="Hotspotted"></p>
+<h2 id="summary">
+  Summary
+  <a class="heading-link" href="#summary">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>This project was built for a specific purpose, as part of conference booth.
+I was told there would be no internet or WI-FI available, but they wanted to be able to control it remotely.</p>
+<p>Working through this introduced me to several easy to install applications for the Raspberry Pi.</p>
+<p>There is way more we could do with this same hardware and &ldquo;photobooth&rdquo; objective, but this is a great start, easy to do.</p>
+<p>Immediately after completing this project, I used <a href="https://github.com/silvanmelchior/RPi_Cam_Web_Interface"  class="external-link" target="_blank" rel="noopener">Rpi Cam Web Interface</a>
+and deployed a <code>Zero 2 W</code> and <code>Zero View</code> device to my office window.
+It is using the motion enabled image capture feature to take pictures of our dog and the animals in the backyard.</p>
+<p><img src="https://dashaun.com/images/blog/remote-controlled-photo-booth-pi/office-cam.jpg" alt="Office Cam"></p>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2025
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>
