@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  How to Deploy Korifi v0.16.0 on Single-Node K3s with Ubuntu 24.04 Raspberry Pi 5 (Step-by-Step) · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="Learn how to set up Korifi on a singe-node K3s Kubernetes cluster using Raspberry Pi 5 and Ubuntu 24.04. Step-by-step guide with troubleshooting tips.">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:image" content="https://dashaun.com/posts/korifi-v0_16_0-on-raspberry-pi/images/feature.png">
+	<meta name="twitter:title" content="How to Deploy Korifi v0.16.0 on Single-Node K3s with Ubuntu 24.04 Raspberry Pi 5 (Step-by-Step)">
+	<meta name="twitter:description" content="Learn how to set up Korifi on a singe-node K3s Kubernetes cluster using Raspberry Pi 5 and Ubuntu 24.04. Step-by-step guide with troubleshooting tips.">
+
+<meta property="og:url" content="https://dashaun.com/posts/korifi-v0_16_0-on-raspberry-pi/">
+	<meta property="og:site_name" content="DaShaun">
+	<meta property="og:title" content="How to Deploy Korifi v0.16.0 on Single-Node K3s with Ubuntu 24.04 Raspberry Pi 5 (Step-by-Step)">
+	<meta property="og:description" content="Learn how to set up Korifi on a singe-node K3s Kubernetes cluster using Raspberry Pi 5 and Ubuntu 24.04. Step-by-step guide with troubleshooting tips.">
+	<meta property="og:locale" content="en_us">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="posts">
+		<meta property="article:published_time" content="2025-09-22T18:46:35-05:00">
+		<meta property="article:modified_time" content="2025-09-23T07:45:54-05:00">
+		<meta property="article:tag" content="Spring-Boot-3-5">
+		<meta property="article:tag" content="Paketo">
+		<meta property="article:tag" content="Korifi">
+		<meta property="article:tag" content="K3s">
+		<meta property="article:tag" content="Kubernetes">
+		<meta property="article:tag" content="Kpack">
+		<meta property="og:image" content="https://dashaun.com/posts/korifi-v0_16_0-on-raspberry-pi/images/feature.png">
+			<meta property="og:see_also" content="https://dashaun.com/posts/korifi-v0_14_0-on-raspberry-pi/">
+			<meta property="og:see_also" content="https://dashaun.com/posts/korifi-on-raspberry-pi/">
+			<meta property="og:see_also" content="https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/">
+			<meta property="og:see_also" content="https://dashaun.com/posts/spring-boot-stackpath-terraform/">
+			<meta property="og:see_also" content="https://dashaun.com/posts/spring-boot-kamatera-terraform/">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/korifi-v0_16_0-on-raspberry-pi/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+  
+    
+    <link rel="stylesheet" href="https://dashaun.com/css/books.min.b87f3c1ea0499269b841b08ad51be908f3793ba89b688237b3fb62096fb0979c.css" integrity="sha256-uH88HqBJkmm4QbCK1RvpCPN5O6ibaII3s/tiCW&#43;wl5w=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/books/pro-spring-boot-4/">Book</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Javagrunt</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/korifi-v0_16_0-on-raspberry-pi/">
+              How to Deploy Korifi v0.16.0 on Single-Node K3s with Ubuntu 24.04 Raspberry Pi 5 (Step-by-Step)
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2025-09-22T18:46:35-05:00'>
+                September 22, 2025
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2025-09-22T18:46:35-05:00'>
+                September 23, 2025
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              11-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='images/feature.png' alt="Featured image"/>
+        
+        <h2 id="bill-of-materials-for-the-raspberry-pi-cluster">
+  Bill of Materials for the Raspberry Pi Cluster
+  <a class="heading-link" href="#bill-of-materials-for-the-raspberry-pi-cluster">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li>(1) Raspberry Pi 5 (8gb)</li>
+<li>(1) SanDisk 128gb</li>
+<li>(1) USB-C, right-angle, &ldquo;HotNow&rdquo; brand cables</li>
+<li>(1) 1-foot CAT6 flat ethernet cables</li>
+<li>(1) Ubiquiti Flex Mini switch</li>
+<li>(1) Official Raspberry Pi 5 Charger</li>
+<li>(1) Raspberry Pi 5 case</li>
+<li>(1) DeskPi 7.84-inch Touch Screen</li>
+</ul>
+<p>This is a slightly different setup than <a href="https://dashaun.com/posts/korifi-v0_14_0-on-raspberry-pi/"  class="external-link" target="_blank" rel="noopener">the last time.</a>
+But only because my office is a mess, nothing else. Had zero power concerns or warnings.</p>
+<h2 id="installing-ubuntu-2404-on-raspberry-pi">
+  Installing Ubuntu 24.04 on Raspberry Pi
+  <a class="heading-link" href="#installing-ubuntu-2404-on-raspberry-pi">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>It&rsquo;s September 2025, why am I using Ubuntu 24.04 when I was using 24.10 last time?
+Since 25.04 is available, 24.10 is no longer a viable option.  I tried with 25.04 but I ran into two unexpected problems.</p>
+<p>The first problem is that the cgroup settings that were <a href="https://dashaun.com/posts/korifi-on-raspberry-pi/"  class="external-link" target="_blank" rel="noopener">handled</a> in 24.10, were not handled in 25.04.
+That was easy enough to work through because we&rsquo;ve had to do that in the past.</p>
+<p>The second problem was that I couldn&rsquo;t get the <code>qemu</code> emulation to work at all, so I could never get <code>kpack</code> to work.
+I didn&rsquo;t want to spend any more time investigating because of other pressing deadlines.</p>
+<p>So, I backed up to 24.04, the latest LTS release.  I still use the Raspberry Pi Imager.</p>
+<p>Same as before, edit the settings before writing the image:</p>
+<ul>
+<li>Configure the hostname</li>
+<li>Set country</li>
+<li>Add user (dashaun)</li>
+<li>Enable SSH server on boot</li>
+<li>Add public key for SSH auth</li>
+</ul>
+<h3 id="update-to-the-latest">
+  Update to the latest
+  <a class="heading-link" href="#update-to-the-latest">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>After starting up the Raspberry Pi from the USB, I&rsquo;m able to login to it remotely.
+This time I did have a little monitor attached to the Raspberry Pi so I could see when it was fully booted and at the command prompt.</p>
+<p>On first login, do all the updates!</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo apt update
+</span></span><span style="display:flex;"><span>sudo apt upgrade -y
+</span></span><span style="display:flex;"><span>sudo shutdown -r now
+</span></span></code></pre></div><h2 id="tailscale">
+  Tailscale
+  <a class="heading-link" href="#tailscale">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I&rsquo;m working from multiple networks, even at home I have multiple providers, so I need an easy way to connect to all my nodes.
+Lately I&rsquo;ve been leaning into <a href="https://tailscale.com/"  class="external-link" target="_blank" rel="noopener">tailscale</a>.</p>
+<p>Right after I do the first reboot, I install <code>tailscale</code>:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>curl -fsSL https://tailscale.com/install.sh | sh
+</span></span><span style="display:flex;"><span>sudo tailscale up
+</span></span></code></pre></div><blockquote>
+<p>Requires authentication&hellip;</p>
+</blockquote>
+<p>After authenticating and adding the device to my VPN, I&rsquo;m feeling pretty good.</p>
+<h2 id="setup-k3s-using-k3sup">
+  Setup K3s using K3sup
+  <a class="heading-link" href="#setup-k3s-using-k3sup">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I&rsquo;ve got <a href="https://github.com/alexellis/k3sup"  class="external-link" target="_blank" rel="noopener">k3sup</a> installed on my laptop.
+This needs to be ran from another device, not the Raspberry Pi that we are installing on.</p>
+<p>There are no changes here, I&rsquo;m using the same command I&rsquo;ve used in the past.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>k3sup install --ip 100.81.187.23 --user dashaun --k3s-extra-args <span style="color:#4070a0">&#39;--disable traefik&#39;</span> --merge --local-path ~/.kube/config --context pikorifi
+</span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># Validate the single-node cluster</span>
+</span></span><span style="display:flex;"><span>kubectl get nodes -o wide
+</span></span></code></pre></div><blockquote>
+<p>I used the VPN ip address of the node so I can use the KUBECONFIG from anywhere on my VPN.</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>NAME         STATUS   ROLES                  AGE    VERSION        INTERNAL-IP   EXTERNAL-IP   OS-IMAGE             KERNEL-VERSION     CONTAINER-RUNTIME
+</span></span><span style="display:flex;"><span>pikorifi00   Ready    control-plane,master   7m24s  v1.33.4+k3s1   10.14.1.18    &lt;none&gt;        Ubuntu 24.04.3 LTS   6.8.0-1038-raspi   containerd://2.0.5-k3s2
+</span></span></code></pre></div><p>At this point, things are very similar to before.
+But, last time we were using Kubernetes v1.31, this time its v1.33.</p>
+<h2 id="installing-and-configuring-korifi-on-kubernetes">
+  Installing and Configuring Korifi on Kubernetes
+  <a class="heading-link" href="#installing-and-configuring-korifi-on-kubernetes">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p><a href="https://github.com/cloudfoundry/korifi/blob/main/INSTALL.md"  class="external-link" target="_blank" rel="noopener">The installation instructions that I&rsquo;m following.</a></p>
+<p>I use <code>direnv</code> and <a href="https://bitwarden.com/"  class="external-link" target="_blank" rel="noopener">bitwarden</a> and configured my <code>.envrc</code></p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">BW_SESSION</span><span style="color:#666">=</span><span style="color:#007020;font-weight:bold">$(</span>bw unlock --raw<span style="color:#007020;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">ROOT_NAMESPACE</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;cf&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">KORIFI_NAMESPACE</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;korifi&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">ADMIN_USERNAME</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;cf-admin&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">BASE_DOMAIN</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;pikorifi00.korifi.cc&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">GATEWAY_CLASS_NAME</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;contour&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">DOCKERHUB_USERNAME</span><span style="color:#666">=</span><span style="color:#007020;font-weight:bold">$(</span>bw get username dockerhub-access-token<span style="color:#007020;font-weight:bold">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#007020">export</span> <span style="color:#bb60d5">DOCKERHUB_PASSWORD</span><span style="color:#666">=</span><span style="color:#007020;font-weight:bold">$(</span>bw get password dockerhub-access-token<span style="color:#007020;font-weight:bold">)</span>
+</span></span></code></pre></div><h3 id="install-cert-manager">
+  Install Cert-Manager
+  <a class="heading-link" href="#install-cert-manager">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.18.2/cert-manager.yaml
+</span></span></code></pre></div><h3 id="install-kpack">
+  Install Kpack
+  <a class="heading-link" href="#install-kpack">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl apply -f https://github.com/buildpacks-community/kpack/releases/download/v0.17.0/release-0.17.0.yaml
+</span></span></code></pre></div><p>Kpack still doesn&rsquo;t deliver ARM64 images yet.  With Kubernetes v1.31 I was able to deploy a <code>daemonset</code> that would install <code>qemu</code> on every node of the cluster.
+Something has changed.  That solution no longer works, and again, I didn&rsquo;t have time to figure out the reason.</p>
+<p>In order to make that <code>kpack</code> install work, I had to setup <code>qemu</code> on each node manually, but it&rsquo;s super easy.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># On each K3s node</span>
+</span></span><span style="display:flex;"><span>sudo modprobe binfmt_misc
+</span></span><span style="display:flex;"><span>sudo apt install -y qemu-user-static
+</span></span></code></pre></div><blockquote>
+<p>Almost immediately after finishing that install, the kpack deploy becomes healthy.</p>
+</blockquote>
+<p>That was the big change from my last journey down this path.
+Some of the steps are the same as last time.
+I&rsquo;m just copying and updating them, so I/we don&rsquo;t have to jump back and forth.</p>
+<h3 id="install-contour">
+  Install Contour
+  <a class="heading-link" href="#install-contour">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl apply -f https://raw.githubusercontent.com/projectcontour/contour/release-1.33/examples/render/contour-gateway-provisioner.yaml
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>kubectl apply -f - <span style="color:#4070a0">&lt;&lt;EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">kind: GatewayClass
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">apiVersion: gateway.networking.k8s.io/v1
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">  name: $GATEWAY_CLASS_NAME
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">spec:
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">  controllerName: projectcontour.io/gateway-controller
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">EOF</span>
+</span></span></code></pre></div><blockquote>
+<p>Dynamic provisioning</p>
+</blockquote>
+<h3 id="metrics-server">
+  Metrics Server
+  <a class="heading-link" href="#metrics-server">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>The Kubernetes <code>Metrics Server</code> got installed with <code>k3s</code> so we are moving along, same as last time.</p>
+<h3 id="install-service-bindings-controller">
+  Install Service Bindings Controller
+  <a class="heading-link" href="#install-service-bindings-controller">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl apply -f https://github.com/servicebinding/runtime/releases/download/v1.0.0/servicebinding-runtime-v1.0.0.yaml
+</span></span></code></pre></div><h3 id="create-namespaces">
+  Create namespaces:
+  <a class="heading-link" href="#create-namespaces">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cat <span style="color:#4070a0">&lt;&lt;EOF | kubectl apply -f -
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">apiVersion: v1
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">kind: Namespace
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">  name: $ROOT_NAMESPACE
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">  labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">    pod-security.kubernetes.io/audit: restricted
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">    pod-security.kubernetes.io/enforce: restricted
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">EOF</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>cat <span style="color:#4070a0">&lt;&lt;EOF | kubectl apply -f -
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">apiVersion: v1
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">kind: Namespace
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">metadata:
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">  name: $KORIFI_NAMESPACE
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">  labels:
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">    pod-security.kubernetes.io/audit: restricted
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">    pod-security.kubernetes.io/enforce: restricted
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0">EOF</span>
+</span></span></code></pre></div><h3 id="add-container-registry-credentials">
+  Add container registry credentials:
+  <a class="heading-link" href="#add-container-registry-credentials">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl --namespace <span style="color:#4070a0">&#34;</span><span style="color:#bb60d5">$ROOT_NAMESPACE</span><span style="color:#4070a0">&#34;</span> create secret docker-registry image-registry-credentials <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span>    --docker-username<span style="color:#666">=</span><span style="color:#4070a0">&#34;</span><span style="color:#bb60d5">$DOCKERHUB_USERNAME</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span>    --docker-password<span style="color:#666">=</span><span style="color:#4070a0">&#34;</span><span style="color:#bb60d5">$DOCKERHUB_PASSWORD</span><span style="color:#4070a0">&#34;</span>
+</span></span></code></pre></div><blockquote>
+<p>I&rsquo;m using DockerHub</p>
+</blockquote>
+<h3 id="ssltls">
+  SSL/TLS
+  <a class="heading-link" href="#ssltls">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>I&rsquo;m still cool with self-signed certificates for now.
+But with this example, I&rsquo;m going to use <code>cloudflared</code> and talk through making this Raspberry Pi public to the world.</p>
+<h3 id="install-korifi-with-helm">
+  Install Korifi with Helm
+  <a class="heading-link" href="#install-korifi-with-helm">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>helm install korifi https://github.com/cloudfoundry/korifi/releases/download/v0.16.0/korifi-0.16.0.tgz <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span>    --namespace<span style="color:#666">=</span><span style="color:#4070a0">&#34;</span><span style="color:#bb60d5">$KORIFI_NAMESPACE</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span>    --set<span style="color:#666">=</span><span style="color:#bb60d5">generateIngressCertificates</span><span style="color:#666">=</span><span style="color:#007020">true</span> <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span>    --set<span style="color:#666">=</span><span style="color:#bb60d5">rootNamespace</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;</span><span style="color:#bb60d5">$ROOT_NAMESPACE</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span>    --set<span style="color:#666">=</span><span style="color:#bb60d5">adminUserName</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;</span><span style="color:#bb60d5">$ADMIN_USERNAME</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span>    --set<span style="color:#666">=</span>api.apiServer.url<span style="color:#666">=</span><span style="color:#4070a0">&#34;api.</span><span style="color:#bb60d5">$BASE_DOMAIN</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span>    --set<span style="color:#666">=</span><span style="color:#bb60d5">defaultAppDomainName</span><span style="color:#666">=</span><span style="color:#4070a0">&#34;apps.</span><span style="color:#bb60d5">$BASE_DOMAIN</span><span style="color:#4070a0">&#34;</span> <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span>    --set<span style="color:#666">=</span><span style="color:#bb60d5">containerRepositoryPrefix</span><span style="color:#666">=</span>index.docker.io/dashaun/ <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span>    --set<span style="color:#666">=</span>kpackImageBuilder.builderRepository<span style="color:#666">=</span>index.docker.io/dashaun/kpack-builder <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span>    --set<span style="color:#666">=</span>networking.gatewayClass<span style="color:#666">=</span><span style="color:#bb60d5">$GATEWAY_CLASS_NAME</span> <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span>    --wait
+</span></span></code></pre></div><blockquote>
+<p>These are my values, update <code>containerRepositoryPrefix</code> and <code>kpackImageBuilder.builderRepository</code> with your values.</p>
+</blockquote>
+<p>Takes a couple of minutes for everything to resolve, but we used <code>--wait</code>, don&rsquo;t panic!</p>
+<h2 id="post-install-config">
+  Post-Install Config
+  <a class="heading-link" href="#post-install-config">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Instead of just running this locally, I want to make it public.
+I&rsquo;m not just making the apps public, I&rsquo;m also making the API public!
+That will allow my <a href="https://twitch.tv/javagrunt"  class="external-link" target="_blank" rel="noopener">Twitch community</a>, to use my Korifi cluster!
+Stay tuned for more on that later!</p>
+<h3 id="cloudflared">
+  Cloudflared
+  <a class="heading-link" href="#cloudflared">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>On my laptop, I have the <a href="https://github.com/cloudflare/cloudflared"  class="external-link" target="_blank" rel="noopener">cloudflared</a> CLI installed.</p>
+<p>The first thing I did was create a tunnel with <code>cloudflared</code>.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cloudflared tunnel create javagrunt
+</span></span></code></pre></div><blockquote>
+<p>From my laptop, not on the Raspberry Pi</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Tunnel credentials written to /Users/dashaun/.cloudflared/89b6e689-2786-44a4-b607-7ee3e3aa6ef8.json. cloudflared chose this file based on where your origin certificate was found. Keep this file secret. To revoke these credentials, delete the tunnel.
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Created tunnel javagrunt with id 89b6e689-2786-44a4-b607-7ee3e3aa6ef8
+</span></span></code></pre></div><blockquote>
+<p>That ID is very important.</p>
+</blockquote>
+<p>Then I add that secret to the kubernetes cluster.
+This isn&rsquo;t the most secure way to handle secrets.
+I&rsquo;ve been using <a href="https://fluxcd.io/flux/guides/mozilla-sops/"  class="external-link" target="_blank" rel="noopener">SOPS</a> for secrets in production.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>kubectl create secret generic tunnel-credentials <span style="color:#4070a0;font-weight:bold">\
+</span></span></span><span style="display:flex;"><span>--from-file<span style="color:#666">=</span>credentials.json<span style="color:#666">=</span>/Users/dashaun/.cloudflared/89b6e689-2786-44a4-b607-7ee3e3aa6ef8.json
+</span></span></code></pre></div><blockquote>
+<p>Points to the file that was generated above</p>
+</blockquote>
+<p>With that secret deployed to the cluster, now I can create the tunnel from Cloudflare directly to the Kubernetes cluster on my Raspberry Pi!</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#0e84b5;font-weight:bold">---</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>apps/v1<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>Deployment<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">metadata</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>cloudflared<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">namespace</span>:<span style="color:#bbb"> </span>default<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">spec</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">selector</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">matchLabels</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span><span style="color:#062873;font-weight:bold">app</span>:<span style="color:#bbb"> </span>cloudflared<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">replicas</span>:<span style="color:#bbb"> </span><span style="color:#40a070">1</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">template</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">metadata</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span><span style="color:#062873;font-weight:bold">labels</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#062873;font-weight:bold">app</span>:<span style="color:#bbb"> </span>cloudflared<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">spec</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span><span style="color:#062873;font-weight:bold">containers</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>- <span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>cloudflared<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">          </span><span style="color:#062873;font-weight:bold">image</span>:<span style="color:#bbb"> </span>cloudflare/cloudflared:2025.9.0<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">          </span><span style="color:#062873;font-weight:bold">args</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span>- tunnel<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#60a0b0;font-style:italic"># Points cloudflared to the config file, which configures what</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#60a0b0;font-style:italic"># cloudflared will actually do. This file is created by a ConfigMap</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#60a0b0;font-style:italic"># below.</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span>- --config<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span>- /etc/cloudflared/config/config.yaml<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span>- run<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">          </span><span style="color:#062873;font-weight:bold">livenessProbe</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#062873;font-weight:bold">httpGet</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">              </span><span style="color:#60a0b0;font-style:italic"># Cloudflared has a /ready endpoint which returns 200 if and only if</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">              </span><span style="color:#60a0b0;font-style:italic"># it has an active connection to the edge.</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">              </span><span style="color:#062873;font-weight:bold">path</span>:<span style="color:#bbb"> </span>/ready<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">              </span><span style="color:#062873;font-weight:bold">port</span>:<span style="color:#bbb"> </span><span style="color:#40a070">2000</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#062873;font-weight:bold">failureThreshold</span>:<span style="color:#bbb"> </span><span style="color:#40a070">1</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#062873;font-weight:bold">initialDelaySeconds</span>:<span style="color:#bbb"> </span><span style="color:#40a070">10</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#062873;font-weight:bold">periodSeconds</span>:<span style="color:#bbb"> </span><span style="color:#40a070">10</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">          </span><span style="color:#062873;font-weight:bold">volumeMounts</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span>- <span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>config<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">              </span><span style="color:#062873;font-weight:bold">mountPath</span>:<span style="color:#bbb"> </span>/etc/cloudflared/config<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">              </span><span style="color:#062873;font-weight:bold">readOnly</span>:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">true</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#60a0b0;font-style:italic"># Each tunnel has an associated &#34;credentials file&#34; which authorizes machines</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#60a0b0;font-style:italic"># to run the tunnel. cloudflared will read this file from its local filesystem,</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#60a0b0;font-style:italic"># and it&#39;ll be stored in a k8s secret.</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span>- <span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>creds<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">              </span><span style="color:#062873;font-weight:bold">mountPath</span>:<span style="color:#bbb"> </span>/etc/cloudflared/creds<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">              </span><span style="color:#062873;font-weight:bold">readOnly</span>:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">true</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span><span style="color:#062873;font-weight:bold">volumes</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>- <span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>creds<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">          </span><span style="color:#062873;font-weight:bold">secret</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#60a0b0;font-style:italic"># By default, the credentials file will be created under ~/.cloudflared/&lt;tunnel ID&gt;.json</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#60a0b0;font-style:italic"># when you run `cloudflared tunnel create`. You can move it into a secret by using:</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#60a0b0;font-style:italic"># ```sh</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#60a0b0;font-style:italic"># kubectl create secret generic tunnel-credentials \</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#60a0b0;font-style:italic"># --from-file=credentials.json=/Users/yourusername/.cloudflared/&lt;tunnel ID&gt;.json</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#60a0b0;font-style:italic"># ```</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#062873;font-weight:bold">secretName</span>:<span style="color:#bbb"> </span>tunnel-credentials<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#60a0b0;font-style:italic"># Create a config.yaml file from the ConfigMap below.</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>- <span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>config<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">          </span><span style="color:#062873;font-weight:bold">configMap</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>cloudflared<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">            </span><span style="color:#062873;font-weight:bold">items</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">              </span>- <span style="color:#062873;font-weight:bold">key</span>:<span style="color:#bbb"> </span>config.yaml<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">                </span><span style="color:#062873;font-weight:bold">path</span>:<span style="color:#bbb"> </span>config.yaml<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#0e84b5;font-weight:bold">---</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># This ConfigMap is just a way to define the cloudflared config.yaml file in k8s.</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># It&#39;s useful to define it in k8s, rather than as a stand-alone .yaml file, because</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># this lets you use various k8s templating solutions (e.g. Helm charts) to</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#60a0b0;font-style:italic"># parameterize your config, instead of just using string literals.</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">apiVersion</span>:<span style="color:#bbb"> </span>v1<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">kind</span>:<span style="color:#bbb"> </span>ConfigMap<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">metadata</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">name</span>:<span style="color:#bbb"> </span>cloudflared<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">namespace</span>:<span style="color:#bbb"> </span>default<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">data</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">  </span><span style="color:#062873;font-weight:bold">config.yaml</span>:<span style="color:#bbb"> </span>|<span style="color:#4070a0;font-style:italic">
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">    # Name of the tunnel you want to run
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">    tunnel: javagrunt
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">    credentials-file: /etc/cloudflared/creds/credentials.json
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">    # Serves the metrics server under /metrics and the readiness server under /ready
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">    metrics: 0.0.0.0:2000
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">    # Autoupdates applied in a k8s pod will be lost when the pod is removed or restarted, so
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">    # autoupdate doesn&#39;t make sense in Kubernetes. However, outside of Kubernetes, we strongly
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">    # recommend using autoupdate.
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">    no-autoupdate: true
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">    # The `ingress` block tells cloudflared which local service to route incoming
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">    # requests to. For more about ingress rules, see
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">    # https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/configuration/ingress
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">    #
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">    # Remember, these rules route traffic from cloudflared to a local service. To route traffic
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">    # from the internet to cloudflared, run `cloudflared tunnel route dns &lt;tunnel&gt; &lt;hostname&gt;`.
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">    # E.g. `cloudflared tunnel route dns example-tunnel tunnel.example.com`.
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">    ingress:
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">      # The first rule proxies traffic to the httpbin sample Service defined in app.yaml
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">      # This rule sends traffic to the built-in hello-world HTTP server. This can help debug connectivity
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">      # issues. If hello.example.com resolves and tunnel.example.com does not, then the problem is
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">      # in the connection from cloudflared to your local service, not from the internet to cloudflared.
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">      - hostname: &#34;api.pikorifi00.korifi.cc&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">        service: https://korifi-api-svc.korifi.svc.cluster.local
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">        originRequest:
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">          noTLSVerify: true
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">      - hostname: &#34;*&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#4070a0;font-style:italic">        service: http://envoy-korifi.korifi-gateway.svc.cluster.local:80</span><span style="color:#bbb">
+</span></span></span></code></pre></div><p>Here are the things you will want to change from that file above.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#bbb">          </span><span style="color:#062873;font-weight:bold">image</span>:<span style="color:#bbb"> </span>cloudflare/cloudflared:2025.9.0<span style="color:#bbb">
+</span></span></span></code></pre></div><blockquote>
+<p>Line 19, the latest <code>cloudflared</code> image</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#062873;font-weight:bold">tunnel</span>:<span style="color:#bbb"> </span>javagrunt<span style="color:#bbb">
+</span></span></span></code></pre></div><blockquote>
+<p>Line 77, the name of the tunnel</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#bbb">      </span>- <span style="color:#062873;font-weight:bold">hostname</span>:<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;api.pikorifi00.korifi.cc&#34;</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#062873;font-weight:bold">service</span>:<span style="color:#bbb"> </span>https://korifi-api-svc.korifi.svc.cluster.local<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#062873;font-weight:bold">originRequest</span>:<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">          </span><span style="color:#062873;font-weight:bold">noTLSVerify</span>:<span style="color:#bbb"> </span><span style="color:#007020;font-weight:bold">true</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">      </span>- <span style="color:#062873;font-weight:bold">hostname</span>:<span style="color:#bbb"> </span><span style="color:#4070a0">&#34;*&#34;</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#062873;font-weight:bold">service</span>:<span style="color:#bbb"> </span>http://envoy-korifi.korifi-gateway.svc.cluster.local:80<span style="color:#bbb">
+</span></span></span></code></pre></div><blockquote>
+<p>Lines 97-102, exposes the API, exposes the gateway</p>
+</blockquote>
+<p>This is so cool!  But we aren&rsquo;t done yet.  I need make sure that Cloudflare knows how to handle the route.</p>
+<p>Inside of Cloudflare, where I&rsquo;m managing DNS, I&rsquo;m adding two CNAME records for the API.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>CNAME | api.pikorifi00.korifi.cc    | 89b6e689-2786-44a4-b607-7ee3e3aa6ef8.cfargotunnel.com
+</span></span><span style="display:flex;"><span>CNAME | *.apps.pikorifi00.korifi.cc | 89b6e689-2786-44a4-b607-7ee3e3aa6ef8.cfargotunnel.com
+</span></span></code></pre></div><blockquote>
+<p>The CNAME target is the <tunnel-id>.cfargotunnel.com</p>
+</blockquote>
+<p>Now I have a publicly available API for my Korifi foundation!</p>
+<p>I also added Cloudflare Edge Certificates for <code>*.apps.pikorifi00.korifi.cc</code> and <code>*.pikorifi00.korifi.cc</code>.
+The $10/month feels like a bargain to enable SSL certs for my Korifi API and all the apps that I deploy.</p>
+<h2 id="use-that-sweet-sweet-api">
+  Use that sweet sweet API
+  <a class="heading-link" href="#use-that-sweet-sweet-api">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cf api https://api.<span style="color:#bb60d5">$BASE_DOMAIN</span>
+</span></span></code></pre></div><blockquote>
+<p>Exposed with a valid SSL certificate</p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>Setting API endpoint to https://api.pikorifi00.korifi.cc...
+</span></span><span style="display:flex;"><span>OK
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>API endpoint:   https://api.pikorifi00.korifi.cc
+</span></span><span style="display:flex;"><span>API version:    3.117.0+cf-k8s
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Not logged in. Use &#39;cf login&#39; or &#39;cf login --sso&#39; to log in.
+</span></span></code></pre></div><p>So far, so good!</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cf login
+</span></span></code></pre></div><p>I&rsquo;m presented with a list of all of the users in my <code>~/.kube/config</code> and I choose the entry in the list associated to $ADMIN_USERNAME</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>API endpoint: https://api.pikorifi00.korifi.cc
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>1. admin
+</span></span><span style="display:flex;"><span>2. admin@k3d-korifi
+</span></span><span style="display:flex;"><span>3. cf-admin
+</span></span><span style="display:flex;"><span>4. pikorifi
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Choose your Kubernetes authentication info (enter to skip): 3
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Authenticating...
+</span></span><span style="display:flex;"><span>OK
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>API endpoint:   https://api.pikorifi00.korifi.cc
+</span></span><span style="display:flex;"><span>API version:    3.117.0+cf-k8s
+</span></span><span style="display:flex;"><span>user:           cf-admin
+</span></span><span style="display:flex;"><span>No org or space targeted, use &#39;cf target -o ORG -s SPACE&#39;
+</span></span></code></pre></div><p>This is working!</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cf create-org pikorifi-cc
+</span></span><span style="display:flex;"><span>cf create-space -o pikorifi-cc production
+</span></span><span style="display:flex;"><span>cf target -o pikorifi-cc -s production
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>API endpoint:   https://api.pikorifi00.korifi.cc
+</span></span><span style="display:flex;"><span>API version:    3.117.0+cf-k8s
+</span></span><span style="display:flex;"><span>user:           cf-admin
+</span></span><span style="display:flex;"><span>org:            pikorifi-cc
+</span></span><span style="display:flex;"><span>space:          production
+</span></span></code></pre></div><h3 id="production">
+  Production
+  <a class="heading-link" href="#production">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cf push www --docker-image dashaun/cc.pikorifi.www:latest
+</span></span></code></pre></div><blockquote>
+<p>The app is now visible at <a href="https://www.apps.pikorifi00.korifi.cc"  class="external-link" target="_blank" rel="noopener">https://www.apps.pikorifi00.korifi.cc</a> with a valid SSL cert</p>
+</blockquote>
+<p>That&rsquo;s great, but YOU probably want to use your own domain.
+Korifi handles that too.</p>
+<p>If you own <code>pikorifi.cc</code> you simply point your domain to the same tunnel!</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>CNAME | pikorifi.cc   | 89b6e689-2786-44a4-b607-7ee3e3aa6ef8.cfargotunnel.com
+</span></span><span style="display:flex;"><span>CNAME | *.pikorifi.cc | 89b6e689-2786-44a4-b607-7ee3e3aa6ef8.cfargotunnel.com
+</span></span></code></pre></div><blockquote>
+<p>Pointing to the same tunnel as above</p>
+</blockquote>
+<p>Now tell Korifi that we want to handle traffic for that domain!
+And setup a specific route.
+Cloudflare provides free certs for the root and *.<yourdomain>.<tld>!</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cf create-shared-domain pikorifi.cc
+</span></span><span style="display:flex;"><span>cf create-route pikorifi.cc --hostname www
+</span></span><span style="display:flex;"><span>cf map-route demo pikorifi.cc --hostname www
+</span></span></code></pre></div><blockquote>
+<p>The app is now visible at <a href="https://www.pikorifi.cc"  class="external-link" target="_blank" rel="noopener">https://www.pikorifi.cc</a> with a valid SSL cert</p>
+</blockquote>
+<p>The API lets us look at the routes.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>cf apps
+</span></span></code></pre></div><blockquote>
+<p>Check the status of the apps in the target <code>org</code> and <code>space</code></p>
+</blockquote>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Getting apps in org pikorifi-cc / space production as cf-admin...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>name   requested state   processes   routes
+</span></span><span style="display:flex;"><span>www    started           web:1/1     www.pikorifi.cc, www.apps.pikorifi00.korifi.cc
+</span></span></code></pre></div><p>I could remove the default route if I wanted to.
+I&rsquo;m leaving it around so you can see it for yourself.</p>
+<p>Check it out for yourself!</p>
+<p><a href="https://www.pikorifi.cc"  class="external-link" target="_blank" rel="noopener">https://www.pikorifi.cc/</a></p>
+<h3 id="conclusion">
+  Conclusion
+  <a class="heading-link" href="#conclusion">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Korifi keeps getting better.
+It handles a bunch of stuff for us.
+I&rsquo;ll be pushing it to its limits in the coming months.
+Stay tuned!
+Also, make sure the follow the journey on my <a href="https://twitch.tv/javagrunt"  class="external-link" target="_blank" rel="noopener">Twitch channel</a> so you can play along!</p>
+<p>As always, your feedback is welcomed.</p>
+<h3 id="links">
+  Links
+  <a class="heading-link" href="#links">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p><a href="https://www.youtube.com/live/3rQpiZLHtpk?si=mTnh80x5ZHbSFjGV"  class="external-link" target="_blank" rel="noopener">Multi-Node Korifi on Raspberry Pi from scratch(YouTube)</a>
+<a href="https://dashaun.com/posts/multi-architecture-spring-oci-from-anywhere-with-paketo/"  class="external-link" target="_blank" rel="noopener">Multi-arch Spring Boot OCI images from anywhere with Paketo</a>
+<a href="https://github.com/pikorifi-cc/cc.pikorifi.www"  class="external-link" target="_blank" rel="noopener">https://github.com/pikorifi-cc/cc.pikorifi.www</a>
+<a href="https://github.com/cloudfoundry/korifi"  class="external-link" target="_blank" rel="noopener">Korifi</a>
+<a href="https://www.youtube.com/live/rcyUKhapsko"  class="external-link" target="_blank" rel="noopener">Pragmatic approach to architecture (and development)</a></p>
+
+      </div>
+
+
+      <footer>
+        
+
+<section class="see-also">
+  
+    
+    
+    
+  
+</section>
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2026
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

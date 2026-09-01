@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Pro Spring Boot 4 · DaShaun</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="Pro Spring Boot 4: An Authoritative Guide with Best Practices, by Felipe Gutierrez and DaShaun Carter.">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:image" content="https://dashaun.com/images/books/pro-spring-boot-4/cover.jpg">
+	<meta name="twitter:title" content="Pro Spring Boot 4">
+	<meta name="twitter:description" content="Pro Spring Boot 4: An Authoritative Guide with Best Practices, by Felipe Gutierrez and DaShaun Carter.">
+
+<meta property="og:url" content="https://dashaun.com/books/pro-spring-boot-4/">
+	<meta property="og:site_name" content="DaShaun">
+	<meta property="og:title" content="Pro Spring Boot 4">
+	<meta property="og:description" content="Pro Spring Boot 4: An Authoritative Guide with Best Practices, by Felipe Gutierrez and DaShaun Carter.">
+	<meta property="og:locale" content="en_us">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="books">
+		<meta property="article:published_time" content="2026-07-31T00:00:00+00:00">
+		<meta property="article:modified_time" content="2026-09-01T16:31:53-07:00">
+		<meta property="og:image" content="https://dashaun.com/images/books/pro-spring-boot-4/cover.jpg">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/books/pro-spring-boot-4/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+  
+    
+    <link rel="stylesheet" href="https://dashaun.com/css/books.min.b87f3c1ea0499269b841b08ad51be908f3793ba89b688237b3fb62096fb0979c.css" integrity="sha256-uH88HqBJkmm4QbCK1RvpCPN5O6ibaII3s/tiCW&#43;wl5w=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/books/pro-spring-boot-4/">Book</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Javagrunt</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+
+
+<article class="book-page">
+  <header class="book-hero">
+    <div class="book-hero__art">
+      <img class="book-hero__cover" src="https://dashaun.com/images/books/pro-spring-boot-4/cover.jpg" width="827" height="1181" alt="Cover of Pro Spring Boot 4 by Felipe Gutierrez and DaShaun Carter">
+    </div>
+    <div>
+      <h1>Pro Spring Boot 4</h1>
+      <p class="book-hero__subtitle">An Authoritative Guide with Best Practices</p>
+      <p class="book-hero__authors">By Felipe Gutierrez and DaShaun Carter</p>
+      <p class="book-hero__lead">A practical, authoritative guide to building modern web, cloud, enterprise, and AI-powered applications with Spring Boot 4.</p>
+      <div class="book-actions" aria-label="Buy Pro Spring Boot 4">
+        <a class="book-button" href="https://www.amazon.com/Pro-Spring-Boot-Authoritative-Practices/dp/B0GLM357J5" rel="noopener">Buy on Amazon</a>
+        <a class="book-button" href="https://link.springer.com/book/10.1007/979-8-8688-2640-5" rel="noopener">Apress / Springer</a>
+      </div>
+    </div>
+  </header>
+
+  <dl class="book-facts" aria-label="Publication details">
+    <div><dt>Publisher</dt><dd>Apress</dd></div>
+    <div><dt>Edition</dt><dd>Fourth</dd></div>
+    <div><dt>Published</dt><dd>2026</dd></div>
+    <div><dt>Length</dt><dd>539 pages</dd></div>
+  </dl>
+
+  <section class="book-section">
+    <h2>What this book helps you build</h2>
+    <div class="book-section__body">
+      <p>Spring Boot makes it easier to get started. This book helps you go further: from the framework’s internals to the decisions involved in testing, securing, observing, deploying, and evolving production applications.</p>
+      <p>Felipe and I bring experience from enterprise software, developer advocacy, cloud platforms, distributed data, and the Spring community to examples designed for working developers.</p>
+    </div>
+  </section>
+
+  <section class="book-section">
+    <h2>Who it’s for</h2>
+    <div class="book-section__body">
+      <dl class="book-audience">
+        <div><dt>Experienced Spring developers</dt><dd>Deepen your understanding of Spring Boot 4 and the systems surrounding production applications.</dd></div>
+        <div><dt>Java teams modernizing applications</dt><dd>Navigate security, data access, observability, native compilation, cloud patterns, and framework upgrades.</dd></div>
+        <div><dt>Technical leads and architects</dt><dd>Build shared context around current Spring practices and the tradeoffs behind them.</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="book-section">
+    <h2>Inside the fourth edition</h2>
+    <div class="book-section__body">
+      <ul class="book-topics">
+        <li>Spring Boot internals and features</li>
+        <li>Web development</li>
+        <li>JDBC, JdbcClient, JPA, and NoSQL</li>
+        <li>Distributed SQL with CockroachDB</li>
+        <li>Reactive applications</li>
+        <li>Advanced testing</li>
+        <li>Spring Security</li>
+        <li>Messaging and RSocket</li>
+        <li>Actuator and OpenTelemetry</li>
+        <li>GraalVM native compilation</li>
+        <li>Spring Cloud microservices</li>
+        <li>Spring AI applications and agents</li>
+        <li>Custom starters</li>
+        <li>What’s new in Spring Boot 4</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="book-section" id="conversation">
+    <h2>The conversation continues</h2>
+    <div class="book-section__body">
+      <div class="video-embed">
+        <iframe src="https://www.youtube-nocookie.com/embed/IJ9AG4ehIug" title="Spring Office Hours: S5E21 — Pro Spring Boot 4 with Felipe Gutierrez" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      </div>
+      <p class="book-video-caption"><strong>Spring Office Hours, Season 5 Episode 21.</strong> Felipe Gutierrez joins us to talk about <em>Pro Spring Boot 4</em>, the fourth edition, and what experienced Spring developers will find inside.</p>
+      <a class="book-link" href="https://www.youtube.com/watch?v=IJ9AG4ehIug" rel="noopener">Watch on YouTube</a>
+    </div>
+  </section>
+
+  <footer class="book-close">
+    <h2>Ready to go deeper with Spring Boot 4?</h2>
+    <p>Choose the retailer that works for you. Print and digital availability varies by destination.</p>
+    <div class="book-actions" aria-label="Purchase options">
+      <a class="book-button" href="https://www.amazon.com/Pro-Spring-Boot-Authoritative-Practices/dp/B0GLM357J5" rel="noopener">Buy on Amazon</a>
+      <a class="book-button" href="https://link.springer.com/book/10.1007/979-8-8688-2640-5" rel="noopener">View at Apress / Springer</a>
+    </div>
+  </footer>
+</article>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Book",
+  "name": "Pro Spring Boot 4",
+  "alternativeHeadline": "An Authoritative Guide with Best Practices",
+  "author": [
+    {"@type": "Person", "name": "Felipe Gutierrez"},
+    {"@type": "Person", "name": "DaShaun Carter"}
+  ],
+  "publisher": {"@type": "Organization", "name": "Apress"},
+  "datePublished": "2026",
+  "bookEdition": "4",
+  "numberOfPages": 539,
+  "isbn": "979-8-8688-2639-9",
+  "image": "https://dashaun.com/images/books/pro-spring-boot-4/cover.jpg",
+  "url": "https://dashaun.com/books/pro-spring-boot-4/"
+}
+</script>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2026
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

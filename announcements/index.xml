@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Announcements on DaShaun</title>
+        <link>https://dashaun.com/announcements/</link>
+        <description>Recent content in Announcements on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <managingEditor>dashaun@dashaun.com (DaShaun Carter)</managingEditor>
+        <webMaster>dashaun@dashaun.com (DaShaun Carter)</webMaster><atom:link href="https://dashaun.com/announcements/index.xml" rel="self" type="application/rss+xml" />
+    </channel>
+</rss>

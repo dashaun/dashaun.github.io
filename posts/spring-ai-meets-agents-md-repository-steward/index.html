@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Spring AI &#43; AGENTS.md Repository Steward · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="The story behind spring-ai-agents-md: precedence, observability, sane safety limits, and a Spring AI coding agent that keeps people in control.">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:image" content="https://dashaun.com/posts/spring-ai-meets-agents-md-repository-steward/images/feature.png">
+	<meta name="twitter:title" content="Spring AI &#43; AGENTS.md Repository Steward">
+	<meta name="twitter:description" content="The story behind spring-ai-agents-md: precedence, observability, sane safety limits, and a Spring AI coding agent that keeps people in control.">
+
+<meta property="og:url" content="https://dashaun.com/posts/spring-ai-meets-agents-md-repository-steward/">
+	<meta property="og:site_name" content="DaShaun">
+	<meta property="og:title" content="Spring AI &#43; AGENTS.md Repository Steward">
+	<meta property="og:description" content="The story behind spring-ai-agents-md: precedence, observability, sane safety limits, and a Spring AI coding agent that keeps people in control.">
+	<meta property="og:locale" content="en_us">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="posts">
+		<meta property="article:published_time" content="2026-08-31T23:35:00-07:00">
+		<meta property="article:modified_time" content="2026-08-31T23:56:37-07:00">
+		<meta property="article:tag" content="Spring-Ai">
+		<meta property="article:tag" content="Agents-Md">
+		<meta property="article:tag" content="Aaif">
+		<meta property="article:tag" content="Coding-Agents">
+		<meta property="article:tag" content="Spring-Boot">
+		<meta property="article:tag" content="Observability">
+		<meta property="og:image" content="https://dashaun.com/posts/spring-ai-meets-agents-md-repository-steward/images/feature.png">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/spring-ai-meets-agents-md-repository-steward/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+  
+    
+    <link rel="stylesheet" href="https://dashaun.com/css/books.min.b87f3c1ea0499269b841b08ad51be908f3793ba89b688237b3fb62096fb0979c.css" integrity="sha256-uH88HqBJkmm4QbCK1RvpCPN5O6ibaII3s/tiCW&#43;wl5w=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/books/pro-spring-boot-4/">Book</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Javagrunt</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/spring-ai-meets-agents-md-repository-steward/">
+              Spring AI &#43; AGENTS.md Repository Steward
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2026-08-31T23:35:00-07:00'>
+                August 31, 2026
+              </time>
+            </span>
+            
+            
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              9-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='images/feature.png' alt="Featured image"/>
+        
+        <p>I have been having a lot of fun building <a href="https://github.com/dashaun/spring-ai-agents-md"  class="external-link" target="_blank" rel="noopener"><code>spring-ai-agents-md</code></a>.</p>
+<p>Let me back up.</p>
+<p>I had two motivations for creating this starter.</p>
+<p>First, I am an <a href="https://aaif.io/community/ambassadors/"  class="external-link" target="_blank" rel="noopener">AAIF Ambassador</a>. I needed to do some Ambassador&rsquo;ing. I wanted to make a public contribution that tied directly to an AAIF project and helped developers understand it, try it, and build something useful with it. <code>AGENTS.md</code> was the obvious choice for me.</p>
+<p>Second, I am building agents with Spring AI. I want to be able to build my own &ldquo;Claude&rdquo; or &ldquo;Codex&rdquo; with Spring AI, and I am getting closer all the time.</p>
+<p>I work with the popular coding agents. I am also building my own agents and agent harnesses. I do not want a completely different instruction format for each one. <code>AGENTS.md</code> is a simple, open specification that works across those worlds. The same repository instructions can help the agents people already use and the agents I am creating with Spring AI.</p>
+<p>I really like that.</p>
+<p>The idea seemed simple enough.</p>
+<p><a href="https://agents.md"  class="external-link" target="_blank" rel="noopener"><code>AGENTS.md</code></a> gives coding agents a predictable place to find the instructions for a repository. <a href="https://spring.io/projects/spring-ai"  class="external-link" target="_blank" rel="noopener">Spring AI</a> gives Java developers a consistent way to build AI applications. I wanted to bring the two together.</p>
+<p>Put an <code>AGENTS.md</code> file in a Spring project. Add a starter. Build a normal Spring AI <code>ChatClient</code>. Let the agent get the right repository instructions automatically.</p>
+<p>Easy, right?</p>
+<p>Well, mostly.</p>
+<h2 id="phase-1-make-the-simple-thing-simple">
+  Phase 1: Make the simple thing simple
+  <a class="heading-link" href="#phase-1-make-the-simple-thing-simple">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>The first goal was a Spring Boot starter that loads an <code>AGENTS.md</code> document and adds it to Spring AI requests through a <code>CallAdvisor</code>.</p>
+<p>I did not want to invent a schema. An <code>AGENTS.md</code> file is Markdown. People should be able to organize it in whatever way works for their project. The library preserves the complete document, including headings, lists, tables, code blocks, whitespace, and line endings.</p>
+<p>The starter handles the wiring. This is the dependency:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-xml" data-lang="xml"><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">&lt;dependency&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#062873;font-weight:bold">&lt;groupId&gt;</span>io.github.spring-ai-community<span style="color:#062873;font-weight:bold">&lt;/groupId&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#062873;font-weight:bold">&lt;artifactId&gt;</span>spring-ai-starter-agents-md<span style="color:#062873;font-weight:bold">&lt;/artifactId&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#062873;font-weight:bold">&lt;version&gt;</span>0.0.1-SNAPSHOT<span style="color:#062873;font-weight:bold">&lt;/version&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#062873;font-weight:bold">&lt;/dependency&gt;</span>
+</span></span></code></pre></div><p>Then you build the <code>ChatClient</code> like you normally would.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#555;font-weight:bold">@Bean</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span>ChatClient<span style="color:#bbb"> </span><span style="color:#06287e">chatClient</span>(ChatClient.<span style="color:#4070a0">Builder</span><span style="color:#bbb"> </span>builder)<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span><span style="color:#007020;font-weight:bold">return</span><span style="color:#bbb"> </span>builder.<span style="color:#4070a0">build</span>();<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span>}<span style="color:#bbb">
+</span></span></span></code></pre></div><p>The auto-configuration attaches the advisor to the auto-configured builder. There is no special advisor registration required in the application.</p>
+<p>That part felt really good. It was the Spring experience I wanted.</p>
+<h2 id="precedence-was-the-hard-part">
+  Precedence was the hard part
+  <a class="heading-link" href="#precedence-was-the-hard-part">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Loading one file was not the biggest struggle. Precedence was.</p>
+<p>What happens when a repository has more than one <code>AGENTS.md</code> file?</p>
+<p>Which instructions apply to a file deep inside a project? Does the closest document replace the root document, or do the instructions accumulate? What happens when two documents disagree? What happens after a filesystem tool moves the agent into another part of the repository?</p>
+<p>I did not want the answers to be whatever felt right to me that day.</p>
+<p>Luckily, the proposed <a href="https://github.com/agentsmd/agents.md/issues/135"  class="external-link" target="_blank" rel="noopener"><code>AGENTS.md</code> v1.1 clarification</a> arrived at the right time. It put names around the behavior I needed: jurisdiction, accumulation, precedence, and implicit inheritance.</p>
+<p>The rules are intuitive once they are written down:</p>
+<ul>
+<li>An <code>AGENTS.md</code> file applies to its directory and everything below it.</li>
+<li>Applicable guidance accumulates from ancestor directories.</li>
+<li>The closest instructions take precedence when guidance conflicts.</li>
+<li>Explicit user instructions override file-based instructions.</li>
+<li>Instructions from sibling directories do not apply.</li>
+</ul>
+<p>The proposal is still a proposal, and the library says that clearly. But it gave me a solid target to implement and test instead of leaving the most important behavior implicit.</p>
+<p>For a target file, <code>spring-ai-agents-md</code> walks toward the repository root, collects the applicable documents, and supplies them broadest first. Each complete document is kept intact inside a small framework-owned context envelope that explains the precedence.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>repository/AGENTS.md
+</span></span><span style="display:flex;"><span>        |
+</span></span><span style="display:flex;"><span>        v
+</span></span><span style="display:flex;"><span>repository/examples/AGENTS.md
+</span></span><span style="display:flex;"><span>        |
+</span></span><span style="display:flex;"><span>        v
+</span></span><span style="display:flex;"><span>repository/examples/steward/AGENTS.md
+</span></span><span style="display:flex;"><span>        |
+</span></span><span style="display:flex;"><span>        v
+</span></span><span style="display:flex;"><span>repository/examples/steward/src/RepositoryTools.java
+</span></span></code></pre></div><p>That final file gets the accumulated guidance, with the closest applicable instructions winning when there is a conflict.</p>
+<p>When an application already knows the target, it can be explicit:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>chatClient.<span style="color:#4070a0">prompt</span>()<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span>.<span style="color:#4070a0">advisors</span>(AgentsMdAdvisorParams.<span style="color:#4070a0">target</span>(<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>Path.<span style="color:#4070a0">of</span>(<span style="color:#4070a0">&#34;src/main/java/com/example/Example.java&#34;</span>)))<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span>.<span style="color:#4070a0">user</span>(request)<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span>.<span style="color:#4070a0">call</span>();<span style="color:#bbb">
+</span></span></span></code></pre></div><p>Filesystem tools can also propagate the path they accessed. The advisor resolves the instructions again on the next pass through the tool loop. That is the part that made the final example possible.</p>
+<h2 id="i-wanted-to-be-able-to-see-what-was-happening">
+  I wanted to be able to see what was happening
+  <a class="heading-link" href="#i-wanted-to-be-able-to-see-what-was-happening">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I really wanted observability in this project.</p>
+<p>When an agent gives a surprising answer, I need to be able to debug it. Did the advisor find an <code>AGENTS.md</code> file? Did it find one document or several? Did discovery stop at a safety limit? How much context did I add to the prompt?</p>
+<p>Without that feedback, every problem starts to look like a model problem.</p>
+<p>At the same time, an <code>AGENTS.md</code> file can contain repository details that do not belong in logs, metric tags, or exception messages. I wanted useful visibility without copying the instructions into another system.</p>
+<p>The starter uses Spring Boot&rsquo;s normal logging configuration. At DEBUG, it reports the selected resource location and character count. It never writes the contents of <code>AGENTS.md</code> to the logs.</p>
+<p>When an <code>ObservationRegistry</code> is available, the advisor emits a focused Micrometer observation around the local prompt augmentation step:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>spring.ai.agents.md.advisor
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>document.state      = present | empty
+</span></span><span style="display:flex;"><span>document.count      = zero | one | multiple
+</span></span><span style="display:flex;"><span>resolution.outcome  = complete | depth-limit | document-limit | size-limit
+</span></span></code></pre></div><p>The observation does not wrap the model call or duplicate the observations that Spring AI already provides. A separate <code>spring.ai.agents.md.context.size</code> distribution summary records how many characters were added to the system prompt. The tags stay low-cardinality. Document contents and resource paths are never used as tags.</p>
+<p>I also wanted sane defaults. A repository should not be able to add an unlimited number of files, or an unlimited amount of text, to every model request.</p>
+<table>
+	<thead>
+			<tr>
+					<th style="text-align: left">Limit</th>
+					<th style="text-align: left">Default</th>
+			</tr>
+	</thead>
+	<tbody>
+			<tr>
+					<td style="text-align: left">Directories inspected</td>
+					<td style="text-align: left"><code>32</code></td>
+			</tr>
+			<tr>
+					<td style="text-align: left">Documents composed</td>
+					<td style="text-align: left"><code>16</code></td>
+			</tr>
+			<tr>
+					<td style="text-align: left">Size of one document</td>
+					<td style="text-align: left"><code>64KB</code></td>
+			</tr>
+			<tr>
+					<td style="text-align: left">Total composed context</td>
+					<td style="text-align: left"><code>256KB</code></td>
+			</tr>
+	</tbody>
+</table>
+<p>Those limits are configurable. Invalid values fail during configuration instead of surprising you later. An oversized document is skipped whole, never silently truncated. When the total-size or document-count limit is reached, composition stops while keeping the accepted documents in broadest-to-closest order.</p>
+<p>Most importantly, the application gets feedback when that happens. The advisor publishes an <code>AgentsMdLimitReachedEvent</code> with the normalized target, the limit that was reached, the number of documents accepted, the context size, and the configured limit. It does not contain the document contents.</p>
+<p>An interactive application can turn that event into immediate, useful feedback:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#555;font-weight:bold">@EventListener</span><span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#902000">void</span><span style="color:#bbb"> </span><span style="color:#06287e">warnAboutAgentsMdLimit</span>(AgentsMdLimitReachedEvent<span style="color:#bbb"> </span>event)<span style="color:#bbb"> </span>{<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">    </span>System.<span style="color:#4070a0">err</span>.<span style="color:#4070a0">printf</span>(<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span><span style="color:#4070a0">&#34;AGENTS.md %s reached for %s; %d documents were applied.%n&#34;</span>,<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span><span style="color:#bbb">        </span>event.<span style="color:#4070a0">outcome</span>(),<span style="color:#bbb"> </span>event.<span style="color:#4070a0">target</span>(),<span style="color:#bbb"> </span>event.<span style="color:#4070a0">acceptedDocumentCount</span>());<span style="color:#bbb">
+</span></span></span><span style="display:flex;"><span>}<span style="color:#bbb">
+</span></span></span></code></pre></div><p>That distinction matters to me. A safety limit should not quietly change what the model knows. If a limit changes the context, I want to know about it. I want enough information to fix the configuration or the repository without exposing the instructions I was trying to protect.</p>
+<h2 id="phase-2-prove-it-with-a-coding-agent">
+  Phase 2: Prove it with a coding agent
+  <a class="heading-link" href="#phase-2-prove-it-with-a-coding-agent">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>For Phase 2, I wanted something more convincing than a unit test and a chat endpoint.</p>
+<p>I built the <a href="https://github.com/dashaun/spring-ai-agents-md/tree/main/examples/spring-ai-agents-md-coding-agent"  class="external-link" target="_blank" rel="noopener"><code>Repository Steward</code></a>, an interactive coding agent built with Spring AI and Spring Shell 4.0.3.</p>
+<p>The steward can list, search, and read files inside a bounded repository workspace. As it moves through the repository, its filesystem tools propagate the active path. The <code>AgentsMdSystemAdvisor</code> refreshes the applicable instructions for that path.</p>
+<p>The architecture looks like this:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-text" data-lang="text"><span style="display:flex;"><span>Spring Shell `steward` command
+</span></span><span style="display:flex;"><span>            |
+</span></span><span style="display:flex;"><span>            v
+</span></span><span style="display:flex;"><span>Spring AI ChatClient + tool loop
+</span></span><span style="display:flex;"><span>            |
+</span></span><span style="display:flex;"><span>            +--&gt; AgentsMdSystemAdvisor
+</span></span><span style="display:flex;"><span>            |       refreshes instructions for the active path
+</span></span><span style="display:flex;"><span>            |
+</span></span><span style="display:flex;"><span>            +--&gt; listFiles / searchFiles / readFile
+</span></span><span style="display:flex;"><span>            |
+</span></span><span style="display:flex;"><span>            +--&gt; proposePatch --&gt; pending ChangeProposal
+</span></span><span style="display:flex;"><span>                                      |
+</span></span><span style="display:flex;"><span>                         show-change / apply-change
+</span></span><span style="display:flex;"><span>                                      |
+</span></span><span style="display:flex;"><span>                                      v
+</span></span><span style="display:flex;"><span>                              atomic filesystem write
+</span></span></code></pre></div><p>The model can explore the repository and propose a patch. It cannot approve its own change. <code>apply-change</code> is a Spring Shell command, not a model tool. A person has to review the proposal and run the command.</p>
+<p>The safety boundaries are implemented in Java, not trusted to the prompt.</p>
+<ul>
+<li>Paths must remain inside the configured workspace.</li>
+<li>Absolute paths and <code>..</code> escapes are rejected.</li>
+<li>Symbolic links and protected directories such as <code>.git</code> and <code>target</code> are rejected.</li>
+<li>Reads, searches, file sizes, depth, and result counts are bounded.</li>
+<li>A patch must replace one exact, unique piece of text.</li>
+<li>Each proposal stores a digest of the file that was reviewed.</li>
+<li>The digest is checked again immediately before the atomic write.</li>
+</ul>
+<p>If the file changed after the proposal was reviewed, the proposal is stale and the write is refused.</p>
+<p>That is one of my favorite parts of the demo.</p>
+<h2 id="was-the-final-example-necessary">
+  Was the final example necessary?
+  <a class="heading-link" href="#was-the-final-example-necessary">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Yes.</p>
+<p>Was it too much?</p>
+<p>Maybe.</p>
+<p>The Repository Steward turned a focused Spring Boot starter into a real CLI coding agent, with filesystem containment, proposal storage, diffs, atomic writes, stale-change protection, Spring Shell commands, JLine, and a lot more tests.</p>
+<p>It also forced the model to do something that sounds simple but is not. The model has to inspect a file, preserve exact text across multiple calls, invoke a structured tool with the right arguments, process the result, and return to the conversation.</p>
+<p>I tried a lot of models.</p>
+<p>Some stopped after reading the file. Some printed JSON that looked like a tool call instead of calling the tool. Some invented a proposal ID. One changed the registered <code>readFile</code> tool name to <code>read</code>, which Spring AI correctly rejected. A model advertising tool support does not mean it is good at multi-step structured tool calling.</p>
+<p>At first, I wondered if my laptop was the problem. So I ran the same workflow against larger hardware and more models. The hardware helped with speed. It did not turn every model into a reliable coding agent.</p>
+<p>That was humbling, but useful.</p>
+<p>The example might be more than the starter needed. It is also the best proof that the starter works. It shows AGENTS.md instructions changing as an agent moves through a repository. It shows Spring AI driving a recursive tool loop. It shows the difference between instructions for a model and safety boundaries enforced by an application.</p>
+<p>It also made one requirement very clear: use a model that is good at multi-step structured tool calling.</p>
+<h2 id="watch-the-repository-steward">
+  Watch the Repository Steward
+  <a class="heading-link" href="#watch-the-repository-steward">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p><a href="https://youtu.be/bIlYmp_iiBM"  class="external-link" target="_blank" rel="noopener"><img src="https://img.youtube.com/vi/bIlYmp_iiBM/maxresdefault.jpg" alt="Repository Steward demo"></a></p>
+<p>The video is less than one minute. It shows the steward:</p>
+<ol>
+<li>Confirming its bounded workspace.</li>
+<li>Discovering the <code>AGENTS.md</code> files that apply to a nested Java file.</li>
+<li>Inspecting the implementation before answering a question.</li>
+<li>Creating a pending patch without changing the file.</li>
+<li>Showing the proposed diff.</li>
+<li>Applying it only after explicit approval.</li>
+</ol>
+<p>That is the story I wanted the example to tell.</p>
+<h2 id="why-i-think-this-matters">
+  Why I think this matters
+  <a class="heading-link" href="#why-i-think-this-matters">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I am building my own agents and agent harnesses with Spring AI. I am not sure how many other people are doing the same thing yet.</p>
+<p>I do know that I want the instructions for those agents to live with the code. I want the format to be open. I want nested projects to provide focused context without copying everything from the repository root. I want the behavior to be easy to explain. I want the Spring integration to feel like Spring.</p>
+<p><code>spring-ai-agents-md</code> is small, but I think it is really valuable.</p>
+<p>This has been really fun. I am really excited about this project. The tests are green, the repository is public, the example is documented, and the demo is recorded.</p>
+<p>Now that the blog is done, let&rsquo;s see if I can get this pulled into <a href="https://github.com/spring-ai-community"  class="external-link" target="_blank" rel="noopener"><code>spring-ai-community</code></a>.</p>
+<p>I have put a lot of work into it. I am ready for feedback, but I am still nervous.</p>
+<p>That probably means it is time to share it.</p>
+<h2 id="links">
+  Links
+  <a class="heading-link" href="#links">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><a href="https://github.com/dashaun/spring-ai-agents-md"  class="external-link" target="_blank" rel="noopener"><code>spring-ai-agents-md</code> repository</a></li>
+<li><a href="https://github.com/dashaun/spring-ai-agents-md/tree/main/examples/spring-ai-agents-md-coding-agent"  class="external-link" target="_blank" rel="noopener">Repository Steward example</a></li>
+<li><a href="https://youtu.be/bIlYmp_iiBM"  class="external-link" target="_blank" rel="noopener">Repository Steward video</a></li>
+<li><a href="https://agents.md"  class="external-link" target="_blank" rel="noopener"><code>AGENTS.md</code></a></li>
+<li><a href="https://github.com/agentsmd/agents.md/issues/135"  class="external-link" target="_blank" rel="noopener"><code>AGENTS.md</code> v1.1 clarification proposal</a></li>
+<li><a href="https://aaif.io/"  class="external-link" target="_blank" rel="noopener">Agentic AI Foundation</a></li>
+<li><a href="https://spring.io/projects/spring-ai"  class="external-link" target="_blank" rel="noopener">Spring AI</a></li>
+</ul>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2026
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

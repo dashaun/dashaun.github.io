@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Offstage Advocacy · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="Finding a name that fits for all of the developer advocacy things that drive value but aren&#39;t done in public.">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:image" content="https://dashaun.com/posts/offstage-advocacy/images/feature.png">
+	<meta name="twitter:title" content="Offstage Advocacy">
+	<meta name="twitter:description" content="Finding a name that fits for all of the developer advocacy things that drive value but aren&#39;t done in public.">
+
+<meta property="og:url" content="https://dashaun.com/posts/offstage-advocacy/">
+	<meta property="og:site_name" content="DaShaun">
+	<meta property="og:title" content="Offstage Advocacy">
+	<meta property="og:description" content="Finding a name that fits for all of the developer advocacy things that drive value but aren&#39;t done in public.">
+	<meta property="og:locale" content="en_us">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="posts">
+		<meta property="article:published_time" content="2025-11-24T14:19:27-06:00">
+		<meta property="article:modified_time" content="2025-11-24T17:25:08-06:00">
+		<meta property="og:image" content="https://dashaun.com/posts/offstage-advocacy/images/feature.png">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/offstage-advocacy/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+  
+    
+    <link rel="stylesheet" href="https://dashaun.com/css/books.min.b87f3c1ea0499269b841b08ad51be908f3793ba89b688237b3fb62096fb0979c.css" integrity="sha256-uH88HqBJkmm4QbCK1RvpCPN5O6ibaII3s/tiCW&#43;wl5w=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/books/pro-spring-boot-4/">Book</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Javagrunt</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/offstage-advocacy/">
+              Offstage Advocacy
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2025-11-24T14:19:27-06:00'>
+                November 24, 2025
+              </time>
+            </span>
+            
+            
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              7-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='images/feature.png' alt="Featured image"/>
+        
+        <h2 id="the-essential-role-of-offstage-advocacy-in-developer-relations">
+  The Essential Role of Offstage Advocacy in Developer Relations
+  <a class="heading-link" href="#the-essential-role-of-offstage-advocacy-in-developer-relations">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>The Developer Advocate (DA) title is notoriously inconsistent. Before I took this role, I interviewed dozens of people in the developer advocate space.</p>
+<ul>
+<li>What does it mean to be a developer advocate?</li>
+<li>How do you do it well?</li>
+<li>What does good look like?</li>
+<li>Where does it report: engineering, marketing, sales?</li>
+</ul>
+<p>The only thing that was consistent, is that there was zero consistency, even within the same organization. Every DA had a different approach. Every DA manager had a different way to measure success. Those interviews left me with even more questions. They also taught me one very important thing.</p>
+<p>There&rsquo;s more to developer advocacy than just conferences and content. The real thing that companies want, is they want to see it move the needle. They want to see us driving adoption, or driving sales, or driving perceptions, or sentiment. We&rsquo;ve got to move the needle.</p>
+<p>So, how do we do that when we aren&rsquo;t on stage?</p>
+<p>I&rsquo;ve coined a new term for the essential work that happens outside the spotlight: <strong>Offstage Advocacy.</strong></p>
+<h3 id="what-is-offstage-advocacy">
+  What is Offstage Advocacy?
+  <a class="heading-link" href="#what-is-offstage-advocacy">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>Offstage Advocacy is the essential phrase for what we are doing when we&rsquo;re not on stage, when we&rsquo;re not publishing content. It&rsquo;s all the things that we have to do in order to move the needle, while not being in public.</p>
+<p>It’s going and meeting our customers where they’re at, understanding how they’re using the thing that we’re advocating for. <em>How are they using it? What do they wish it did better? What are their pain points?</em></p>
+<p>Part of developer advocacy is understanding the community. But if all we&rsquo;re doing is publishing content on YouTube, or a blog, and speaking at a conference, how are we getting that real feedback? We have found getting real answers from real conversations with customers: it can’t be done at a conference or in the comments sections. It has to be on their terms. We have to meet our customers where they&rsquo;re at, in a <em>safe</em> space.</p>
+<h3 id="the-budget-reality-why-i-needed-another-avenue">
+  The Budget Reality: Why I Needed Another Avenue
+  <a class="heading-link" href="#the-budget-reality-why-i-needed-another-avenue">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>What most of my audience doesn&rsquo;t realize is that most developer advocates are on a very tight budget. They see a DA on stage at their favorite conference, and on YouTube, and assume that is what DAs do all year.</p>
+<p>After my first full year of applying to dozens of conferences, 50% of the applications getting rejected, and 90% of my accepted talks not getting budget, I realized that I needed another avenue to deliver value. <em>(I also had the world&rsquo;s best manager, Tasha Isenberg, pointing me in the right direction.)</em></p>
+<p>The current trend of the &ldquo;forward-deployed engineer&rdquo; really resonates with me, but with developer advocacy it has to be different. We realized that we could be a powerful &ldquo;voice of the customer&rdquo; because of the real relationships and insights we gain into real-world use cases. We realized that we could be &ldquo;advocating&rdquo; for our customers by taking their feedback directly to the product teams. That is the core value proposition we had to build.</p>
+<h3 id="the-offstage-pattern-weekly-office-hours">
+  The Offstage Pattern: Weekly &ldquo;office hours&rdquo;
+  <a class="heading-link" href="#the-offstage-pattern-weekly-office-hours">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>We set up regularly scheduled weekly calls with customers. These calls are typically small groups, sometimes larger depending on the topic, and are scheduled for one hour. We actually have an agenda for it: News, Roadmap Updates, Demo/Presentation, and Q&amp;A.</p>
+<p>But we always start off by saying something similar:</p>
+<p><code>The agenda doesn't matter. If there is something pressing, a hot topic, or questions, we can start with Q&amp;A.</code></p>
+<ul>
+<li>Listening has a higher priority than presenting.</li>
+<li>Customers are not obligated to attend, its optional for them.</li>
+<li>Be prepared for zero people to show up, and don&rsquo;t take it personally, use that time to practice your demo or presentation anyway.</li>
+<li>Blocking time for a customer that never shows up is not delivering value.</li>
+</ul>
+<h3 id="scaling-the-impact-teamwork-and-visibility">
+  Scaling the Impact: Teamwork and Visibility
+  <a class="heading-link" href="#scaling-the-impact-teamwork-and-visibility">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>This offstage advocacy isn&rsquo;t a &ldquo;standalone&rdquo; effort. It&rsquo;s hard to get started. We have to have people inside your organization that are willing to sponsor and collaborate on this effort. Even if we have a great relationship with a customer, we need to strengthen the relationship between the customer and the account teams.</p>
+<p><strong>The Shared Notes Channel:</strong> For every engagement, we take notes, providing a &ldquo;summary&rdquo; of how it went, no matter if it was positive or negative. We capture number of attendees, names, and team names. We needed a system, so we could look at our notes from week to week, as we go from customer to customer. We set up an internal channel for all of these &ldquo;office hours&rdquo; notes to be shared.</p>
+<p><strong>Unblocking the Organization:</strong> Because most organizations don&rsquo;t have enough developer advocates to meet with all of their customers every week (we don&rsquo;t either), this shared channel lets others see what is happening: Sales, Product, R&amp;D, Leadership.</p>
+<p><strong>Cross-Selling and Education:</strong> When we bring one of my amazing teammates (Josh, Dan, Cora or Coté) in to meet with a customer that I&rsquo;ve primarily been engaged with, we can bring them up to speed easily and completely. Additionally, this channel lets everyone see what people are presenting on. For example, when someone sees that a presentation on &ldquo;Spring AI&rdquo; had 1000 people attending at one of our customers, they ask themselves, &ldquo;I wonder if my customer would like a presentation on Spring AI?&rdquo; They know exactly who to go to. And because it&rsquo;s a regularly scheduled weekly meeting, hopefully/eventually, there will be an opening that works for the presenter and that customer!</p>
+<p><strong>Ownership and Feedback Loop:</strong> The account team has a pattern to follow (news/roadmap/demo/Q&amp;A) and topics to discuss from the channel, even if they don&rsquo;t have a DA. We&rsquo;ve been &ldquo;bootstrapping&rdquo; the weekly meetings, but eventually, it&rsquo;s the account team that &ldquo;owns&rdquo; those meetings. The more customers we get in front of, the more we learn about how the products are being used by our customers. This makes MORE account teams want to pull DAs into these &ldquo;offstage&rdquo; engagements.</p>
+<h3 id="creating-champions">
+  Creating Champions
+  <a class="heading-link" href="#creating-champions">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h3>
+<p>This approach has allowed us to find &ldquo;champions&rdquo; within our customers. We are having regularly scheduled meetings and building real relationships. So when it&rsquo;s time for our company/product to show up at a conference, it doesn&rsquo;t have to be one of our DAs. We have dozens of &ldquo;champions&rdquo; that we trust to put &ldquo;on stage&rdquo; at a conference to deliver a powerful, educational, real-world story.  As a developer advocate, there are very few things more rewarding, than getting to put a customer on stage.</p>
+<p>Every company has a different definition, and way to measure developer advocates, but today, I&rsquo;m certain that every developer advocate should have at least one customer that they can practice <strong>Offstage Advocacy</strong> with, so they can get real feedback (at a minimum) and drive real outcomes (ideally).</p>
+<p>It&rsquo;s not onstage or offstage. I think it has to be both, given the current landscape. You still have to build your brand and be credible, but you&rsquo;ve also got to build relationships and be able to move the meter with customers.</p>
+<h4 id="additional-notes">
+  Additional Notes
+  <a class="heading-link" href="#additional-notes">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h4>
+<p>I also realize how lucky I am to be an advocate for the world&rsquo;s best Java framework in Spring, and the world&rsquo;s best PaaS in Tanzu Platform. Until today, I have been struggling with how to name this thing that we have been having so much success with.  We are constantly iterating on our process, and &ldquo;forward-deployed advocate&rdquo; didn&rsquo;t capture it. Naming things is hard. It was a conversation with my friend Joel this morning, that lead me to <strong>Offstage Advocacy</strong>. It feels perfect. It fits for every version that we have had before, and the future versions as far as I can see. I had to get it out of my head. I&rsquo;m looking forward to your feedback.</p>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2026
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>
