@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 340" width="720" height="340" role="img" aria-labelledby="t d">
+  <title id="t">Time to first token for long prompts</title>
+  <desc id="d">Slowest request per run. One 129K-token prompt: 62.6 seconds. Two 129K prompts: 114.6 seconds. Four 129K prompts: 227.7 seconds. One 905K-token prompt: 729 seconds (12.2 minutes).</desc>
+  <style>
+    text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+    .surface { fill: #fcfcfb; }
+    .ink { fill: #0b0b0b; }
+    .ink2 { fill: #52514e; }
+    .muted { fill: #898781; }
+    .grid { stroke: #e1e0d9; stroke-width: 1; }
+    .axis { stroke: #c3c2b7; stroke-width: 1; }
+    .s1 { fill: #2a78d6; }
+    @media (prefers-color-scheme: dark) {
+      .surface { fill: #1a1a19; }
+      .ink { fill: #ffffff; }
+      .ink2 { fill: #c3c2b7; }
+      .grid { stroke: #2c2c2a; }
+      .axis { stroke: #383835; }
+      .s1 { fill: #3987e5; }
+    }
+  </style>
+  <rect class="surface" x="0" y="0" width="720" height="340" rx="8"/>
+  <text class="ink" x="28" y="34" font-size="17" font-weight="600">Time to first token, long prompts</text>
+  <text class="ink2" x="28" y="56" font-size="13">Slowest request in each run. Prompts are processed one after another, so waits stack up.</text>
+
+  <!-- gridlines at 0, 300, 600, 900 s (x = 200 + s * 460/900) -->
+  <line class="grid" x1="353.3" y1="82" x2="353.3" y2="272"/>
+  <line class="grid" x1="506.7" y1="82" x2="506.7" y2="272"/>
+  <line class="grid" x1="660" y1="82" x2="660" y2="272"/>
+  <line class="axis" x1="200" y1="82" x2="200" y2="272"/>
+
+  <!-- bars: 24px thick, 4px rounded data end, square at baseline -->
+  <path class="s1" d="M200 92 H228 Q232 92 232 96 V112 Q232 116 228 116 H200 Z"/>
+  <path class="s1" d="M200 140 H254.6 Q258.6 140 258.6 144 V160 Q258.6 164 254.6 164 H200 Z"/>
+  <path class="s1" d="M200 188 H312.4 Q316.4 188 316.4 192 V208 Q316.4 212 312.4 212 H200 Z"/>
+  <path class="s1" d="M200 236 H568.7 Q572.7 236 572.7 240 V256 Q572.7 260 568.7 260 H200 Z"/>
+
+  <!-- category labels -->
+  <text class="ink" x="188" y="108" font-size="13" text-anchor="end">1 request · 129K tokens</text>
+  <text class="ink" x="188" y="156" font-size="13" text-anchor="end">2 requests · 129K each</text>
+  <text class="ink" x="188" y="204" font-size="13" text-anchor="end">4 requests · 129K each</text>
+  <text class="ink" x="188" y="252" font-size="13" text-anchor="end">1 request · 905K tokens</text>
+
+  <!-- value labels at bar tips -->
+  <text class="ink" x="240" y="108" font-size="13" font-weight="600">62.6 s</text>
+  <text class="ink" x="266.6" y="156" font-size="13" font-weight="600">114.6 s</text>
+  <text class="ink" x="324.4" y="204" font-size="13" font-weight="600">227.7 s</text>
+  <text class="ink" x="580.7" y="252" font-size="13" font-weight="600">729 s (12.2 min)</text>
+
+  <!-- x-axis ticks -->
+  <text class="muted" x="200" y="292" font-size="12" text-anchor="middle">0 s</text>
+  <text class="muted" x="353.3" y="292" font-size="12" text-anchor="middle">300 s</text>
+  <text class="muted" x="506.7" y="292" font-size="12" text-anchor="middle">600 s</text>
+  <text class="muted" x="660" y="292" font-size="12" text-anchor="middle">900 s</text>
+
+  <text class="muted" x="28" y="324" font-size="11">2× DGX Spark, TP=2, 1M context, 11 GiB KV cache. One run each; exact values in the README tables.</text>
+</svg>

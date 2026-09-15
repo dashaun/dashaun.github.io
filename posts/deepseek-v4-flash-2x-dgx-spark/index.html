@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Two DGX Sparks, One Model: DeepSeek-V4-Flash with a 1M-Token Context · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="I got two DGX Sparks and wanted a model that needed both of them. I got there, but it was not as easy as I hoped, so I made a repo to keep track of what I did.">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:image" content="https://dashaun.com/posts/deepseek-v4-flash-2x-dgx-spark/images/feature.png">
+	<meta name="twitter:title" content="Two DGX Sparks, One Model: DeepSeek-V4-Flash with a 1M-Token Context">
+	<meta name="twitter:description" content="I got two DGX Sparks and wanted a model that needed both of them. I got there, but it was not as easy as I hoped, so I made a repo to keep track of what I did.">
+
+<meta property="og:url" content="https://dashaun.com/posts/deepseek-v4-flash-2x-dgx-spark/">
+	<meta property="og:site_name" content="DaShaun">
+	<meta property="og:title" content="Two DGX Sparks, One Model: DeepSeek-V4-Flash with a 1M-Token Context">
+	<meta property="og:description" content="I got two DGX Sparks and wanted a model that needed both of them. I got there, but it was not as easy as I hoped, so I made a repo to keep track of what I did.">
+	<meta property="og:locale" content="en_us">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="posts">
+		<meta property="article:published_time" content="2026-09-14T20:00:00-07:00">
+		<meta property="article:modified_time" content="2026-09-15T11:52:16-05:00">
+		<meta property="article:tag" content="Dgx-Spark">
+		<meta property="article:tag" content="Vllm">
+		<meta property="article:tag" content="Ray">
+		<meta property="article:tag" content="Deepseek">
+		<meta property="article:tag" content="Llm-Inference">
+		<meta property="article:tag" content="Homelab">
+		<meta property="og:image" content="https://dashaun.com/posts/deepseek-v4-flash-2x-dgx-spark/images/feature.png">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/deepseek-v4-flash-2x-dgx-spark/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-regular-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+  
+    
+    <link rel="stylesheet" href="https://dashaun.com/css/books.min.b87f3c1ea0499269b841b08ad51be908f3793ba89b688237b3fb62096fb0979c.css" integrity="sha256-uH88HqBJkmm4QbCK1RvpCPN5O6ibaII3s/tiCW&#43;wl5w=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/books/pro-spring-boot-4/">Book</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Javagrunt</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/deepseek-v4-flash-2x-dgx-spark/">
+              Two DGX Sparks, One Model: DeepSeek-V4-Flash with a 1M-Token Context
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2026-09-14T20:00:00-07:00'>
+                September 14, 2026
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2026-09-14T20:00:00-07:00'>
+                September 15, 2026
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa fa-clock-o" aria-hidden="true"></i>
+              9-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          <img src='images/feature.png' alt="Featured image"/>
+        
+        <p>I got some new hardware.</p>
+<p>Two NVIDIA DGX Sparks. I connected them to each other with two QSFP cables, and put both of them on my Tailscale network.</p>
+<p><img src="images/sparks.jpg" alt="Both Sparks on the bench, joined by the two QSFP cables"></p>
+<p>A single Spark has 128 GB of memory, shared between the CPU and the GPU. That is a lot of memory. It is also not the point. I did not buy two of them to run two copies of the same small model. I wanted to run something that <strong>needed both nodes</strong>.</p>
+<p>NVIDIA even has a <a href="https://build.nvidia.com/spark/vllm/multi-node"  class="external-link" target="_blank" rel="noopener">playbook for running vLLM across two Sparks</a>. Follow the steps, pick a big model, done.</p>
+<p>Easy, right?</p>
+<p>Well, eventually.</p>
+<p>I got it working. DeepSeek-V4-Flash is running across both Sparks with the full 1,048,576-token context. It was not as easy as I hoped, so I made a repo to keep track of what I did: <a href="https://github.com/dashaun/deepseek-v4-flash-2x-dgx-spark"  class="external-link" target="_blank" rel="noopener"><code>dashaun/deepseek-v4-flash-2x-dgx-spark</code></a>.</p>
+<p>This post is the story behind that repo.</p>
+<h2 id="the-rules-i-set-for-myself">
+  The rules I set for myself
+  <a class="heading-link" href="#the-rules-i-set-for-myself">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Before I started, I decided on a few constraints:</p>
+<ul>
+<li><strong>vLLM and Ray run in Docker containers.</strong> Nothing gets installed on the Spark hosts.</li>
+<li><strong>The head node</strong> is one Spark, and <strong>the worker node</strong> is the other.</li>
+<li><strong>The model has to need both nodes.</strong> Tensor parallelism across the two GPUs, over the QSFP link.</li>
+<li><strong>Everything is driven from my Mac</strong> over SSH. No logging in to each node and typing commands in two terminals.</li>
+</ul>
+<p>I did this work in a long session with <a href="https://claude.com/claude-code"  class="external-link" target="_blank" rel="noopener">Claude Code</a> driving the terminal, while I made the decisions. That turned out to be a good fit for this kind of project: lots of reading docs, checking logs, and trying the next thing. It also meant that when something failed, we stopped and figured out <em>why</em> before changing anything.</p>
+<h2 id="picking-the-model">
+  Picking the model
+  <a class="heading-link" href="#picking-the-model">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>My first instinct was &ldquo;the latest DeepSeek.&rdquo;</p>
+<p>The latest one, DeepSeek-V4.1-Flash, needs about 614 GB of memory at its released precision. The only full-weight DGX Spark setup I could find uses <strong>four</strong> Sparks. There is a community 2.9-bit quantization that squeezes it onto two, but that means a different base image and very aggressive quantization.</p>
+<p>So I settled on <strong>DeepSeek-V4-Flash</strong> (the 0731 release): a 284B-parameter mixture-of-experts model, 13B active, about 156 GB of weights. Too big for one Spark. Just right for two.</p>
+<h2 id="picking-the-container-image">
+  Picking the container image
+  <a class="heading-link" href="#picking-the-container-image">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>The NVIDIA playbook uses the NGC vLLM container. My plan was to use the newest NGC image.</p>
+<p>It did not take long to find out that nobody runs DeepSeek V4 on a DGX Spark with the stock images. The GB10 (compute capability 12.1) needs kernels that just are not in them.</p>
+<p>The community has done a lot of work here. I went with <a href="https://github.com/eugr/spark-vllm-docker"  class="external-link" target="_blank" rel="noopener">eugr/spark-vllm-docker</a> and its <code>spark-vllm-b12x</code> image, which has a recipe for exactly this model on two Sparks. I pinned the image by digest, so both nodes always run identical bits.</p>
+<p>eugr&rsquo;s tooling defaults to running without Ray. I wanted Ray, and I wanted nothing copied onto the hosts, so I wrote my own <code>start.sh</code>, <code>stop.sh</code> and <code>status.sh</code> that drive both nodes over SSH. They run <code>docker</code> commands on each Spark and install nothing.</p>
+<h2 id="two-cables-four-links">
+  Two cables, four links
+  <a class="heading-link" href="#two-cables-four-links">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Here is something I did not expect: two QSFP cables show up as <strong>four</strong> RoCE devices on each Spark.</p>
+<p>Each physical port appears twice, once for each of the GB10&rsquo;s PCIe connections. So <code>rocep1s0f0</code> and <code>roceP2p1s0f0</code> are the same cable.</p>
+<p>That matters, because NCCL has to be told which devices to use. I ended up writing <code>network.sh</code>, which reads everything from both nodes (ports, devices, IPs, MTU, the RoCE v2 GID index) and checks it. It doesn&rsquo;t change any host settings; it just tells you what you have and whether it&rsquo;s right.</p>
+<p><img src="images/network-verify.svg" alt="Output of ./network.sh verify: four QSFP links at 200G with MTU 9000, RoCE ACTIVE, and every check passing. Hostnames and paths are blurred."></p>
+<p>With all four devices in use, an NCCL all-reduce between the nodes measured <strong>145–185 Gbit/s</strong>, over RDMA, not TCP. Later load tests showed traffic split evenly across all four devices.</p>
+<p><img src="images/roce-balance.svg" alt="RoCE traffic per device during a long-prompt load test: about 166 GB on each of the four devices, two per QSFP port"></p>
+<h2 id="it-works-the-first-time">
+  It works! (the first time)
+  <a class="heading-link" href="#it-works-the-first-time">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>The first full start took about four and a half minutes: load the weights (156 GB total, split across both nodes), compile, capture CUDA graphs. Then the API came up.</p>
+<p>vLLM&rsquo;s <code>--max-model-len auto</code> picked the full 1M-token context. A single request ran at around 41–52 tokens per second, and eight concurrent requests reached 88 tokens per second in total.</p>
+<p>I thought I was done.</p>
+<h2 id="it-doesnt-work-the-second-time">
+  It doesn&rsquo;t work (the second time)
+  <a class="heading-link" href="#it-doesnt-work-the-second-time">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Before sharing anything, I wanted to prove the whole thing survives a clean stop and start.</p>
+<p>It did not.</p>
+<p>The second start failed while warming up the model, with an assertion deep in vLLM&rsquo;s DeepSeek-V4 attention code:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>assert active_topk_width &gt;= cm.max_seq_len // self.compress_ratio
+</span></span><span style="display:flex;"><span>AssertionError
+</span></span></code></pre></div><p>It turned out this start had about 3 GiB less memory available for the KV cache than the first one. So <code>auto</code> quietly shrank the context from 1,048,576 to 937,472 tokens, and part of the attention code still assumed the full length.</p>
+<p>Same machines. Same image. Same settings. Different result.</p>
+<p>I pinned the context at 524,288 tokens and it started cleanly. Half the context, but stable.</p>
+<h2 id="the-os-update-surprise">
+  The OS update surprise
+  <a class="heading-link" href="#the-os-update-surprise">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Then I ran <code>sudo apt update</code> and <code>sudo apt upgrade -y</code> and rebooted both nodes.</p>
+<p>The upgrade pulled in DGX OS OTA 7.6.0 and a new kernel: 7.0 instead of 6.17. Everything below the kernel stayed the same (driver, ConnectX firmware), and all four links came back healthy.</p>
+<p>A reboot also taught me that nothing restarts on its own. The containers are left &ldquo;Exited&rdquo;, and <code>./stop.sh &amp;&amp; ./start.sh</code> brings everything back.</p>
+<h2 id="chasing-the-1m-context">
+  Chasing the 1M context
+  <a class="heading-link" href="#chasing-the-1m-context">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I really wanted the full context back, so I pinned <code>--max-model-len 1048576</code> and tried again.</p>
+<p>This time vLLM refused to start. The KV cache needed 10.06 GiB, and it had 10.03 GiB.</p>
+<p><strong>30 MiB short.</strong></p>
+<p>The fix I reached for was to give vLLM a bigger share of memory, so I raised <code>--gpu-memory-utilization</code> from 0.85 to 0.87.</p>
+<p>That froze <strong>both</strong> Sparks.</p>
+<p>SSH stopped answering. Ping went from under a millisecond to several seconds. After 30 minutes of waiting, they needed a hard power cycle. The kernel logs from that boot showed endless &ldquo;Under memory pressure&rdquo; messages right up until they stopped. I am just glad nothing got corrupted.</p>
+<p>That was the most important lesson of the whole project: <strong>on a DGX Spark, the GPU and the operating system share the same memory.</strong> A memory setting for the GPU is also a memory setting for the OS. At 0.87, vLLM gave the KV cache 16.6 GiB and left the machines nothing to breathe with.</p>
+<h2 id="the-fix-stop-letting-it-guess">
+  The fix: stop letting it guess
+  <a class="heading-link" href="#the-fix-stop-letting-it-guess">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>After the power cycle, I looked at what else was running on each node. The desktop (GDM, GNOME, Xorg) was using about 0.8 GB, so I turned it off. I will never use a desktop on these machines.</p>
+<p>But freeing host memory was not the real fix. The real problem was that vLLM <strong>measures</strong> how much memory it can use for the KV cache at startup, and that measurement moved around a lot:</p>
+<p><img src="images/kv-cache-per-start.svg" alt="KV cache memory per start: 12.84, 9.66, 14.35 and 10.03 GiB at utilization 0.85, 16.6 GiB at 0.87 which froze both nodes, and a fixed 11 GiB that fits the 10.06 GiB a 1M-token request needs"></p>
+<p>Five starts, same settings, anywhere from 9.66 to 16.6 GiB. The 1M context fit on some of them and not on others.</p>
+<p>vLLM has a flag for this: <code>--kv-cache-memory-bytes</code>. Instead of measuring, it uses exactly the size you give it. I set it to <code>11G</code>, enough for one full 1M-token request plus about 9% headroom, and well below the sizes that had run stably.</p>
+<p>Every start now behaves the same.</p>
+<h2 id="did-the-1m-context-actually-work">
+  Did the 1M context actually work?
+  <a class="heading-link" href="#did-the-1m-context-actually-work">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Configured is not the same as working, so I tested it with real long prompts.</p>
+<ul>
+<li><strong>129K-token prompts:</strong> about 63 seconds to the first token.</li>
+<li><strong>Four 129K-token prompts at once:</strong> the slowest waited 228 seconds. The prompts are processed one after another, so the waits stack up.</li>
+<li><strong>A 904,911-token prompt:</strong> 12.2 minutes to the first token, then 42 tokens per second. No errors, and the server stayed healthy.</li>
+</ul>
+<p><img src="images/ttft.svg" alt="Time to first token for long prompts: 62.6 s for one 129K-token prompt, 114.6 s and 227.7 s for the slowest of 2 and 4 concurrent prompts, and 729 s for one 905K-token prompt"></p>
+<p>Free memory on both hosts stayed above 8 GB the whole time.</p>
+<p>The full 1M-token context works end to end.</p>
+<h2 id="why-i-made-a-repo">
+  Why I made a repo
+  <a class="heading-link" href="#why-i-made-a-repo">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>By the end I had scripts, a network checker, a load tester, a memory-sizing rule, and a list of things that had bitten me. Next time I rebuild these nodes, or someone else tries the same thing, I don&rsquo;t want to rediscover all of it.</p>
+<p>So I wrote it down: <a href="https://github.com/dashaun/deepseek-v4-flash-2x-dgx-spark"  class="external-link" target="_blank" rel="noopener"><code>dashaun/deepseek-v4-flash-2x-dgx-spark</code></a>.</p>
+<p>It includes:</p>
+<ul>
+<li><strong><code>start.sh</code>, <code>stop.sh</code>, <code>status.sh</code>:</strong> bring both nodes up and down from one machine, with nothing installed on the hosts.</li>
+<li><strong><code>network.sh</code>:</strong> discover and verify the QSFP/RoCE setup, and write the right settings into the config.</li>
+<li><strong><code>loadtest.py</code>:</strong> concurrency and long-prompt tests, with per-cable RoCE traffic.</li>
+<li><strong>A README</strong> with the measured results, the memory-sizing rules, troubleshooting for every failure above, and links to all the sources and community projects I leaned on.</li>
+</ul>
+<p>It is <strong>experimental</strong>. It was tested on one pair of Sparks, it depends on a community container image with a vLLM development build, and the API has no authentication. The README says all of that up front.</p>
+<h2 id="what-i-learned">
+  What I learned
+  <a class="heading-link" href="#what-i-learned">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><strong>Two QSFP cables are four RoCE devices.</strong> Use all four, and verify them before you blame the model.</li>
+<li><strong>The newest model is not always the right model.</strong> Start from what fits.</li>
+<li><strong>Stock images are not enough for new hardware.</strong> The community builds the good stuff first. Use it, credit it, and pin it.</li>
+<li><strong>Test a clean restart before you celebrate.</strong> My first success hid a problem that only showed up on the second start.</li>
+<li><strong>On unified memory, GPU memory settings are OS memory settings.</strong> Be conservative, and don&rsquo;t nudge them &ldquo;just a little&rdquo; on a live system.</li>
+<li><strong>Don&rsquo;t let the runtime guess when you can tell it.</strong> A fixed KV cache size turned &ldquo;sometimes works&rdquo; into &ldquo;always works.&rdquo;</li>
+<li><strong>Write it down.</strong> That is what the repo is for.</li>
+</ul>
+<p>If you have a pair of DGX Sparks, give it a try, and let me know what breaks.</p>
+<h2 id="a-note-on-how-this-post-was-edited">
+  A note on how this post was edited
+  <a class="heading-link" href="#a-note-on-how-this-post-was-edited">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I finished editing this blog post using <a href="https://opencode.ai"  class="external-link" target="_blank" rel="noopener">OpenCode</a> and DeepSeek V4 Flash, running on the exact setup this post describes.</p>
+<p>DeepSeek V4 Flash and OpenCode work so well together that I dropped my two $200/month subscriptions (Claude and Codex) and switched to a $200/year subscription and a $20/month subscription instead. The savings are real, and I&rsquo;m getting better results.</p>
+<p>In about two years, this will have paid for itself. Until then, I&rsquo;m going to be token-maxing to get the most bang for the buck.</p>
+<h2 id="see-also">
+  See also
+  <a class="heading-link" href="#see-also">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li><a href="https://github.com/dashaun/deepseek-v4-flash-2x-dgx-spark"  class="external-link" target="_blank" rel="noopener">dashaun/deepseek-v4-flash-2x-dgx-spark</a> — the repo with the scripts, network checker, load tester, and notes.</li>
+</ul>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2026
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

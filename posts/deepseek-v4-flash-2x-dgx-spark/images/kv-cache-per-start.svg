@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 440" width="720" height="440" role="img" aria-labelledby="t d">
+  <title id="t">KV cache memory chosen per start</title>
+  <desc id="d">Head node KV cache memory. Start 1 at gpu-memory-utilization 0.85: 12.84 GiB, 1M context fit. Start 2 at 0.85: 9.66 GiB, context shrank and vLLM hit an assertion. Start 3 at 0.85: 14.35 GiB, 524K context ran fine. Start 4 at 0.85: 10.03 GiB, 30 MiB short of 1M. Start 5 at 0.87: 16.6 GiB, both nodes froze. Fixed kv-cache-memory-bytes 11 GiB: 11.0 GiB on every start, 1M fits. A 1M-token request needs 10.06 GiB.</desc>
+  <style>
+    text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+    .surface { fill: #fcfcfb; }
+    .ink { fill: #0b0b0b; }
+    .ink2 { fill: #52514e; }
+    .muted { fill: #898781; }
+    .grid { stroke: #e1e0d9; stroke-width: 1; }
+    .axis { stroke: #c3c2b7; stroke-width: 1; }
+    .ref { stroke: #52514e; stroke-width: 1.5; }
+    .de { fill: #898781; }
+    .s1 { fill: #2a78d6; }
+    @media (prefers-color-scheme: dark) {
+      .surface { fill: #1a1a19; }
+      .ink { fill: #ffffff; }
+      .ink2 { fill: #c3c2b7; }
+      .grid { stroke: #2c2c2a; }
+      .axis { stroke: #383835; }
+      .ref { stroke: #c3c2b7; }
+      .s1 { fill: #3987e5; }
+    }
+  </style>
+  <rect class="surface" x="0" y="0" width="720" height="440" rx="8"/>
+  <text class="ink" x="28" y="34" font-size="17" font-weight="600">KV cache memory per start (head node)</text>
+  <text class="ink2" x="28" y="56" font-size="13">Identical starts got very different KV caches until the size was fixed.</text>
+
+  <!-- legend -->
+  <rect class="de" x="28" y="70" width="12" height="12" rx="2"/>
+  <text class="ink" x="46" y="80" font-size="13">vLLM measured it at startup (--gpu-memory-utilization)</text>
+  <rect class="s1" x="410" y="70" width="12" height="12" rx="2"/>
+  <text class="ink" x="428" y="80" font-size="13">Fixed (--kv-cache-memory-bytes 11G)</text>
+
+  <!-- gridlines at 0, 6, 12, 18 GiB (x = 250 + GiB * 390/18) -->
+  <line class="grid" x1="380" y1="112" x2="380" y2="378"/>
+  <line class="grid" x1="510" y1="112" x2="510" y2="378"/>
+  <line class="grid" x1="640" y1="112" x2="640" y2="378"/>
+  <line class="axis" x1="250" y1="112" x2="250" y2="378"/>
+
+  <!-- bars: 22px thick, 4px rounded data end -->
+  <path class="de" d="M250 125 H524.2 Q528.2 125 528.2 129 V143 Q528.2 147 524.2 147 H250 Z"/>
+  <path class="de" d="M250 169 H455.3 Q459.3 169 459.3 173 V187 Q459.3 191 455.3 191 H250 Z"/>
+  <path class="de" d="M250 213 H556.9 Q560.9 213 560.9 217 V231 Q560.9 235 556.9 235 H250 Z"/>
+  <path class="de" d="M250 257 H463.3 Q467.3 257 467.3 261 V275 Q467.3 279 463.3 279 H250 Z"/>
+  <path class="de" d="M250 301 H605.7 Q609.7 301 609.7 305 V319 Q609.7 323 605.7 323 H250 Z"/>
+  <path class="s1" d="M250 345 H484.3 Q488.3 345 488.3 349 V363 Q488.3 367 484.3 367 H250 Z"/>
+
+  <!-- reference: KV cache needed for one 1M-token request (10.06 GiB) -->
+  <line class="ref" x1="468" y1="112" x2="468" y2="378"/>
+  <text class="ink2" x="468" y="104" font-size="12" text-anchor="middle">1M context needs 10.06 GiB</text>
+
+  <!-- row labels: setting, then outcome -->
+  <text class="ink" x="236" y="134" font-size="13" text-anchor="end">Start 1 · utilization 0.85</text>
+  <text class="ink2" x="236" y="150" font-size="12" text-anchor="end">1M context fit</text>
+  <text class="ink" x="236" y="178" font-size="13" text-anchor="end">Start 2 · utilization 0.85</text>
+  <text class="ink2" x="236" y="194" font-size="12" text-anchor="end">Context shrank, vLLM assertion</text>
+  <text class="ink" x="236" y="222" font-size="13" text-anchor="end">Start 3 · utilization 0.85</text>
+  <text class="ink2" x="236" y="238" font-size="12" text-anchor="end">524K context, ran fine</text>
+  <text class="ink" x="236" y="266" font-size="13" text-anchor="end">Start 4 · utilization 0.85</text>
+  <text class="ink2" x="236" y="282" font-size="12" text-anchor="end">30 MiB short of 1M</text>
+  <text class="ink" x="236" y="310" font-size="13" text-anchor="end">Start 5 · utilization 0.87</text>
+  <text class="ink2" x="236" y="326" font-size="12" text-anchor="end">Froze both nodes</text>
+  <text class="ink" x="236" y="354" font-size="13" font-weight="600" text-anchor="end">Fixed 11 GiB</text>
+  <text class="ink2" x="236" y="370" font-size="12" text-anchor="end">Same every start, 1M fits</text>
+
+  <!-- values at bar tips -->
+  <text class="ink" x="536.2" y="140" font-size="13" font-weight="600">12.84 GiB</text>
+  <text class="ink" x="467.3" y="184" font-size="13" font-weight="600" dx="8">9.66 GiB</text>
+  <text class="ink" x="568.9" y="228" font-size="13" font-weight="600">14.35 GiB</text>
+  <text class="ink" x="475.3" y="272" font-size="13" font-weight="600">10.03 GiB</text>
+  <text class="ink" x="617.7" y="316" font-size="13" font-weight="600">16.6 GiB</text>
+  <text class="ink" x="496.3" y="360" font-size="13" font-weight="600">11.0 GiB</text>
+
+  <!-- x-axis ticks -->
+  <text class="muted" x="250" y="398" font-size="12" text-anchor="middle">0</text>
+  <text class="muted" x="380" y="398" font-size="12" text-anchor="middle">6</text>
+  <text class="muted" x="510" y="398" font-size="12" text-anchor="middle">12</text>
+  <text class="muted" x="640" y="398" font-size="12" text-anchor="middle">18 GiB</text>
+
+  <text class="muted" x="28" y="428" font-size="11">Head node, one start each. Starts 1–3: kernel 6.17; starts 4–5 and fixed: kernel 7.0. Details in the README Memory sizing section.</text>
+</svg>
