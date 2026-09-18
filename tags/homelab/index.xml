@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Homelab on DaShaun</title>
+        <link>https://dashaun.com/tags/homelab/</link>
+        <description>Recent content in Homelab on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <managingEditor>dashaun@dashaun.com (DaShaun Carter)</managingEditor>
+        <webMaster>dashaun@dashaun.com (DaShaun Carter)</webMaster>
+        <lastBuildDate>Mon, 14 Sep 2026 20:00:00 -0700</lastBuildDate><atom:link href="https://dashaun.com/tags/homelab/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Two DGX Sparks, One Model: DeepSeek-V4-Flash with a 1M-Token Context</title>
+            <link>https://dashaun.com/posts/deepseek-v4-flash-2x-dgx-spark/</link>
+            <pubDate>Mon, 14 Sep 2026 20:00:00 -0700</pubDate>
+            <author>dashaun@dashaun.com (DaShaun Carter)</author>
+            <guid>https://dashaun.com/posts/deepseek-v4-flash-2x-dgx-spark/</guid>
+            <description>&lt;p&gt;I got some new hardware.&lt;/p&gt;
+&lt;p&gt;Two NVIDIA DGX Sparks. I connected them to each other with two QSFP cables, and put both of them on my Tailscale network.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/sparks.jpg&#34; alt=&#34;Both Sparks on the bench, joined by the two QSFP cables&#34;&gt;&lt;/p&gt;
+&lt;p&gt;A single Spark has 128 GB of memory, shared between the CPU and the GPU. That is a lot of memory. It is also not the point. I did not buy two of them to run two copies of the same small model. I wanted to run something that &lt;strong&gt;needed both nodes&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;NVIDIA even has a &lt;a href=&#34;https://build.nvidia.com/spark/vllm/multi-node&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;playbook for running vLLM across two Sparks&lt;/a&gt;. Follow the steps, pick a big model, done.&lt;/p&gt;
+&lt;p&gt;Easy, right?&lt;/p&gt;
+&lt;p&gt;Well, eventually.&lt;/p&gt;
+&lt;p&gt;I got it working. DeepSeek-V4-Flash is running across both Sparks with the full 1,048,576-token context. It was not as easy as I hoped, so I made a repo to keep track of what I did: &lt;a href=&#34;https://github.com/dashaun/deepseek-v4-flash-2x-dgx-spark&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;dashaun/deepseek-v4-flash-2x-dgx-spark&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This post is the story behind that repo.&lt;/p&gt;
+&lt;h2 id=&#34;the-rules-i-set-for-myself&#34;&gt;
+  The rules I set for myself
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-rules-i-set-for-myself&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Before I started, I decided on a few constraints:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;vLLM and Ray run in Docker containers.&lt;/strong&gt; Nothing gets installed on the Spark hosts.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The head node&lt;/strong&gt; is one Spark, and &lt;strong&gt;the worker node&lt;/strong&gt; is the other.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The model has to need both nodes.&lt;/strong&gt; Tensor parallelism across the two GPUs, over the QSFP link.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Everything is driven from my Mac&lt;/strong&gt; over SSH. No logging in to each node and typing commands in two terminals.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I did this work in a long session with &lt;a href=&#34;https://claude.com/claude-code&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Claude Code&lt;/a&gt; driving the terminal, while I made the decisions. That turned out to be a good fit for this kind of project: lots of reading docs, checking logs, and trying the next thing. It also meant that when something failed, we stopped and figured out &lt;em&gt;why&lt;/em&gt; before changing anything.&lt;/p&gt;
+&lt;h2 id=&#34;picking-the-model&#34;&gt;
+  Picking the model
+  &lt;a class=&#34;heading-link&#34; href=&#34;#picking-the-model&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;My first instinct was &amp;ldquo;the latest DeepSeek.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;The latest one, DeepSeek-V4.1-Flash, needs about 614 GB of memory at its released precision. The only full-weight DGX Spark setup I could find uses &lt;strong&gt;four&lt;/strong&gt; Sparks. There is a community 2.9-bit quantization that squeezes it onto two, but that means a different base image and very aggressive quantization.&lt;/p&gt;
+&lt;p&gt;So I settled on &lt;strong&gt;DeepSeek-V4-Flash&lt;/strong&gt; (the 0731 release): a 284B-parameter mixture-of-experts model, 13B active, about 156 GB of weights. Too big for one Spark. Just right for two.&lt;/p&gt;
+&lt;h2 id=&#34;picking-the-container-image&#34;&gt;
+  Picking the container image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#picking-the-container-image&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The NVIDIA playbook uses the NGC vLLM container. My plan was to use the newest NGC image.&lt;/p&gt;
+&lt;p&gt;It did not take long to find out that nobody runs DeepSeek V4 on a DGX Spark with the stock images. The GB10 (compute capability 12.1) needs kernels that just are not in them.&lt;/p&gt;
+&lt;p&gt;The community has done a lot of work here. I went with &lt;a href=&#34;https://github.com/eugr/spark-vllm-docker&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;eugr/spark-vllm-docker&lt;/a&gt; and its &lt;code&gt;spark-vllm-b12x&lt;/code&gt; image, which has a recipe for exactly this model on two Sparks. I pinned the image by digest, so both nodes always run identical bits.&lt;/p&gt;
+&lt;p&gt;eugr&amp;rsquo;s tooling defaults to running without Ray. I wanted Ray, and I wanted nothing copied onto the hosts, so I wrote my own &lt;code&gt;start.sh&lt;/code&gt;, &lt;code&gt;stop.sh&lt;/code&gt; and &lt;code&gt;status.sh&lt;/code&gt; that drive both nodes over SSH. They run &lt;code&gt;docker&lt;/code&gt; commands on each Spark and install nothing.&lt;/p&gt;
+&lt;h2 id=&#34;two-cables-four-links&#34;&gt;
+  Two cables, four links
+  &lt;a class=&#34;heading-link&#34; href=&#34;#two-cables-four-links&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Here is something I did not expect: two QSFP cables show up as &lt;strong&gt;four&lt;/strong&gt; RoCE devices on each Spark.&lt;/p&gt;
+&lt;p&gt;Each physical port appears twice, once for each of the GB10&amp;rsquo;s PCIe connections. So &lt;code&gt;rocep1s0f0&lt;/code&gt; and &lt;code&gt;roceP2p1s0f0&lt;/code&gt; are the same cable.&lt;/p&gt;
+&lt;p&gt;That matters, because NCCL has to be told which devices to use. I ended up writing &lt;code&gt;network.sh&lt;/code&gt;, which reads everything from both nodes (ports, devices, IPs, MTU, the RoCE v2 GID index) and checks it. It doesn&amp;rsquo;t change any host settings; it just tells you what you have and whether it&amp;rsquo;s right.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/network-verify.svg&#34; alt=&#34;Output of ./network.sh verify: four QSFP links at 200G with MTU 9000, RoCE ACTIVE, and every check passing. Hostnames and paths are blurred.&#34;&gt;&lt;/p&gt;
+&lt;p&gt;With all four devices in use, an NCCL all-reduce between the nodes measured &lt;strong&gt;145–185 Gbit/s&lt;/strong&gt;, over RDMA, not TCP. Later load tests showed traffic split evenly across all four devices.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/roce-balance.svg&#34; alt=&#34;RoCE traffic per device during a long-prompt load test: about 166 GB on each of the four devices, two per QSFP port&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;it-works-the-first-time&#34;&gt;
+  It works! (the first time)
+  &lt;a class=&#34;heading-link&#34; href=&#34;#it-works-the-first-time&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The first full start took about four and a half minutes: load the weights (156 GB total, split across both nodes), compile, capture CUDA graphs. Then the API came up.&lt;/p&gt;
+&lt;p&gt;vLLM&amp;rsquo;s &lt;code&gt;--max-model-len auto&lt;/code&gt; picked the full 1M-token context. A single request ran at around 41–52 tokens per second, and eight concurrent requests reached 88 tokens per second in total.&lt;/p&gt;
+&lt;p&gt;I thought I was done.&lt;/p&gt;
+&lt;h2 id=&#34;it-doesnt-work-the-second-time&#34;&gt;
+  It doesn&amp;rsquo;t work (the second time)
+  &lt;a class=&#34;heading-link&#34; href=&#34;#it-doesnt-work-the-second-time&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Before sharing anything, I wanted to prove the whole thing survives a clean stop and start.&lt;/p&gt;
+&lt;p&gt;It did not.&lt;/p&gt;
+&lt;p&gt;The second start failed while warming up the model, with an assertion deep in vLLM&amp;rsquo;s DeepSeek-V4 attention code:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;assert active_topk_width &amp;gt;= cm.max_seq_len // self.compress_ratio
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;AssertionError
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;It turned out this start had about 3 GiB less memory available for the KV cache than the first one. So &lt;code&gt;auto&lt;/code&gt; quietly shrank the context from 1,048,576 to 937,472 tokens, and part of the attention code still assumed the full length.&lt;/p&gt;
+&lt;p&gt;Same machines. Same image. Same settings. Different result.&lt;/p&gt;
+&lt;p&gt;I pinned the context at 524,288 tokens and it started cleanly. Half the context, but stable.&lt;/p&gt;
+&lt;h2 id=&#34;the-os-update-surprise&#34;&gt;
+  The OS update surprise
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-os-update-surprise&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Then I ran &lt;code&gt;sudo apt update&lt;/code&gt; and &lt;code&gt;sudo apt upgrade -y&lt;/code&gt; and rebooted both nodes.&lt;/p&gt;
+&lt;p&gt;The upgrade pulled in DGX OS OTA 7.6.0 and a new kernel: 7.0 instead of 6.17. Everything below the kernel stayed the same (driver, ConnectX firmware), and all four links came back healthy.&lt;/p&gt;
+&lt;p&gt;A reboot also taught me that nothing restarts on its own. The containers are left &amp;ldquo;Exited&amp;rdquo;, and &lt;code&gt;./stop.sh &amp;amp;&amp;amp; ./start.sh&lt;/code&gt; brings everything back.&lt;/p&gt;
+&lt;h2 id=&#34;chasing-the-1m-context&#34;&gt;
+  Chasing the 1M context
+  &lt;a class=&#34;heading-link&#34; href=&#34;#chasing-the-1m-context&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I really wanted the full context back, so I pinned &lt;code&gt;--max-model-len 1048576&lt;/code&gt; and tried again.&lt;/p&gt;
+&lt;p&gt;This time vLLM refused to start. The KV cache needed 10.06 GiB, and it had 10.03 GiB.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;30 MiB short.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The fix I reached for was to give vLLM a bigger share of memory, so I raised &lt;code&gt;--gpu-memory-utilization&lt;/code&gt; from 0.85 to 0.87.&lt;/p&gt;
+&lt;p&gt;That froze &lt;strong&gt;both&lt;/strong&gt; Sparks.&lt;/p&gt;
+&lt;p&gt;SSH stopped answering. Ping went from under a millisecond to several seconds. After 30 minutes of waiting, they needed a hard power cycle. The kernel logs from that boot showed endless &amp;ldquo;Under memory pressure&amp;rdquo; messages right up until they stopped. I am just glad nothing got corrupted.&lt;/p&gt;
+&lt;p&gt;That was the most important lesson of the whole project: &lt;strong&gt;on a DGX Spark, the GPU and the operating system share the same memory.&lt;/strong&gt; A memory setting for the GPU is also a memory setting for the OS. At 0.87, vLLM gave the KV cache 16.6 GiB and left the machines nothing to breathe with.&lt;/p&gt;
+&lt;h2 id=&#34;the-fix-stop-letting-it-guess&#34;&gt;
+  The fix: stop letting it guess
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-fix-stop-letting-it-guess&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;After the power cycle, I looked at what else was running on each node. The desktop (GDM, GNOME, Xorg) was using about 0.8 GB, so I turned it off. I will never use a desktop on these machines.&lt;/p&gt;
+&lt;p&gt;But freeing host memory was not the real fix. The real problem was that vLLM &lt;strong&gt;measures&lt;/strong&gt; how much memory it can use for the KV cache at startup, and that measurement moved around a lot:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/kv-cache-per-start.svg&#34; alt=&#34;KV cache memory per start: 12.84, 9.66, 14.35 and 10.03 GiB at utilization 0.85, 16.6 GiB at 0.87 which froze both nodes, and a fixed 11 GiB that fits the 10.06 GiB a 1M-token request needs&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Five starts, same settings, anywhere from 9.66 to 16.6 GiB. The 1M context fit on some of them and not on others.&lt;/p&gt;
+&lt;p&gt;vLLM has a flag for this: &lt;code&gt;--kv-cache-memory-bytes&lt;/code&gt;. Instead of measuring, it uses exactly the size you give it. I set it to &lt;code&gt;11G&lt;/code&gt;, enough for one full 1M-token request plus about 9% headroom, and well below the sizes that had run stably.&lt;/p&gt;
+&lt;p&gt;Every start now behaves the same.&lt;/p&gt;
+&lt;h2 id=&#34;did-the-1m-context-actually-work&#34;&gt;
+  Did the 1M context actually work?
+  &lt;a class=&#34;heading-link&#34; href=&#34;#did-the-1m-context-actually-work&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Configured is not the same as working, so I tested it with real long prompts.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;129K-token prompts:&lt;/strong&gt; about 63 seconds to the first token.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Four 129K-token prompts at once:&lt;/strong&gt; the slowest waited 228 seconds. The prompts are processed one after another, so the waits stack up.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;A 904,911-token prompt:&lt;/strong&gt; 12.2 minutes to the first token, then 42 tokens per second. No errors, and the server stayed healthy.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;images/ttft.svg&#34; alt=&#34;Time to first token for long prompts: 62.6 s for one 129K-token prompt, 114.6 s and 227.7 s for the slowest of 2 and 4 concurrent prompts, and 729 s for one 905K-token prompt&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Free memory on both hosts stayed above 8 GB the whole time.&lt;/p&gt;
+&lt;p&gt;The full 1M-token context works end to end.&lt;/p&gt;
+&lt;h2 id=&#34;why-i-made-a-repo&#34;&gt;
+  Why I made a repo
+  &lt;a class=&#34;heading-link&#34; href=&#34;#why-i-made-a-repo&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;By the end I had scripts, a network checker, a load tester, a memory-sizing rule, and a list of things that had bitten me. Next time I rebuild these nodes, or someone else tries the same thing, I don&amp;rsquo;t want to rediscover all of it.&lt;/p&gt;
+&lt;p&gt;So I wrote it down: &lt;a href=&#34;https://github.com/dashaun/deepseek-v4-flash-2x-dgx-spark&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;dashaun/deepseek-v4-flash-2x-dgx-spark&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;It includes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;start.sh&lt;/code&gt;, &lt;code&gt;stop.sh&lt;/code&gt;, &lt;code&gt;status.sh&lt;/code&gt;:&lt;/strong&gt; bring both nodes up and down from one machine, with nothing installed on the hosts.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;network.sh&lt;/code&gt;:&lt;/strong&gt; discover and verify the QSFP/RoCE setup, and write the right settings into the config.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;loadtest.py&lt;/code&gt;:&lt;/strong&gt; concurrency and long-prompt tests, with per-cable RoCE traffic.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;A README&lt;/strong&gt; with the measured results, the memory-sizing rules, troubleshooting for every failure above, and links to all the sources and community projects I leaned on.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It is &lt;strong&gt;experimental&lt;/strong&gt;. It was tested on one pair of Sparks, it depends on a community container image with a vLLM development build, and the API has no authentication. The README says all of that up front.&lt;/p&gt;
+&lt;h2 id=&#34;what-i-learned&#34;&gt;
+  What I learned
+  &lt;a class=&#34;heading-link&#34; href=&#34;#what-i-learned&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Two QSFP cables are four RoCE devices.&lt;/strong&gt; Use all four, and verify them before you blame the model.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The newest model is not always the right model.&lt;/strong&gt; Start from what fits.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Stock images are not enough for new hardware.&lt;/strong&gt; The community builds the good stuff first. Use it, credit it, and pin it.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Test a clean restart before you celebrate.&lt;/strong&gt; My first success hid a problem that only showed up on the second start.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;On unified memory, GPU memory settings are OS memory settings.&lt;/strong&gt; Be conservative, and don&amp;rsquo;t nudge them &amp;ldquo;just a little&amp;rdquo; on a live system.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Don&amp;rsquo;t let the runtime guess when you can tell it.&lt;/strong&gt; A fixed KV cache size turned &amp;ldquo;sometimes works&amp;rdquo; into &amp;ldquo;always works.&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Write it down.&lt;/strong&gt; That is what the repo is for.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If you have a pair of DGX Sparks, give it a try, and let me know what breaks.&lt;/p&gt;
+&lt;h2 id=&#34;a-note-on-how-this-post-was-edited&#34;&gt;
+  A note on how this post was edited
+  &lt;a class=&#34;heading-link&#34; href=&#34;#a-note-on-how-this-post-was-edited&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I finished editing this blog post using &lt;a href=&#34;https://opencode.ai&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;OpenCode&lt;/a&gt; and DeepSeek V4 Flash, running on the exact setup this post describes.&lt;/p&gt;
+&lt;p&gt;DeepSeek V4 Flash and OpenCode work so well together that I dropped my two $200/month subscriptions (Claude and Codex) and switched to a $200/year subscription and a $20/month subscription instead. The savings are real, and I&amp;rsquo;m getting better results.&lt;/p&gt;
+&lt;p&gt;In about two years, this will have paid for itself. Until then, I&amp;rsquo;m going to be token-maxing to get the most bang for the buck.&lt;/p&gt;
+&lt;h2 id=&#34;see-also&#34;&gt;
+  See also
+  &lt;a class=&#34;heading-link&#34; href=&#34;#see-also&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/deepseek-v4-flash-2x-dgx-spark&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dashaun/deepseek-v4-flash-2x-dgx-spark&lt;/a&gt; — the repo with the scripts, network checker, load tester, and notes.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Homelab BOM February 2021</title>
+            <link>https://dashaun.com/posts/homelab-bom-feb-2021/</link>
+            <pubDate>Sat, 27 Feb 2021 14:11:50 -0600</pubDate>
+            <author>dashaun@dashaun.com (DaShaun Carter)</author>
+            <guid>https://dashaun.com/posts/homelab-bom-feb-2021/</guid>
+            <description>&lt;h2 id=&#34;homelab-redux&#34;&gt;
+  Homelab Redux
+  &lt;a class=&#34;heading-link&#34; href=&#34;#homelab-redux&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; My homelab is always under construction&lt;span style=&#34;color:#666&#34;&gt;.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; Like the dude that is always working on his car, I&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;m always working on my homelab.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; I&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;m always wiping it clean and building it over.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; I&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;m always trying out different configurations.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; I&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;m swapping out some type of hardware about every 3 months.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;bom&#34;&gt;
+  BOM
+  &lt;a class=&#34;heading-link&#34; href=&#34;#bom&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;(4) CompuLab HDMI Display Emulator (fit-headless) &lt;a href=&#34;https://www.fit-pc.com/web/products/fit-headless/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;1&lt;/a&gt; &lt;a href=&#34;https://www.amazon.com/CompuLab-fit-Headless-Display-Emulator/dp/B00FLZXGJ6&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;(4) SanDisk UltraFit 32GB USB 3.1&lt;/li&gt;
+&lt;li&gt;(4) Anker USB 3.0 Gigabit Ethernet Adapter&lt;/li&gt;
+&lt;li&gt;(8) Samsung 32GB SODIMM DDR4 2666Mhz&lt;/li&gt;
+&lt;li&gt;(3) 128GB NVMe&lt;/li&gt;
+&lt;li&gt;(1) 500GB NVMe&lt;/li&gt;
+&lt;li&gt;(3) Intel NUC7i5BNH&lt;/li&gt;
+&lt;li&gt;(1) Intel NUC8i5BEH&lt;/li&gt;
+&lt;li&gt;(2) 2TB WD RED HDD&lt;/li&gt;
+&lt;li&gt;(1) QNAP TS-231P&lt;/li&gt;
+&lt;li&gt;(10) Raspberry Pi 3B+&lt;/li&gt;
+&lt;li&gt;(2) Raspberry Pi 4 2GB&lt;/li&gt;
+&lt;li&gt;(2) Raspberry Pi 4 4GB&lt;/li&gt;
+&lt;li&gt;(3) Raspberry Pi 4 8GB&lt;/li&gt;
+&lt;li&gt;(4) LoveRPI PoE Hat&lt;/li&gt;
+&lt;li&gt;(3) Padarsey M.2 NVME USB 3.1 Adapter&lt;/li&gt;
+&lt;li&gt;(3) Transcend 128GB NVME M.2 SSD TS128GMTE110S&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Homelab Bill of Materials August 2019</title>
+            <link>https://dashaun.com/posts/homelab-bom-aug-2019/</link>
+            <pubDate>Thu, 29 Aug 2019 22:09:06 -0500</pubDate>
+            <author>dashaun@dashaun.com (DaShaun Carter)</author>
+            <guid>https://dashaun.com/posts/homelab-bom-aug-2019/</guid>
+            <description>&lt;h2 id=&#34;i-need-to-give-my-homelab-more-power&#34;&gt;
+  I need to give my homelab more power
+  &lt;a class=&#34;heading-link&#34; href=&#34;#i-need-to-give-my-homelab-more-power&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;My homelab is always under construction.
+Like the dude that is always working on his car, I&amp;rsquo;m always working on my homelab.
+I&amp;rsquo;m always wiping it clean and building it over.
+I&amp;rsquo;m always trying out different configurations.
+I&amp;rsquo;m swapping out some type of hardware about every 3 months.
+This week I have been doing a ton of studying.
+I&amp;rsquo;m rebuilding the homelab because of the recent release of 6.7u3.
+This time I would like to use vsan, but I&amp;rsquo;m focused on PKS with NSX-T..
+I&amp;rsquo;m getting lots of help from the web, but I&amp;rsquo;m following Keith Lee&amp;rsquo;s &lt;a href=&#34;http://keithlee.ie/2018/10/30/pks-nsx-t-homelab-part-1-shopping-list/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;example&lt;/a&gt; from last year, and documenting along the way.
+I&amp;rsquo;ll also lean on William Lam at &lt;a href=&#34;https://www.virtuallyghetto.com/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;VirtuallyGhetto&lt;/a&gt;.
+I haven&amp;rsquo;t had NSX-T working completely in the homelab yet, I&amp;rsquo;ve failed multiple times.
+So, this time I do have some new hardware, which also means I can&amp;rsquo;t use a lot of the previous work.
+I&amp;rsquo;ve added an additional NUC and now each host has a second NIC.&lt;/p&gt;
+&lt;h3 id=&#34;bom&#34;&gt;
+  BOM
+  &lt;a class=&#34;heading-link&#34; href=&#34;#bom&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;(4) CompuLab HDMI Display Emulator (fit-headless) &lt;a href=&#34;https://www.fit-pc.com/web/products/fit-headless/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;1&lt;/a&gt; &lt;a href=&#34;https://www.amazon.com/CompuLab-fit-Headless-Display-Emulator/dp/B00FLZXGJ6&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;(4) SanDisk UltraFit 32GB USB 3.1&lt;/li&gt;
+&lt;li&gt;(4) Anker USB 3.0 Gigabit Ethernet Adapter&lt;/li&gt;
+&lt;li&gt;(8) Samsung 32GB SODIMM DDR4 2666Mhz&lt;/li&gt;
+&lt;li&gt;(3) 128GB NVMe&lt;/li&gt;
+&lt;li&gt;(1) 500GB NVMe&lt;/li&gt;
+&lt;li&gt;(3) Intel NUC7i5BNH&lt;/li&gt;
+&lt;li&gt;(1) Intel NUC8i5BEH&lt;/li&gt;
+&lt;li&gt;(2) 2TB WD RED HDD&lt;/li&gt;
+&lt;li&gt;(1) QNAP TS-231P&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;On this day, all of the hardware is installed, and running.
+Tomorrow, I&amp;rsquo;ll try to start over, wipe everything and deploy ESX 6.7u3.&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>
