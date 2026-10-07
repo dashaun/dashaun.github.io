@@ -1,0 +1,59 @@
+<svg viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kev deployment architecture">
+  <rect width="760" height="380" fill="#ffffff"/>
+  <text x="24" y="28" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" font-weight="600" fill="#24292f">kev-poc · docker compose</text>
+
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12">
+    <rect x="24" y="48" width="140" height="52" rx="8" fill="#f6f8fa" stroke="#24292f" stroke-width="1.5"/>
+    <text x="94" y="70" text-anchor="middle" font-weight="600" fill="#24292f">Agent / App</text>
+    <text x="94" y="88" text-anchor="middle" fill="#57606a">TypeSafe SDK</text>
+    <rect x="24" y="116" width="140" height="52" rx="8" fill="#f6f8fa" stroke="#24292f" stroke-width="1.5"/>
+    <text x="94" y="138" text-anchor="middle" font-weight="600" fill="#24292f">Spring AI</text>
+    <text x="94" y="156" text-anchor="middle" fill="#57606a">judges summaries</text>
+  </g>
+
+  <g stroke="#0969da" stroke-width="2" stroke-dasharray="6 4" fill="none">
+    <path d="M 164 74 H 300"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="0.8s" repeatCount="indefinite"/></path>
+    <path d="M 164 142 H 300"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="0.8s" repeatCount="indefinite"/></path>
+  </g>
+
+  <rect x="300" y="40" width="240" height="300" rx="12" fill="#fafbfc" stroke="#24292f" stroke-width="1.5"/>
+  <text x="420" y="66" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="600" fill="#24292f">Docker Compose</text>
+
+  <rect x="322" y="80" width="196" height="56" rx="8" fill="#ffffff" stroke="#0969da" stroke-width="1.5"/>
+  <text x="420" y="102" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" font-weight="600" fill="#0969da">kev.serve</text>
+  <text x="420" y="120" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="#57606a">POST /v1/systemone · :8008</text>
+
+  <rect x="322" y="152" width="196" height="72" rx="8" fill="#ffffff" stroke="#24292f" stroke-width="1.5"/>
+  <text x="420" y="174" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" font-weight="600" fill="#24292f">Qwen3.5-4B-Base</text>
+  <text x="420" y="192" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="#57606a">frozen · bf16</text>
+  <text x="420" y="210" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="#57606a">+ LoRA r16 · pointer head</text>
+
+  <rect x="322" y="240" width="196" height="56" rx="8" fill="#ffffff" stroke="#24292f" stroke-width="1.5"/>
+  <text x="420" y="262" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" font-weight="600" fill="#24292f">kev-hf volume</text>
+  <text x="420" y="280" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="#57606a">weights cached once</text>
+
+  <g stroke="#24292f" stroke-width="2" fill="none">
+    <path d="M 420 136 V 152"/>
+    <path d="M 420 224 V 240"/>
+  </g>
+
+  <rect x="578" y="80" width="160" height="120" rx="12" fill="#f6f8fa" stroke="#24292f" stroke-width="1.5"/>
+  <rect x="578" y="80" width="160" height="120" rx="12" fill="none" stroke="#0969da" stroke-width="2"><animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/></rect>
+  <text x="658" y="106" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" font-weight="600" fill="#24292f">RTX 4090</text>
+  <g fill="#0969da">
+    <rect x="604" y="120" width="18" height="18" rx="4"/>
+    <rect x="628" y="120" width="18" height="18" rx="4"/>
+    <rect x="652" y="120" width="18" height="18" rx="4"/>
+    <rect x="676" y="120" width="18" height="18" rx="4"/>
+    <rect x="604" y="144" width="18" height="18" rx="4"/>
+    <rect x="628" y="144" width="18" height="18" rx="4"/>
+    <rect x="652" y="144" width="18" height="18" rx="4"/>
+    <rect x="676" y="144" width="18" height="18" rx="4"/>
+  </g>
+  <text x="658" y="182" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="#57606a">~9 GB VRAM used</text>
+
+  <path d="M 518 220 C 560 220, 578 200, 578 180" fill="none" stroke="#0969da" stroke-width="2" stroke-dasharray="6 4"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1s" repeatCount="indefinite"/></path>
+
+  <path d="M 578 180 C 600 320, 200 320, 200 168" fill="none" stroke="#1a7f37" stroke-width="2" stroke-dasharray="6 4"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></path>
+  <text x="330" y="356" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="#1a7f37">calibrated answers back to the app</text>
+</svg>

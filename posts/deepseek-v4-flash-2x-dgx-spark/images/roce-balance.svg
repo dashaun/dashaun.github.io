@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 316" width="720" height="316" role="img" aria-labelledby="t d">
+  <title id="t">RoCE traffic per device</title>
+  <desc id="d">Gigabytes sent by the head node during the 128K long-prompt sweep. QSFP port 0: rocep1s0f0 166.3 GB, roceP2p1s0f0 166.0 GB. QSFP port 1: rocep1s0f1 166.3 GB, roceP2p1s0f1 166.0 GB.</desc>
+  <style>
+    text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .surface { fill: #fcfcfb; }
+    .ink { fill: #0b0b0b; }
+    .ink2 { fill: #52514e; }
+    .muted { fill: #898781; }
+    .grid { stroke: #e1e0d9; stroke-width: 1; }
+    .axis { stroke: #c3c2b7; stroke-width: 1; }
+    .s1 { fill: #2a78d6; }
+    .s2 { fill: #eb6834; }
+    @media (prefers-color-scheme: dark) {
+      .surface { fill: #1a1a19; }
+      .ink { fill: #ffffff; }
+      .ink2 { fill: #c3c2b7; }
+      .grid { stroke: #2c2c2a; }
+      .axis { stroke: #383835; }
+      .s1 { fill: #3987e5; }
+      .s2 { fill: #d95926; }
+    }
+  </style>
+  <rect class="surface" x="0" y="0" width="720" height="316" rx="8"/>
+  <text class="ink" x="28" y="34" font-size="17" font-weight="600">RoCE traffic per device</text>
+  <text class="ink2" x="28" y="56" font-size="13">Sent by the head node during the 128K long-prompt sweep. Both cables carry an equal share.</text>
+
+  <!-- legend -->
+  <rect class="s1" x="28" y="70" width="12" height="12" rx="2"/>
+  <text class="ink" x="46" y="80" font-size="13">QSFP port 0</text>
+  <rect class="s2" x="138" y="70" width="12" height="12" rx="2"/>
+  <text class="ink" x="156" y="80" font-size="13">QSFP port 1</text>
+
+  <!-- gridlines at 0, 50, 100, 150, 200 GB (x = 200 + GB * 2.2) -->
+  <line class="grid" x1="310" y1="100" x2="310" y2="266"/>
+  <line class="grid" x1="420" y1="100" x2="420" y2="266"/>
+  <line class="grid" x1="530" y1="100" x2="530" y2="266"/>
+  <line class="grid" x1="640" y1="100" x2="640" y2="266"/>
+  <line class="axis" x1="200" y1="100" x2="200" y2="266"/>
+
+  <!-- bars: port 0 rows at 118/158, port 1 rows at 206/246 (centers) -->
+  <path class="s1" d="M200 106 H561.8 Q565.8 106 565.8 110 V126 Q565.8 130 561.8 130 H200 Z"/>
+  <path class="s1" d="M200 146 H561.3 Q565.3 146 565.3 150 V166 Q565.3 170 561.3 170 H200 Z"/>
+  <path class="s2" d="M200 194 H561.8 Q565.8 194 565.8 198 V214 Q565.8 218 561.8 218 H200 Z"/>
+  <path class="s2" d="M200 234 H561.3 Q565.3 234 565.3 238 V254 Q565.3 258 561.3 258 H200 Z"/>
+
+  <!-- device labels -->
+  <text class="ink mono" x="188" y="122" font-size="13" text-anchor="end">rocep1s0f0</text>
+  <text class="ink mono" x="188" y="162" font-size="13" text-anchor="end">roceP2p1s0f0</text>
+  <text class="ink mono" x="188" y="210" font-size="13" text-anchor="end">rocep1s0f1</text>
+  <text class="ink mono" x="188" y="250" font-size="13" text-anchor="end">roceP2p1s0f1</text>
+
+  <!-- values at bar tips -->
+  <text class="ink" x="573.8" y="122" font-size="13" font-weight="600">166.3 GB</text>
+  <text class="ink" x="573.3" y="162" font-size="13" font-weight="600">166.0 GB</text>
+  <text class="ink" x="573.8" y="210" font-size="13" font-weight="600">166.3 GB</text>
+  <text class="ink" x="573.3" y="250" font-size="13" font-weight="600">166.0 GB</text>
+
+  <!-- x-axis ticks -->
+  <text class="muted" x="200" y="286" font-size="12" text-anchor="middle">0</text>
+  <text class="muted" x="310" y="286" font-size="12" text-anchor="middle">50</text>
+  <text class="muted" x="420" y="286" font-size="12" text-anchor="middle">100</text>
+  <text class="muted" x="530" y="286" font-size="12" text-anchor="middle">150</text>
+  <text class="muted" x="640" y="286" font-size="12" text-anchor="middle">200 GB</text>
+
+  <text class="muted" x="28" y="306" font-size="11">Each QSFP port shows up as two RoCE devices, one per GB10 PCIe connection. Read from port_xmit_data counters.</text>
+</svg>

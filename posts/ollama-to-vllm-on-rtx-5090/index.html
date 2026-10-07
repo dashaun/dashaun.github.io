@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  From Ollama to vLLM on an RTX 5090 · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="I moved the RTX 5090 box (kintsugi) from Ollama to vLLM once my multi-agent workflows outgrew a single model slot. Here is the story and the repo.">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:image" content="https://dashaun.com/images/avatar.png">
+	<meta name="twitter:title" content="From Ollama to vLLM on an RTX 5090">
+	<meta name="twitter:description" content="I moved the RTX 5090 box (kintsugi) from Ollama to vLLM once my multi-agent workflows outgrew a single model slot. Here is the story and the repo.">
+
+<meta property="og:url" content="https://dashaun.com/posts/ollama-to-vllm-on-rtx-5090/">
+	<meta property="og:site_name" content="DaShaun">
+	<meta property="og:title" content="From Ollama to vLLM on an RTX 5090">
+	<meta property="og:description" content="I moved the RTX 5090 box (kintsugi) from Ollama to vLLM once my multi-agent workflows outgrew a single model slot. Here is the story and the repo.">
+	<meta property="og:locale" content="en_us">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="posts">
+		<meta property="article:published_time" content="2026-09-22T12:09:27-05:00">
+		<meta property="article:modified_time" content="2026-09-22T21:00:55-05:00">
+		<meta property="article:tag" content="Vllm">
+		<meta property="article:tag" content="Ollama">
+		<meta property="article:tag" content="Rtx-5090">
+		<meta property="article:tag" content="Homelab">
+		<meta property="article:tag" content="Llm-Inference">
+		<meta property="article:tag" content="Qwen">
+		<meta property="og:image" content="https://dashaun.com/images/avatar.png">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/ollama-to-vllm-on-rtx-5090/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+  
+    
+    <link rel="stylesheet" href="https://dashaun.com/css/books.min.b87f3c1ea0499269b841b08ad51be908f3793ba89b688237b3fb62096fb0979c.css" integrity="sha256-uH88HqBJkmm4QbCK1RvpCPN5O6ibaII3s/tiCW&#43;wl5w=" crossorigin="anonymous" media="screen" />
+  
+
+  
+    
+    <link rel="stylesheet" href="https://dashaun.com/css/img-fix.min.e21dc1566e151ac8e4c92c09a96fd84d6caa2140c97c30a3cd3a50d53b2948c1.css" integrity="sha256-4h3BVm4VGsjkySwJqW/YTWyqIUDJfDCjzTpQ1TspSME=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/books/pro-spring-boot-4/">Book</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Javagrunt</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/ollama-to-vllm-on-rtx-5090/">
+              From Ollama to vLLM on an RTX 5090
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2026-09-22T12:09:27-05:00'>
+                September 22, 2026
+              </time>
+            </span>
+            
+            
+            
+            <span class="reading-time">
+              <i class="fa-solid fa-clock" aria-hidden="true"></i>
+              5-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+        <h1 id="from-ollama-to-vllm-on-an-rtx-5090">
+  From Ollama to vLLM on an RTX 5090
+  <a class="heading-link" href="#from-ollama-to-vllm-on-an-rtx-5090">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<p>I run a couple of DGX Sparks with DeepSeek via vLLM and Ray. The RTX 5090 box (kintsugi) was still on Ollama. That split stopped making sense once my agent workflows outgrew what Ollama does well.</p>
+<h2 id="why-i-left-ollama">
+  Why I left Ollama
+  <a class="heading-link" href="#why-i-left-ollama">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Ollama is fine for one user and one chat. My multi-agent workflows fire dozens of concurrent requests, and Ollama serializes them behind a single model slot. Queues form, latency climbs, and agents stall waiting on each other.</p>
+<p>vLLM does continuous batching. Requests arrive, get packed into the same forward pass, and everyone gets a turn. Same GPU, but the pipeline stays busy.</p>
+
+
+<svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ollama queues requests, vLLM batches them">
+  <rect width="760" height="420" fill="#ffffff"/>
+  <text x="24" y="28" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" font-weight="600" fill="#24292f">Multi-agent load</text>
+
+  <!-- Ollama panel -->
+  <rect x="24" y="44" width="336" height="340" rx="12" fill="#fafbfc" stroke="#24292f" stroke-width="1.5"/>
+  <text x="192" y="70" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" font-weight="600" fill="#d1242f">Ollama</text>
+
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" text-anchor="middle" fill="#24292f">
+    <rect x="44" y="96" width="110" height="30" rx="6" fill="#ffffff" stroke="#d1242f" opacity="0"><animate attributeName="opacity" from="0" to="1" begin="0.4s" dur="0.3s" fill="freeze"/></rect><text x="99" y="116" opacity="0"><animate attributeName="opacity" from="0" to="1" begin="0.4s" dur="0.3s" fill="freeze"/>req 1</text>
+    <rect x="44" y="136" width="110" height="30" rx="6" fill="#ffffff" stroke="#d1242f" opacity="0"><animate attributeName="opacity" from="0" to="1" begin="1.0s" dur="0.3s" fill="freeze"/></rect><text x="99" y="156" opacity="0"><animate attributeName="opacity" from="0" to="1" begin="1.0s" dur="0.3s" fill="freeze"/>req 2</text>
+    <rect x="44" y="176" width="110" height="30" rx="6" fill="#ffffff" stroke="#d1242f" opacity="0"><animate attributeName="opacity" from="0" to="1" begin="1.6s" dur="0.3s" fill="freeze"/></rect><text x="99" y="196" opacity="0"><animate attributeName="opacity" from="0" to="1" begin="1.6s" dur="0.3s" fill="freeze"/>req 3</text>
+    <rect x="44" y="216" width="110" height="30" rx="6" fill="#ffffff" stroke="#d1242f" opacity="0"><animate attributeName="opacity" from="0" to="1" begin="2.2s" dur="0.3s" fill="freeze"/></rect><text x="99" y="236" opacity="0"><animate attributeName="opacity" from="0" to="1" begin="2.2s" dur="0.3s" fill="freeze"/>req 4</text>
+  </g>
+  <text x="99" y="268" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="#57606a">queue grows</text>
+
+  <path d="M 154 200 H 208" stroke="#d1242f" stroke-width="2" stroke-dasharray="6 4" fill="none"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="0.8s" repeatCount="indefinite"/></path>
+
+  <rect x="208" y="140" width="136" height="120" rx="10" fill="#ffffff" stroke="#d1242f" stroke-width="2"/>
+  <text x="276" y="186" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="600" fill="#24292f">model slot</text>
+  <text x="276" y="206" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="#57606a">one at a time</text>
+  <text x="276" y="240" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#d1242f">1 / N served</text>
+
+  <!-- vLLM panel -->
+  <rect x="400" y="44" width="336" height="340" rx="12" fill="#fafbfc" stroke="#24292f" stroke-width="1.5"/>
+  <text x="568" y="70" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" font-weight="600" fill="#1a7f37">vLLM</text>
+
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" text-anchor="middle" fill="#24292f">
+    <rect x="420" y="96" width="110" height="30" rx="6" fill="#ffffff" stroke="#1a7f37"/><text x="475" y="116">req 1</text>
+    <rect x="420" y="136" width="110" height="30" rx="6" fill="#ffffff" stroke="#1a7f37"/><text x="475" y="156">req 2</text>
+    <rect x="420" y="176" width="110" height="30" rx="6" fill="#ffffff" stroke="#1a7f37"/><text x="475" y="196">req 3</text>
+  </g>
+  <text x="475" y="240" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="#57606a">in parallel</text>
+
+  <path d="M 530 111 C 552 111 552 140 560 140" stroke="#1a7f37" stroke-width="2" stroke-dasharray="6 4" fill="none"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="0.6s" repeatCount="indefinite"/></path>
+  <path d="M 530 151 C 552 151 552 160 560 160" stroke="#1a7f37" stroke-width="2" stroke-dasharray="6 4" fill="none"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="0.6s" repeatCount="indefinite"/></path>
+  <path d="M 530 191 C 552 191 552 180 560 180" stroke="#1a7f37" stroke-width="2" stroke-dasharray="6 4" fill="none"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="0.6s" repeatCount="indefinite"/></path>
+
+  <rect x="560" y="130" width="160" height="120" rx="10" fill="#ffffff" stroke="#1a7f37" stroke-width="2"/>
+  <text x="640" y="176" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="600" fill="#24292f">engine</text>
+  <text x="640" y="196" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="#57606a">batch</text>
+  <rect x="578" y="212" width="124" height="8" rx="4" fill="#d0d7de"/>
+  <rect x="578" y="212" width="20" height="8" rx="4" fill="#1a7f37"><animate attributeName="width" values="20;124;20" dur="2.5s" repeatCount="indefinite"/></rect>
+  <text x="640" y="240" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#1a7f37">3 / 3 concurrent</text>
+</svg>
+
+<h2 id="the-box-before">
+  The box before
+  <a class="heading-link" href="#the-box-before">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>kintsugi ran Ollama with eleven models: a few Qwen sizes, Llama 3.x, Phi-4, Granite, an embedding model, and two FLUX diffusion models. The FLUX models moved to a 4090 / M4 because vLLM does not serve diffusion image models. It serves LLMs.</p>
+<h2 id="picking-a-model">
+  Picking a model
+  <a class="heading-link" href="#picking-a-model">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>For a 32 GB card the sweet spot is a MoE with sparse active params: fast because only a slice of the network runs per token, small enough to quantize into the card. That pointed at Qwen3-Coder-30B-A3B (30B total, 3.3B active).</p>
+<p>Then the quantization decision.</p>
+
+
+<svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Model quantization decision">
+  <rect width="760" height="300" fill="#ffffff"/>
+  <text x="24" y="28" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" font-weight="600" fill="#24292f">Qwen3-Coder-30B-A3B on 32 GB</text>
+  <text x="24" y="48" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#57606a">30B total · 3.3B active · MoE</text>
+
+  <!-- row 1: official AWQ -->
+  <rect x="24" y="66" width="580" height="56" rx="10" fill="#fafbfc" stroke="#d0d7de" stroke-width="1.5"/>
+  <text x="48" y="90" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="600" fill="#24292f">Official AWQ</text>
+  <text x="48" y="110" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#57606a">gated · needs HF token and license</text>
+  <text x="668" y="102" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="20" font-weight="600" fill="#d1242f">✗</text>
+
+  <!-- row 2: official FP8 -->
+  <rect x="24" y="134" width="580" height="56" rx="10" fill="#fafbfc" stroke="#d0d7de" stroke-width="1.5"/>
+  <text x="48" y="158" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="600" fill="#24292f">Official FP8</text>
+  <text x="48" y="178" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#57606a">~30.5 GB weights · no KV cache headroom in 32 GB</text>
+  <text x="668" y="170" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="20" font-weight="600" fill="#d1242f">✗</text>
+
+  <!-- row 3: chosen -->
+  <rect x="24" y="202" width="580" height="56" rx="10" fill="#f6fff8" stroke="#1a7f37" stroke-width="2"/>
+  <text x="48" y="226" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="600" fill="#24292f">cyankiwi INT4</text>
+  <text x="48" y="246" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" fill="#57606a">open · ~16 GB · auto-detected (compressed-tensors)</text>
+  <rect x="620" y="214" width="96" height="28" rx="14" fill="#1a7f37"/>
+  <text x="668" y="233" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" font-weight="600" fill="#ffffff">chosen</text>
+  <path d="M 648 270 l 12 12 l 22 -22" fill="none" stroke="#1a7f37" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"><animate attributeName="stroke-dashoffset" from="1" to="0" dur="0.5s" begin="1s" fill="freeze"/></path>
+</svg>
+
+<p>I serve one model, no swap logic. vLLM keeps weights in VRAM for the life of the process, so unlike Ollama there is no load and unload. With one model that is exactly what I want.</p>
+<h2 id="how-it-runs">
+  How it runs
+  <a class="heading-link" href="#how-it-runs">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>The repo is self-contained: a compose file, a setup script, and a systemd unit. <code>sudo ./scripts/setup.sh</code> installs Docker and the NVIDIA Container Toolkit if missing, wires the nvidia runtime, installs the unit, and starts the stack. The unit plus <code>restart: unless-stopped</code> mean the box comes back serving after a reboot.</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/dashaun/rtx5090-vllm
+</span></span><span style="display:flex;"><span><span style="color:#007020">cd</span> rtx5090-vllm
+</span></span><span style="display:flex;"><span>sudo ./scripts/setup.sh
+</span></span><span style="display:flex;"><span>curl localhost:8000/v1/models
+</span></span></code></pre></div>
+
+<svg viewBox="0 0 760 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="kintsugi architecture">
+  <rect width="760" height="400" fill="#ffffff"/>
+  <text x="24" y="28" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="14" font-weight="600" fill="#24292f">Agents</text>
+
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12">
+    <rect x="24" y="44" width="130" height="56" rx="8" fill="#f6f8fa" stroke="#24292f" stroke-width="1.5"/>
+    <text x="89" y="68" text-anchor="middle" font-weight="600" fill="#24292f">Agent</text>
+    <text x="89" y="86" text-anchor="middle" fill="#57606a">Cline</text>
+    <rect x="24" y="116" width="130" height="56" rx="8" fill="#f6f8fa" stroke="#24292f" stroke-width="1.5"/>
+    <text x="89" y="140" text-anchor="middle" font-weight="600" fill="#24292f">Agent</text>
+    <text x="89" y="158" text-anchor="middle" fill="#57606a">LangChain</text>
+    <rect x="24" y="188" width="130" height="56" rx="8" fill="#f6f8fa" stroke="#24292f" stroke-width="1.5"/>
+    <text x="89" y="212" text-anchor="middle" font-weight="600" fill="#24292f">Agent</text>
+    <text x="89" y="230" text-anchor="middle" fill="#57606a">Qwen Code</text>
+  </g>
+
+  <g stroke="#0969da" stroke-width="2" stroke-dasharray="6 4" fill="none">
+    <path d="M 154 72 H 300"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="0.8s" repeatCount="indefinite"/></path>
+    <path d="M 154 144 H 300"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="0.8s" repeatCount="indefinite"/></path>
+    <path d="M 154 216 H 300"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="0.8s" repeatCount="indefinite"/></path>
+  </g>
+
+  <rect x="300" y="40" width="250" height="320" rx="12" fill="#fafbfc" stroke="#24292f" stroke-width="1.5"/>
+  <text x="425" y="66" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="13" font-weight="600" fill="#24292f">vLLM · Docker</text>
+
+  <rect x="322" y="84" width="206" height="56" rx="8" fill="#ffffff" stroke="#0969da" stroke-width="1.5"/>
+  <text x="425" y="106" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" font-weight="600" fill="#0969da">API server</text>
+  <text x="425" y="124" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="#57606a">POST /v1/chat/completions</text>
+
+  <rect x="322" y="164" width="206" height="64" rx="8" fill="#ffffff" stroke="#24292f" stroke-width="1.5"/>
+  <text x="425" y="186" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" font-weight="600" fill="#24292f">Engine</text>
+  <text x="425" y="204" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="#57606a">continuous batching</text>
+  <rect x="340" y="214" width="170" height="6" rx="3" fill="#d0d7de"/>
+  <rect x="340" y="214" width="20" height="6" rx="3" fill="#0969da"><animate attributeName="width" values="20;170;20" dur="3s" repeatCount="indefinite"/></rect>
+
+  <rect x="322" y="252" width="206" height="64" rx="8" fill="#ffffff" stroke="#24292f" stroke-width="1.5"/>
+  <text x="425" y="274" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" font-weight="600" fill="#24292f">qwen3-coder</text>
+  <text x="425" y="292" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="#57606a">30B-A3B · INT4 · 16 GB</text>
+
+  <g stroke="#24292f" stroke-width="2" fill="none">
+    <path d="M 425 140 V 164"/>
+    <path d="M 425 228 V 252"/>
+    <path d="M 528 284 H 590"/>
+  </g>
+
+  <rect x="590" y="120" width="150" height="130" rx="12" fill="#f6f8fa" stroke="#24292f" stroke-width="1.5"/>
+  <rect x="590" y="120" width="150" height="130" rx="12" fill="none" stroke="#0969da" stroke-width="2"><animate attributeName="opacity" values="0.3;1;0.3" dur="2s" repeatCount="indefinite"/></rect>
+  <text x="665" y="146" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="12" font-weight="600" fill="#24292f">RTX 5090</text>
+  <g fill="#0969da">
+    <rect x="612" y="162" width="20" height="20" rx="4"/>
+    <rect x="640" y="162" width="20" height="20" rx="4"/>
+    <rect x="668" y="162" width="20" height="20" rx="4"/>
+    <rect x="612" y="190" width="20" height="20" rx="4"/>
+    <rect x="640" y="190" width="20" height="20" rx="4"/>
+    <rect x="668" y="190" width="20" height="20" rx="4"/>
+  </g>
+  <text x="665" y="238" text-anchor="middle" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="#57606a">32 GB</text>
+
+  <path d="M 590 300 C 500 340, 320 340, 154 240" fill="none" stroke="#1a7f37" stroke-width="2" stroke-dasharray="6 4"><animate attributeName="stroke-dashoffset" from="0" to="-20" dur="1.2s" repeatCount="indefinite"/></path>
+  <text x="330" y="362" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="#1a7f37">tokens back to agents</text>
+
+  <text x="24" y="382" font-family="ui-monospace,SFMono-Regular,Menlo,monospace" font-size="11" fill="#57606a">kintsugi · Ubuntu · systemd restarts it on boot</text>
+</svg>
+
+<h2 id="what-bit-us">
+  What bit us
+  <a class="heading-link" href="#what-bit-us">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Everything looked simple until it ran. Four problems, each with a clear cause once we found it.</p>
+
+
+<svg viewBox="0 0 760 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Deployment problems and fixes">
+  <rect width="760" height="500" fill="#ffffff"/>
+  <line x1="60" y1="80" x2="60" y2="440" stroke="#d0d7de" stroke-width="3" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"><animate attributeName="stroke-dashoffset" from="1" to="0" dur="1.6s" fill="freeze"/></line>
+
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,monospace">
+    <!-- item 1 -->
+    <circle cx="60" cy="96" r="16" fill="#24292f"/><text x="60" y="101" text-anchor="middle" font-size="13" font-weight="600" fill="#ffffff">1</text>
+    <text x="96" y="88" font-size="13" font-weight="600" fill="#d1242f">nvidia-smi fails</text>
+    <text x="96" y="108" font-size="12" fill="#57606a">cause: driver updated, kernel module stale, box up 10 days</text>
+    <text x="96" y="126" font-size="12" fill="#1a7f37">fix: reboot</text>
+
+    <!-- item 2 -->
+    <circle cx="60" cy="196" r="16" fill="#24292f"/><text x="60" y="201" text-anchor="middle" font-size="13" font-weight="600" fill="#ffffff">2</text>
+    <text x="96" y="188" font-size="13" font-weight="600" fill="#d1242f">unknown or invalid runtime name: nvidia</text>
+    <text x="96" y="208" font-size="12" fill="#57606a">cause: rootless vs system Docker; daemon.json not reloaded</text>
+    <text x="96" y="226" font-size="12" fill="#1a7f37">fix: target system daemon, systemctl restart docker</text>
+
+    <!-- item 3 -->
+    <circle cx="60" cy="296" r="16" fill="#24292f"/><text x="60" y="301" text-anchor="middle" font-size="13" font-weight="600" fill="#ffffff">3</text>
+    <text x="96" y="288" font-size="13" font-weight="600" fill="#d1242f">compressed-tensors does not match awq</text>
+    <text x="96" y="308" font-size="12" fill="#57606a">cause: model is INT4 compressed-tensors despite the AWQ name</text>
+    <text x="96" y="326" font-size="12" fill="#1a7f37">fix: drop --quantization awq, let vLLM read the config</text>
+
+    <!-- item 4 -->
+    <circle cx="60" cy="396" r="16" fill="#24292f"/><text x="60" y="401" text-anchor="middle" font-size="13" font-weight="600" fill="#ffffff">4</text>
+    <text x="96" y="388" font-size="13" font-weight="600" fill="#d1242f">17 GB of weights in a literal ~ dir</text>
+    <text x="96" y="408" font-size="12" fill="#57606a">cause: Compose does not expand ~ in volume paths</text>
+    <text x="96" y="426" font-size="12" fill="#1a7f37">fix: mount ./.cache/huggingface relative to the project</text>
+  </g>
+</svg>
+
+<ol>
+<li>
+<p><code>nvidia-smi</code> failed with a driver/library mismatch. The driver had been updated, the kernel module was stale, and the box had been up for ten days. Fix: reboot.</p>
+</li>
+<li>
+<p><code>docker compose up</code> died with &ldquo;unknown or invalid runtime name: nvidia&rdquo;. The box runs rootless Docker as the user context, but the systemd unit talks to the system daemon. The daemon had a daemon.json declaring the nvidia runtime that it was not loading. Fix: restart Docker and target the system daemon. Rootless Docker is not supported by this setup, and that is now documented.</p>
+</li>
+<li>
+<p>vLLM crashed on startup: the model config says compressed-tensors, and I had forced <code>--quantization awq</code>. The &ldquo;AWQ&rdquo; in the repo name lied. Fix: delete the flag and let vLLM read the config.</p>
+</li>
+<li>
+<p>A few days in I found 17 GB of model weights inside a directory literally named <code>~</code>. Compose does not expand <code>~</code> in volume paths, so the cache mount created a literal directory. Fix: mount <code>./.cache/huggingface</code>, which Compose resolves relative to the project. The cache is gitignored, so the repo stays clean.</p>
+</li>
+</ol>
+<h2 id="decisions-that-stuck">
+  Decisions that stuck
+  <a class="heading-link" href="#decisions-that-stuck">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<ul>
+<li>System Docker, not rootless, for the service. The systemd unit runs compose as root, and rootless Docker ignores /etc/docker/daemon.json.</li>
+<li>compressed-tensors INT4 over a gated AWQ build and an FP8 build that does not fit.</li>
+<li>One model, no swap. A second model means a second compose service, not Ollama-style load and unload.</li>
+<li>Model cache in the repo under <code>.cache</code>, so <code>git pull</code> plus a restart updates the stack without re-downloading weights.</li>
+</ul>
+<h2 id="where-it-landed">
+  Where it landed
+  <a class="heading-link" href="#where-it-landed">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Public repo: <a href="https://github.com/dashaun/rtx5090-vllm"  class="external-link" target="_blank" rel="noopener">https://github.com/dashaun/rtx5090-vllm</a></p>
+<p>An OpenAI-compatible endpoint at <code>http://kintsugi:8000/v1</code> serving <code>qwen3-coder</code>. Point Spring AI or your favorite agent harness at it. Ollama is uninstalled and its ~94 GB of models are gone from the box.</p>
+<p>If you have outgrown Ollama, clone it and take it for a spin. The setup script is the whole story: one command, reboot safe.</p>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2026
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>
