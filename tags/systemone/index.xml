@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Systemone on DaShaun</title>
+        <link>https://dashaun.com/tags/systemone/</link>
+        <description>Recent content in Systemone on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <managingEditor>dashaun@dashaun.com (DaShaun Carter)</managingEditor>
+        <webMaster>dashaun@dashaun.com (DaShaun Carter)</webMaster>
+        <lastBuildDate>Wed, 30 Sep 2026 09:00:00 -0500</lastBuildDate><atom:link href="https://dashaun.com/tags/systemone/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Self-Hosting Kev: A TypeSafe-SystemOne Decision Model on My Own GPU</title>
+            <link>https://dashaun.com/posts/self-hosting-kev-systemone/</link>
+            <pubDate>Wed, 30 Sep 2026 09:00:00 -0500</pubDate>
+            <author>dashaun@dashaun.com (DaShaun Carter)</author>
+            <guid>https://dashaun.com/posts/self-hosting-kev-systemone/</guid>
+            <description>&lt;h1 id=&#34;self-hosting-kev-a-typesafe-systemone-decision-model-on-my-own-gpu&#34;&gt;
+  Self-Hosting Kev: A TypeSafe-SystemOne Decision Model on My Own GPU
+  &lt;a class=&#34;heading-link&#34; href=&#34;#self-hosting-kev-a-typesafe-systemone-decision-model-on-my-own-gpu&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;I was really interested in &lt;a href=&#34;https://typesafe.ai/blog/introducing-system-one-models-and-jev&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Jev when it came out&lt;/a&gt;. A &amp;ldquo;System One&amp;rdquo; model that
+answers typed questions with calibrated probabilities instead of generating
+text — no chat, no prose, just decisions. The Spring team added support for
+Jev within a week of it being released:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://spring.io/blog/2026/09/21/spring-ai-typesafe-structured-judgment&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring AI: TypeSafe structured judgment&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;But I like things local. I have my own resources, and I don&amp;rsquo;t like training
+other people&amp;rsquo;s models with my data. So when &lt;a href=&#34;https://github.com/jaredpalmer/kev&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Kev&lt;/a&gt;
+came out exposing the exact same API as Jev — TypeSafe&amp;rsquo;s &lt;code&gt;POST /v1/systemone&lt;/code&gt;
+contract — it was an easier drop-in replacement than anything else. Laya and
+the other open System One models are following the same API, which makes the
+whole category swappable.&lt;/p&gt;
+&lt;h2 id=&#34;what-a-system-one-request-looks-like&#34;&gt;
+  What a System One request looks like
+  &lt;a class=&#34;heading-link&#34; href=&#34;#what-a-system-one-request-looks-like&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;You send a shared &lt;code&gt;state&lt;/code&gt; plus a map of typed questions. No system prompt, no
+output schema gymnastics — the model returns a probability distribution per
+question, in one forward pass:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/systemone-roundtrip.svg&#34; alt=&#34;System One round-trip: typed questions in, calibrated answers out&#34;&gt;&lt;/p&gt;
+&lt;p&gt;No text is generated, so your code can route on the probabilities directly:
+automate the confident cases, hand the rest to a person.&lt;/p&gt;
+&lt;h2 id=&#34;why-kev-instead-of-the-hosted-jev&#34;&gt;
+  Why Kev instead of the hosted Jev
+  &lt;a class=&#34;heading-link&#34; href=&#34;#why-kev-instead-of-the-hosted-jev&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Kev is a &lt;a href=&#34;https://github.com/jaredpalmer/kev&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;LoRA adapter plus a pointer head&lt;/a&gt;
+on a frozen Qwen3.5-4B-Base. The adapter and head are Apache-2.0, the base is
+Apache-2.0, and the whole thing serves TypeSafe&amp;rsquo;s &lt;code&gt;/v1/systemone&lt;/code&gt; contract.
+That means the same TypeSafe client code I&amp;rsquo;d use for Jev points at my own box:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/same-client-two-homes.svg&#34; alt=&#34;Same client, two homes: the TypeSafe client pointed at local Kev instead of hosted Jev&#34;&gt;&lt;/p&gt;
+&lt;p&gt;That drop-in nature is exactly why I started with Kev. I&amp;rsquo;ll deploy Laya too,
+but when I started, Kev was the easiest path because it exposed the same API
+as Jev.&lt;/p&gt;
+&lt;h2 id=&#34;what-i-use-it-for&#34;&gt;
+  What I use it for
+  &lt;a class=&#34;heading-link&#34; href=&#34;#what-i-use-it-for&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;m already using Kev to evaluate and judge summaries generated by other
+models, for my &lt;a href=&#34;https://github.com/dashaun-tanzu/recent-cve-news&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;recent-cve-news&lt;/a&gt;
+project: one model writes, Kev decides whether the write-up is good enough to
+publish. A typed &lt;code&gt;noul&lt;/code&gt; for &amp;ldquo;is this complete?&amp;rdquo; and a &lt;code&gt;score&lt;/code&gt; for quality —
+judged on my own GPU, no training data leaving my house.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;m aware of this version of Kev&amp;rsquo;s limitations (it documents them itself):
+training used states of up to 384 tokens, date arithmetic is unreliable
+without the &lt;code&gt;KEV_DATE_FACTS&lt;/code&gt; preprocessor, knowledge is set by the base model,
+and changing option order can change an answer. So I added constraints to fit
+within its parameters — bounded contexts, dates rendered as day counts, and
+stable option ordering.&lt;/p&gt;
+&lt;h2 id=&#34;the-deployment&#34;&gt;
+  The deployment
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-deployment&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Still a big fan of Docker and Docker Compose. This is my default approach —
+one command, reboot safe:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git clone https://github.com/dashaun/kev-poc
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;cd&lt;/span&gt; kev-poc
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker compose up --build -d
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The container runs the maker&amp;rsquo;s own &lt;code&gt;kev.serve&lt;/code&gt; server, not vLLM. That&amp;rsquo;s a
+deliberate choice: Kev is a pointer head on a frozen Qwen base, and the
+SystemOne &lt;code&gt;/v1/systemone&lt;/code&gt; contract isn&amp;rsquo;t servable by vLLM or the SystemOne
+llama.cpp fork. &lt;code&gt;kev.serve&lt;/code&gt; is the intended runtime.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/kev-architecture.svg&#34; alt=&#34;kev-poc deployment architecture&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;try-it&#34;&gt;
+  Try it
+  &lt;a class=&#34;heading-link&#34; href=&#34;#try-it&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The repo is self-contained and the README has curl and TypeSafe SDK examples:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -s localhost:8008/v1/systemone -H &amp;#39;content-type: application/json&amp;#39; -d &amp;#39;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &amp;#34;state&amp;#34;: &amp;#34;Shoes arrived two weeks late and in the wrong size. Also two charges.&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &amp;#34;model&amp;#34;: &amp;#34;kev-latest&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &amp;#34;questions&amp;#34;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;#34;department&amp;#34;:  {&amp;#34;type&amp;#34;: &amp;#34;choice&amp;#34;, &amp;#34;instructions&amp;#34;: &amp;#34;Which team?&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    &amp;#34;criteria&amp;#34;: {&amp;#34;returns&amp;#34;: &amp;#34;Exchanges, refunds&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                                 &amp;#34;shipping&amp;#34;: &amp;#34;Delivery status&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                                 &amp;#34;billing&amp;#34;: &amp;#34;Charges, invoices&amp;#34;}},
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;#34;escalate&amp;#34;:    {&amp;#34;type&amp;#34;: &amp;#34;noul&amp;#34;, &amp;#34;instructions&amp;#34;: &amp;#34;Urgent human attention?&amp;#34;},
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;#34;frustration&amp;#34;: {&amp;#34;type&amp;#34;: &amp;#34;score&amp;#34;, &amp;#34;instructions&amp;#34;: &amp;#34;How frustrated?&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    &amp;#34;criteria&amp;#34;: [&amp;#34;Calm&amp;#34;, &amp;#34;Frustrated&amp;#34;, &amp;#34;Very angry&amp;#34;]}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  }}&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Public repo: &lt;a href=&#34;https://github.com/dashaun/kev-poc&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/dashaun/kev-poc&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I hope it&amp;rsquo;s easy enough for others to use and get started quickly. If not, it&amp;rsquo;s
+still valuable for me — this is my default approach.&lt;/p&gt;
+&lt;h2 id=&#34;note&#34;&gt;
+  Note
+  &lt;a class=&#34;heading-link&#34; href=&#34;#note&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Ollama added support for System One models, and I&amp;rsquo;ve also just installed
+&lt;strong&gt;Nimble 9B&lt;/strong&gt; — another drop-in for the same &lt;code&gt;/v1/systemone&lt;/code&gt; contract.&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>

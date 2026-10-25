@@ -1,0 +1,628 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>DaShaun</title>
+        <link>https://dashaun.com/</link>
+        <description>Recent content on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <managingEditor>dashaun@dashaun.com (DaShaun Carter)</managingEditor>
+        <webMaster>dashaun@dashaun.com (DaShaun Carter)</webMaster>
+        <lastBuildDate>Wed, 30 Sep 2026 09:00:00 -0500</lastBuildDate><atom:link href="https://dashaun.com/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Self-Hosting Kev: A TypeSafe-SystemOne Decision Model on My Own GPU</title>
+            <link>https://dashaun.com/posts/self-hosting-kev-systemone/</link>
+            <pubDate>Wed, 30 Sep 2026 09:00:00 -0500</pubDate>
+            <author>dashaun@dashaun.com (DaShaun Carter)</author>
+            <guid>https://dashaun.com/posts/self-hosting-kev-systemone/</guid>
+            <description>&lt;h1 id=&#34;self-hosting-kev-a-typesafe-systemone-decision-model-on-my-own-gpu&#34;&gt;
+  Self-Hosting Kev: A TypeSafe-SystemOne Decision Model on My Own GPU
+  &lt;a class=&#34;heading-link&#34; href=&#34;#self-hosting-kev-a-typesafe-systemone-decision-model-on-my-own-gpu&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;I was really interested in &lt;a href=&#34;https://typesafe.ai/blog/introducing-system-one-models-and-jev&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Jev when it came out&lt;/a&gt;. A &amp;ldquo;System One&amp;rdquo; model that
+answers typed questions with calibrated probabilities instead of generating
+text — no chat, no prose, just decisions. The Spring team added support for
+Jev within a week of it being released:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://spring.io/blog/2026/09/21/spring-ai-typesafe-structured-judgment&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring AI: TypeSafe structured judgment&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;But I like things local. I have my own resources, and I don&amp;rsquo;t like training
+other people&amp;rsquo;s models with my data. So when &lt;a href=&#34;https://github.com/jaredpalmer/kev&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Kev&lt;/a&gt;
+came out exposing the exact same API as Jev — TypeSafe&amp;rsquo;s &lt;code&gt;POST /v1/systemone&lt;/code&gt;
+contract — it was an easier drop-in replacement than anything else. Laya and
+the other open System One models are following the same API, which makes the
+whole category swappable.&lt;/p&gt;
+&lt;h2 id=&#34;what-a-system-one-request-looks-like&#34;&gt;
+  What a System One request looks like
+  &lt;a class=&#34;heading-link&#34; href=&#34;#what-a-system-one-request-looks-like&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;You send a shared &lt;code&gt;state&lt;/code&gt; plus a map of typed questions. No system prompt, no
+output schema gymnastics — the model returns a probability distribution per
+question, in one forward pass:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/systemone-roundtrip.svg&#34; alt=&#34;System One round-trip: typed questions in, calibrated answers out&#34;&gt;&lt;/p&gt;
+&lt;p&gt;No text is generated, so your code can route on the probabilities directly:
+automate the confident cases, hand the rest to a person.&lt;/p&gt;
+&lt;h2 id=&#34;why-kev-instead-of-the-hosted-jev&#34;&gt;
+  Why Kev instead of the hosted Jev
+  &lt;a class=&#34;heading-link&#34; href=&#34;#why-kev-instead-of-the-hosted-jev&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Kev is a &lt;a href=&#34;https://github.com/jaredpalmer/kev&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;LoRA adapter plus a pointer head&lt;/a&gt;
+on a frozen Qwen3.5-4B-Base. The adapter and head are Apache-2.0, the base is
+Apache-2.0, and the whole thing serves TypeSafe&amp;rsquo;s &lt;code&gt;/v1/systemone&lt;/code&gt; contract.
+That means the same TypeSafe client code I&amp;rsquo;d use for Jev points at my own box:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/same-client-two-homes.svg&#34; alt=&#34;Same client, two homes: the TypeSafe client pointed at local Kev instead of hosted Jev&#34;&gt;&lt;/p&gt;
+&lt;p&gt;That drop-in nature is exactly why I started with Kev. I&amp;rsquo;ll deploy Laya too,
+but when I started, Kev was the easiest path because it exposed the same API
+as Jev.&lt;/p&gt;
+&lt;h2 id=&#34;what-i-use-it-for&#34;&gt;
+  What I use it for
+  &lt;a class=&#34;heading-link&#34; href=&#34;#what-i-use-it-for&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;m already using Kev to evaluate and judge summaries generated by other
+models, for my &lt;a href=&#34;https://github.com/dashaun-tanzu/recent-cve-news&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;recent-cve-news&lt;/a&gt;
+project: one model writes, Kev decides whether the write-up is good enough to
+publish. A typed &lt;code&gt;noul&lt;/code&gt; for &amp;ldquo;is this complete?&amp;rdquo; and a &lt;code&gt;score&lt;/code&gt; for quality —
+judged on my own GPU, no training data leaving my house.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;m aware of this version of Kev&amp;rsquo;s limitations (it documents them itself):
+training used states of up to 384 tokens, date arithmetic is unreliable
+without the &lt;code&gt;KEV_DATE_FACTS&lt;/code&gt; preprocessor, knowledge is set by the base model,
+and changing option order can change an answer. So I added constraints to fit
+within its parameters — bounded contexts, dates rendered as day counts, and
+stable option ordering.&lt;/p&gt;
+&lt;h2 id=&#34;the-deployment&#34;&gt;
+  The deployment
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-deployment&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Still a big fan of Docker and Docker Compose. This is my default approach —
+one command, reboot safe:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git clone https://github.com/dashaun/kev-poc
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;cd&lt;/span&gt; kev-poc
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker compose up --build -d
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The container runs the maker&amp;rsquo;s own &lt;code&gt;kev.serve&lt;/code&gt; server, not vLLM. That&amp;rsquo;s a
+deliberate choice: Kev is a pointer head on a frozen Qwen base, and the
+SystemOne &lt;code&gt;/v1/systemone&lt;/code&gt; contract isn&amp;rsquo;t servable by vLLM or the SystemOne
+llama.cpp fork. &lt;code&gt;kev.serve&lt;/code&gt; is the intended runtime.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/kev-architecture.svg&#34; alt=&#34;kev-poc deployment architecture&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;try-it&#34;&gt;
+  Try it
+  &lt;a class=&#34;heading-link&#34; href=&#34;#try-it&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The repo is self-contained and the README has curl and TypeSafe SDK examples:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -s localhost:8008/v1/systemone -H &amp;#39;content-type: application/json&amp;#39; -d &amp;#39;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &amp;#34;state&amp;#34;: &amp;#34;Shoes arrived two weeks late and in the wrong size. Also two charges.&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &amp;#34;model&amp;#34;: &amp;#34;kev-latest&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &amp;#34;questions&amp;#34;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;#34;department&amp;#34;:  {&amp;#34;type&amp;#34;: &amp;#34;choice&amp;#34;, &amp;#34;instructions&amp;#34;: &amp;#34;Which team?&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    &amp;#34;criteria&amp;#34;: {&amp;#34;returns&amp;#34;: &amp;#34;Exchanges, refunds&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                                 &amp;#34;shipping&amp;#34;: &amp;#34;Delivery status&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                                 &amp;#34;billing&amp;#34;: &amp;#34;Charges, invoices&amp;#34;}},
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;#34;escalate&amp;#34;:    {&amp;#34;type&amp;#34;: &amp;#34;noul&amp;#34;, &amp;#34;instructions&amp;#34;: &amp;#34;Urgent human attention?&amp;#34;},
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;#34;frustration&amp;#34;: {&amp;#34;type&amp;#34;: &amp;#34;score&amp;#34;, &amp;#34;instructions&amp;#34;: &amp;#34;How frustrated?&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    &amp;#34;criteria&amp;#34;: [&amp;#34;Calm&amp;#34;, &amp;#34;Frustrated&amp;#34;, &amp;#34;Very angry&amp;#34;]}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  }}&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Public repo: &lt;a href=&#34;https://github.com/dashaun/kev-poc&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/dashaun/kev-poc&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I hope it&amp;rsquo;s easy enough for others to use and get started quickly. If not, it&amp;rsquo;s
+still valuable for me — this is my default approach.&lt;/p&gt;
+&lt;h2 id=&#34;note&#34;&gt;
+  Note
+  &lt;a class=&#34;heading-link&#34; href=&#34;#note&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Ollama added support for System One models, and I&amp;rsquo;ve also just installed
+&lt;strong&gt;Nimble 9B&lt;/strong&gt; — another drop-in for the same &lt;code&gt;/v1/systemone&lt;/code&gt; contract.&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>From Ollama to vLLM on an RTX 5090</title>
+            <link>https://dashaun.com/posts/ollama-to-vllm-on-rtx-5090/</link>
+            <pubDate>Tue, 22 Sep 2026 12:09:27 -0500</pubDate>
+            <author>dashaun@dashaun.com (DaShaun Carter)</author>
+            <guid>https://dashaun.com/posts/ollama-to-vllm-on-rtx-5090/</guid>
+            <description>&lt;h1 id=&#34;from-ollama-to-vllm-on-an-rtx-5090&#34;&gt;
+  From Ollama to vLLM on an RTX 5090
+  &lt;a class=&#34;heading-link&#34; href=&#34;#from-ollama-to-vllm-on-an-rtx-5090&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;I run a couple of DGX Sparks with DeepSeek via vLLM and Ray. The RTX 5090 box (kintsugi) was still on Ollama. That split stopped making sense once my agent workflows outgrew what Ollama does well.&lt;/p&gt;
+&lt;h2 id=&#34;why-i-left-ollama&#34;&gt;
+  Why I left Ollama
+  &lt;a class=&#34;heading-link&#34; href=&#34;#why-i-left-ollama&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Ollama is fine for one user and one chat. My multi-agent workflows fire dozens of concurrent requests, and Ollama serializes them behind a single model slot. Queues form, latency climbs, and agents stall waiting on each other.&lt;/p&gt;
+&lt;p&gt;vLLM does continuous batching. Requests arrive, get packed into the same forward pass, and everyone gets a turn. Same GPU, but the pipeline stays busy.&lt;/p&gt;
+
+
+&lt;svg viewBox=&#34;0 0 760 420&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34; role=&#34;img&#34; aria-label=&#34;Ollama queues requests, vLLM batches them&#34;&gt;
+  &lt;rect width=&#34;760&#34; height=&#34;420&#34; fill=&#34;#ffffff&#34;/&gt;
+  &lt;text x=&#34;24&#34; y=&#34;28&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;14&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;Multi-agent load&lt;/text&gt;
+
+  &lt;!-- Ollama panel --&gt;
+  &lt;rect x=&#34;24&#34; y=&#34;44&#34; width=&#34;336&#34; height=&#34;340&#34; rx=&#34;12&#34; fill=&#34;#fafbfc&#34; stroke=&#34;#24292f&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;192&#34; y=&#34;70&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;14&#34; font-weight=&#34;600&#34; fill=&#34;#d1242f&#34;&gt;Ollama&lt;/text&gt;
+
+  &lt;g font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; text-anchor=&#34;middle&#34; fill=&#34;#24292f&#34;&gt;
+    &lt;rect x=&#34;44&#34; y=&#34;96&#34; width=&#34;110&#34; height=&#34;30&#34; rx=&#34;6&#34; fill=&#34;#ffffff&#34; stroke=&#34;#d1242f&#34; opacity=&#34;0&#34;&gt;&lt;animate attributeName=&#34;opacity&#34; from=&#34;0&#34; to=&#34;1&#34; begin=&#34;0.4s&#34; dur=&#34;0.3s&#34; fill=&#34;freeze&#34;/&gt;&lt;/rect&gt;&lt;text x=&#34;99&#34; y=&#34;116&#34; opacity=&#34;0&#34;&gt;&lt;animate attributeName=&#34;opacity&#34; from=&#34;0&#34; to=&#34;1&#34; begin=&#34;0.4s&#34; dur=&#34;0.3s&#34; fill=&#34;freeze&#34;/&gt;req 1&lt;/text&gt;
+    &lt;rect x=&#34;44&#34; y=&#34;136&#34; width=&#34;110&#34; height=&#34;30&#34; rx=&#34;6&#34; fill=&#34;#ffffff&#34; stroke=&#34;#d1242f&#34; opacity=&#34;0&#34;&gt;&lt;animate attributeName=&#34;opacity&#34; from=&#34;0&#34; to=&#34;1&#34; begin=&#34;1.0s&#34; dur=&#34;0.3s&#34; fill=&#34;freeze&#34;/&gt;&lt;/rect&gt;&lt;text x=&#34;99&#34; y=&#34;156&#34; opacity=&#34;0&#34;&gt;&lt;animate attributeName=&#34;opacity&#34; from=&#34;0&#34; to=&#34;1&#34; begin=&#34;1.0s&#34; dur=&#34;0.3s&#34; fill=&#34;freeze&#34;/&gt;req 2&lt;/text&gt;
+    &lt;rect x=&#34;44&#34; y=&#34;176&#34; width=&#34;110&#34; height=&#34;30&#34; rx=&#34;6&#34; fill=&#34;#ffffff&#34; stroke=&#34;#d1242f&#34; opacity=&#34;0&#34;&gt;&lt;animate attributeName=&#34;opacity&#34; from=&#34;0&#34; to=&#34;1&#34; begin=&#34;1.6s&#34; dur=&#34;0.3s&#34; fill=&#34;freeze&#34;/&gt;&lt;/rect&gt;&lt;text x=&#34;99&#34; y=&#34;196&#34; opacity=&#34;0&#34;&gt;&lt;animate attributeName=&#34;opacity&#34; from=&#34;0&#34; to=&#34;1&#34; begin=&#34;1.6s&#34; dur=&#34;0.3s&#34; fill=&#34;freeze&#34;/&gt;req 3&lt;/text&gt;
+    &lt;rect x=&#34;44&#34; y=&#34;216&#34; width=&#34;110&#34; height=&#34;30&#34; rx=&#34;6&#34; fill=&#34;#ffffff&#34; stroke=&#34;#d1242f&#34; opacity=&#34;0&#34;&gt;&lt;animate attributeName=&#34;opacity&#34; from=&#34;0&#34; to=&#34;1&#34; begin=&#34;2.2s&#34; dur=&#34;0.3s&#34; fill=&#34;freeze&#34;/&gt;&lt;/rect&gt;&lt;text x=&#34;99&#34; y=&#34;236&#34; opacity=&#34;0&#34;&gt;&lt;animate attributeName=&#34;opacity&#34; from=&#34;0&#34; to=&#34;1&#34; begin=&#34;2.2s&#34; dur=&#34;0.3s&#34; fill=&#34;freeze&#34;/&gt;req 4&lt;/text&gt;
+  &lt;/g&gt;
+  &lt;text x=&#34;99&#34; y=&#34;268&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#57606a&#34;&gt;queue grows&lt;/text&gt;
+
+  &lt;path d=&#34;M 154 200 H 208&#34; stroke=&#34;#d1242f&#34; stroke-width=&#34;2&#34; stroke-dasharray=&#34;6 4&#34; fill=&#34;none&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;0&#34; to=&#34;-20&#34; dur=&#34;0.8s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/path&gt;
+
+  &lt;rect x=&#34;208&#34; y=&#34;140&#34; width=&#34;136&#34; height=&#34;120&#34; rx=&#34;10&#34; fill=&#34;#ffffff&#34; stroke=&#34;#d1242f&#34; stroke-width=&#34;2&#34;/&gt;
+  &lt;text x=&#34;276&#34; y=&#34;186&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;model slot&lt;/text&gt;
+  &lt;text x=&#34;276&#34; y=&#34;206&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#57606a&#34;&gt;one at a time&lt;/text&gt;
+  &lt;text x=&#34;276&#34; y=&#34;240&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; fill=&#34;#d1242f&#34;&gt;1 / N served&lt;/text&gt;
+
+  &lt;!-- vLLM panel --&gt;
+  &lt;rect x=&#34;400&#34; y=&#34;44&#34; width=&#34;336&#34; height=&#34;340&#34; rx=&#34;12&#34; fill=&#34;#fafbfc&#34; stroke=&#34;#24292f&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;568&#34; y=&#34;70&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;14&#34; font-weight=&#34;600&#34; fill=&#34;#1a7f37&#34;&gt;vLLM&lt;/text&gt;
+
+  &lt;g font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; text-anchor=&#34;middle&#34; fill=&#34;#24292f&#34;&gt;
+    &lt;rect x=&#34;420&#34; y=&#34;96&#34; width=&#34;110&#34; height=&#34;30&#34; rx=&#34;6&#34; fill=&#34;#ffffff&#34; stroke=&#34;#1a7f37&#34;/&gt;&lt;text x=&#34;475&#34; y=&#34;116&#34;&gt;req 1&lt;/text&gt;
+    &lt;rect x=&#34;420&#34; y=&#34;136&#34; width=&#34;110&#34; height=&#34;30&#34; rx=&#34;6&#34; fill=&#34;#ffffff&#34; stroke=&#34;#1a7f37&#34;/&gt;&lt;text x=&#34;475&#34; y=&#34;156&#34;&gt;req 2&lt;/text&gt;
+    &lt;rect x=&#34;420&#34; y=&#34;176&#34; width=&#34;110&#34; height=&#34;30&#34; rx=&#34;6&#34; fill=&#34;#ffffff&#34; stroke=&#34;#1a7f37&#34;/&gt;&lt;text x=&#34;475&#34; y=&#34;196&#34;&gt;req 3&lt;/text&gt;
+  &lt;/g&gt;
+  &lt;text x=&#34;475&#34; y=&#34;240&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#57606a&#34;&gt;in parallel&lt;/text&gt;
+
+  &lt;path d=&#34;M 530 111 C 552 111 552 140 560 140&#34; stroke=&#34;#1a7f37&#34; stroke-width=&#34;2&#34; stroke-dasharray=&#34;6 4&#34; fill=&#34;none&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;0&#34; to=&#34;-20&#34; dur=&#34;0.6s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/path&gt;
+  &lt;path d=&#34;M 530 151 C 552 151 552 160 560 160&#34; stroke=&#34;#1a7f37&#34; stroke-width=&#34;2&#34; stroke-dasharray=&#34;6 4&#34; fill=&#34;none&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;0&#34; to=&#34;-20&#34; dur=&#34;0.6s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/path&gt;
+  &lt;path d=&#34;M 530 191 C 552 191 552 180 560 180&#34; stroke=&#34;#1a7f37&#34; stroke-width=&#34;2&#34; stroke-dasharray=&#34;6 4&#34; fill=&#34;none&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;0&#34; to=&#34;-20&#34; dur=&#34;0.6s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/path&gt;
+
+  &lt;rect x=&#34;560&#34; y=&#34;130&#34; width=&#34;160&#34; height=&#34;120&#34; rx=&#34;10&#34; fill=&#34;#ffffff&#34; stroke=&#34;#1a7f37&#34; stroke-width=&#34;2&#34;/&gt;
+  &lt;text x=&#34;640&#34; y=&#34;176&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;engine&lt;/text&gt;
+  &lt;text x=&#34;640&#34; y=&#34;196&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#57606a&#34;&gt;batch&lt;/text&gt;
+  &lt;rect x=&#34;578&#34; y=&#34;212&#34; width=&#34;124&#34; height=&#34;8&#34; rx=&#34;4&#34; fill=&#34;#d0d7de&#34;/&gt;
+  &lt;rect x=&#34;578&#34; y=&#34;212&#34; width=&#34;20&#34; height=&#34;8&#34; rx=&#34;4&#34; fill=&#34;#1a7f37&#34;&gt;&lt;animate attributeName=&#34;width&#34; values=&#34;20;124;20&#34; dur=&#34;2.5s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/rect&gt;
+  &lt;text x=&#34;640&#34; y=&#34;240&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; fill=&#34;#1a7f37&#34;&gt;3 / 3 concurrent&lt;/text&gt;
+&lt;/svg&gt;
+
+&lt;h2 id=&#34;the-box-before&#34;&gt;
+  The box before
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-box-before&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;kintsugi ran Ollama with eleven models: a few Qwen sizes, Llama 3.x, Phi-4, Granite, an embedding model, and two FLUX diffusion models. The FLUX models moved to a 4090 / M4 because vLLM does not serve diffusion image models. It serves LLMs.&lt;/p&gt;
+&lt;h2 id=&#34;picking-a-model&#34;&gt;
+  Picking a model
+  &lt;a class=&#34;heading-link&#34; href=&#34;#picking-a-model&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;For a 32 GB card the sweet spot is a MoE with sparse active params: fast because only a slice of the network runs per token, small enough to quantize into the card. That pointed at Qwen3-Coder-30B-A3B (30B total, 3.3B active).&lt;/p&gt;
+&lt;p&gt;Then the quantization decision.&lt;/p&gt;
+
+
+&lt;svg viewBox=&#34;0 0 760 300&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34; role=&#34;img&#34; aria-label=&#34;Model quantization decision&#34;&gt;
+  &lt;rect width=&#34;760&#34; height=&#34;300&#34; fill=&#34;#ffffff&#34;/&gt;
+  &lt;text x=&#34;24&#34; y=&#34;28&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;14&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;Qwen3-Coder-30B-A3B on 32 GB&lt;/text&gt;
+  &lt;text x=&#34;24&#34; y=&#34;48&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; fill=&#34;#57606a&#34;&gt;30B total · 3.3B active · MoE&lt;/text&gt;
+
+  &lt;!-- row 1: official AWQ --&gt;
+  &lt;rect x=&#34;24&#34; y=&#34;66&#34; width=&#34;580&#34; height=&#34;56&#34; rx=&#34;10&#34; fill=&#34;#fafbfc&#34; stroke=&#34;#d0d7de&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;48&#34; y=&#34;90&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;Official AWQ&lt;/text&gt;
+  &lt;text x=&#34;48&#34; y=&#34;110&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; fill=&#34;#57606a&#34;&gt;gated · needs HF token and license&lt;/text&gt;
+  &lt;text x=&#34;668&#34; y=&#34;102&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;20&#34; font-weight=&#34;600&#34; fill=&#34;#d1242f&#34;&gt;✗&lt;/text&gt;
+
+  &lt;!-- row 2: official FP8 --&gt;
+  &lt;rect x=&#34;24&#34; y=&#34;134&#34; width=&#34;580&#34; height=&#34;56&#34; rx=&#34;10&#34; fill=&#34;#fafbfc&#34; stroke=&#34;#d0d7de&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;48&#34; y=&#34;158&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;Official FP8&lt;/text&gt;
+  &lt;text x=&#34;48&#34; y=&#34;178&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; fill=&#34;#57606a&#34;&gt;~30.5 GB weights · no KV cache headroom in 32 GB&lt;/text&gt;
+  &lt;text x=&#34;668&#34; y=&#34;170&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;20&#34; font-weight=&#34;600&#34; fill=&#34;#d1242f&#34;&gt;✗&lt;/text&gt;
+
+  &lt;!-- row 3: chosen --&gt;
+  &lt;rect x=&#34;24&#34; y=&#34;202&#34; width=&#34;580&#34; height=&#34;56&#34; rx=&#34;10&#34; fill=&#34;#f6fff8&#34; stroke=&#34;#1a7f37&#34; stroke-width=&#34;2&#34;/&gt;
+  &lt;text x=&#34;48&#34; y=&#34;226&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;cyankiwi INT4&lt;/text&gt;
+  &lt;text x=&#34;48&#34; y=&#34;246&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; fill=&#34;#57606a&#34;&gt;open · ~16 GB · auto-detected (compressed-tensors)&lt;/text&gt;
+  &lt;rect x=&#34;620&#34; y=&#34;214&#34; width=&#34;96&#34; height=&#34;28&#34; rx=&#34;14&#34; fill=&#34;#1a7f37&#34;/&gt;
+  &lt;text x=&#34;668&#34; y=&#34;233&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; font-weight=&#34;600&#34; fill=&#34;#ffffff&#34;&gt;chosen&lt;/text&gt;
+  &lt;path d=&#34;M 648 270 l 12 12 l 22 -22&#34; fill=&#34;none&#34; stroke=&#34;#1a7f37&#34; stroke-width=&#34;3&#34; stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34; pathLength=&#34;1&#34; stroke-dasharray=&#34;1 1&#34; stroke-dashoffset=&#34;1&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;1&#34; to=&#34;0&#34; dur=&#34;0.5s&#34; begin=&#34;1s&#34; fill=&#34;freeze&#34;/&gt;&lt;/path&gt;
+&lt;/svg&gt;
+
+&lt;p&gt;I serve one model, no swap logic. vLLM keeps weights in VRAM for the life of the process, so unlike Ollama there is no load and unload. With one model that is exactly what I want.&lt;/p&gt;
+&lt;h2 id=&#34;how-it-runs&#34;&gt;
+  How it runs
+  &lt;a class=&#34;heading-link&#34; href=&#34;#how-it-runs&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The repo is self-contained: a compose file, a setup script, and a systemd unit. &lt;code&gt;sudo ./scripts/setup.sh&lt;/code&gt; installs Docker and the NVIDIA Container Toolkit if missing, wires the nvidia runtime, installs the unit, and starts the stack. The unit plus &lt;code&gt;restart: unless-stopped&lt;/code&gt; mean the box comes back serving after a reboot.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git clone https://github.com/dashaun/rtx5090-vllm
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;cd&lt;/span&gt; rtx5090-vllm
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo ./scripts/setup.sh
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl localhost:8000/v1/models
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;svg viewBox=&#34;0 0 760 400&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34; role=&#34;img&#34; aria-label=&#34;kintsugi architecture&#34;&gt;
+  &lt;rect width=&#34;760&#34; height=&#34;400&#34; fill=&#34;#ffffff&#34;/&gt;
+  &lt;text x=&#34;24&#34; y=&#34;28&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;14&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;Agents&lt;/text&gt;
+
+  &lt;g font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34;&gt;
+    &lt;rect x=&#34;24&#34; y=&#34;44&#34; width=&#34;130&#34; height=&#34;56&#34; rx=&#34;8&#34; fill=&#34;#f6f8fa&#34; stroke=&#34;#24292f&#34; stroke-width=&#34;1.5&#34;/&gt;
+    &lt;text x=&#34;89&#34; y=&#34;68&#34; text-anchor=&#34;middle&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;Agent&lt;/text&gt;
+    &lt;text x=&#34;89&#34; y=&#34;86&#34; text-anchor=&#34;middle&#34; fill=&#34;#57606a&#34;&gt;Cline&lt;/text&gt;
+    &lt;rect x=&#34;24&#34; y=&#34;116&#34; width=&#34;130&#34; height=&#34;56&#34; rx=&#34;8&#34; fill=&#34;#f6f8fa&#34; stroke=&#34;#24292f&#34; stroke-width=&#34;1.5&#34;/&gt;
+    &lt;text x=&#34;89&#34; y=&#34;140&#34; text-anchor=&#34;middle&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;Agent&lt;/text&gt;
+    &lt;text x=&#34;89&#34; y=&#34;158&#34; text-anchor=&#34;middle&#34; fill=&#34;#57606a&#34;&gt;LangChain&lt;/text&gt;
+    &lt;rect x=&#34;24&#34; y=&#34;188&#34; width=&#34;130&#34; height=&#34;56&#34; rx=&#34;8&#34; fill=&#34;#f6f8fa&#34; stroke=&#34;#24292f&#34; stroke-width=&#34;1.5&#34;/&gt;
+    &lt;text x=&#34;89&#34; y=&#34;212&#34; text-anchor=&#34;middle&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;Agent&lt;/text&gt;
+    &lt;text x=&#34;89&#34; y=&#34;230&#34; text-anchor=&#34;middle&#34; fill=&#34;#57606a&#34;&gt;Qwen Code&lt;/text&gt;
+  &lt;/g&gt;
+
+  &lt;g stroke=&#34;#0969da&#34; stroke-width=&#34;2&#34; stroke-dasharray=&#34;6 4&#34; fill=&#34;none&#34;&gt;
+    &lt;path d=&#34;M 154 72 H 300&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;0&#34; to=&#34;-20&#34; dur=&#34;0.8s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/path&gt;
+    &lt;path d=&#34;M 154 144 H 300&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;0&#34; to=&#34;-20&#34; dur=&#34;0.8s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/path&gt;
+    &lt;path d=&#34;M 154 216 H 300&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;0&#34; to=&#34;-20&#34; dur=&#34;0.8s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/path&gt;
+  &lt;/g&gt;
+
+  &lt;rect x=&#34;300&#34; y=&#34;40&#34; width=&#34;250&#34; height=&#34;320&#34; rx=&#34;12&#34; fill=&#34;#fafbfc&#34; stroke=&#34;#24292f&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;425&#34; y=&#34;66&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;vLLM · Docker&lt;/text&gt;
+
+  &lt;rect x=&#34;322&#34; y=&#34;84&#34; width=&#34;206&#34; height=&#34;56&#34; rx=&#34;8&#34; fill=&#34;#ffffff&#34; stroke=&#34;#0969da&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;425&#34; y=&#34;106&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; font-weight=&#34;600&#34; fill=&#34;#0969da&#34;&gt;API server&lt;/text&gt;
+  &lt;text x=&#34;425&#34; y=&#34;124&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#57606a&#34;&gt;POST /v1/chat/completions&lt;/text&gt;
+
+  &lt;rect x=&#34;322&#34; y=&#34;164&#34; width=&#34;206&#34; height=&#34;64&#34; rx=&#34;8&#34; fill=&#34;#ffffff&#34; stroke=&#34;#24292f&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;425&#34; y=&#34;186&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;Engine&lt;/text&gt;
+  &lt;text x=&#34;425&#34; y=&#34;204&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#57606a&#34;&gt;continuous batching&lt;/text&gt;
+  &lt;rect x=&#34;340&#34; y=&#34;214&#34; width=&#34;170&#34; height=&#34;6&#34; rx=&#34;3&#34; fill=&#34;#d0d7de&#34;/&gt;
+  &lt;rect x=&#34;340&#34; y=&#34;214&#34; width=&#34;20&#34; height=&#34;6&#34; rx=&#34;3&#34; fill=&#34;#0969da&#34;&gt;&lt;animate attributeName=&#34;width&#34; values=&#34;20;170;20&#34; dur=&#34;3s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/rect&gt;
+
+  &lt;rect x=&#34;322&#34; y=&#34;252&#34; width=&#34;206&#34; height=&#34;64&#34; rx=&#34;8&#34; fill=&#34;#ffffff&#34; stroke=&#34;#24292f&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;425&#34; y=&#34;274&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;qwen3-coder&lt;/text&gt;
+  &lt;text x=&#34;425&#34; y=&#34;292&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#57606a&#34;&gt;30B-A3B · INT4 · 16 GB&lt;/text&gt;
+
+  &lt;g stroke=&#34;#24292f&#34; stroke-width=&#34;2&#34; fill=&#34;none&#34;&gt;
+    &lt;path d=&#34;M 425 140 V 164&#34;/&gt;
+    &lt;path d=&#34;M 425 228 V 252&#34;/&gt;
+    &lt;path d=&#34;M 528 284 H 590&#34;/&gt;
+  &lt;/g&gt;
+
+  &lt;rect x=&#34;590&#34; y=&#34;120&#34; width=&#34;150&#34; height=&#34;130&#34; rx=&#34;12&#34; fill=&#34;#f6f8fa&#34; stroke=&#34;#24292f&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;rect x=&#34;590&#34; y=&#34;120&#34; width=&#34;150&#34; height=&#34;130&#34; rx=&#34;12&#34; fill=&#34;none&#34; stroke=&#34;#0969da&#34; stroke-width=&#34;2&#34;&gt;&lt;animate attributeName=&#34;opacity&#34; values=&#34;0.3;1;0.3&#34; dur=&#34;2s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/rect&gt;
+  &lt;text x=&#34;665&#34; y=&#34;146&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;RTX 5090&lt;/text&gt;
+  &lt;g fill=&#34;#0969da&#34;&gt;
+    &lt;rect x=&#34;612&#34; y=&#34;162&#34; width=&#34;20&#34; height=&#34;20&#34; rx=&#34;4&#34;/&gt;
+    &lt;rect x=&#34;640&#34; y=&#34;162&#34; width=&#34;20&#34; height=&#34;20&#34; rx=&#34;4&#34;/&gt;
+    &lt;rect x=&#34;668&#34; y=&#34;162&#34; width=&#34;20&#34; height=&#34;20&#34; rx=&#34;4&#34;/&gt;
+    &lt;rect x=&#34;612&#34; y=&#34;190&#34; width=&#34;20&#34; height=&#34;20&#34; rx=&#34;4&#34;/&gt;
+    &lt;rect x=&#34;640&#34; y=&#34;190&#34; width=&#34;20&#34; height=&#34;20&#34; rx=&#34;4&#34;/&gt;
+    &lt;rect x=&#34;668&#34; y=&#34;190&#34; width=&#34;20&#34; height=&#34;20&#34; rx=&#34;4&#34;/&gt;
+  &lt;/g&gt;
+  &lt;text x=&#34;665&#34; y=&#34;238&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#57606a&#34;&gt;32 GB&lt;/text&gt;
+
+  &lt;path d=&#34;M 590 300 C 500 340, 320 340, 154 240&#34; fill=&#34;none&#34; stroke=&#34;#1a7f37&#34; stroke-width=&#34;2&#34; stroke-dasharray=&#34;6 4&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;0&#34; to=&#34;-20&#34; dur=&#34;1.2s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/path&gt;
+  &lt;text x=&#34;330&#34; y=&#34;362&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#1a7f37&#34;&gt;tokens back to agents&lt;/text&gt;
+
+  &lt;text x=&#34;24&#34; y=&#34;382&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#57606a&#34;&gt;kintsugi · Ubuntu · systemd restarts it on boot&lt;/text&gt;
+&lt;/svg&gt;
+
+&lt;h2 id=&#34;what-bit-us&#34;&gt;
+  What bit us
+  &lt;a class=&#34;heading-link&#34; href=&#34;#what-bit-us&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Everything looked simple until it ran. Four problems, each with a clear cause once we found it.&lt;/p&gt;
+
+
+&lt;svg viewBox=&#34;0 0 760 500&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34; role=&#34;img&#34; aria-label=&#34;Deployment problems and fixes&#34;&gt;
+  &lt;rect width=&#34;760&#34; height=&#34;500&#34; fill=&#34;#ffffff&#34;/&gt;
+  &lt;line x1=&#34;60&#34; y1=&#34;80&#34; x2=&#34;60&#34; y2=&#34;440&#34; stroke=&#34;#d0d7de&#34; stroke-width=&#34;3&#34; pathLength=&#34;1&#34; stroke-dasharray=&#34;1 1&#34; stroke-dashoffset=&#34;1&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;1&#34; to=&#34;0&#34; dur=&#34;1.6s&#34; fill=&#34;freeze&#34;/&gt;&lt;/line&gt;
+
+  &lt;g font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34;&gt;
+    &lt;!-- item 1 --&gt;
+    &lt;circle cx=&#34;60&#34; cy=&#34;96&#34; r=&#34;16&#34; fill=&#34;#24292f&#34;/&gt;&lt;text x=&#34;60&#34; y=&#34;101&#34; text-anchor=&#34;middle&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#ffffff&#34;&gt;1&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;88&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#d1242f&#34;&gt;nvidia-smi fails&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;108&#34; font-size=&#34;12&#34; fill=&#34;#57606a&#34;&gt;cause: driver updated, kernel module stale, box up 10 days&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;126&#34; font-size=&#34;12&#34; fill=&#34;#1a7f37&#34;&gt;fix: reboot&lt;/text&gt;
+
+    &lt;!-- item 2 --&gt;
+    &lt;circle cx=&#34;60&#34; cy=&#34;196&#34; r=&#34;16&#34; fill=&#34;#24292f&#34;/&gt;&lt;text x=&#34;60&#34; y=&#34;201&#34; text-anchor=&#34;middle&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#ffffff&#34;&gt;2&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;188&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#d1242f&#34;&gt;unknown or invalid runtime name: nvidia&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;208&#34; font-size=&#34;12&#34; fill=&#34;#57606a&#34;&gt;cause: rootless vs system Docker; daemon.json not reloaded&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;226&#34; font-size=&#34;12&#34; fill=&#34;#1a7f37&#34;&gt;fix: target system daemon, systemctl restart docker&lt;/text&gt;
+
+    &lt;!-- item 3 --&gt;
+    &lt;circle cx=&#34;60&#34; cy=&#34;296&#34; r=&#34;16&#34; fill=&#34;#24292f&#34;/&gt;&lt;text x=&#34;60&#34; y=&#34;301&#34; text-anchor=&#34;middle&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#ffffff&#34;&gt;3&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;288&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#d1242f&#34;&gt;compressed-tensors does not match awq&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;308&#34; font-size=&#34;12&#34; fill=&#34;#57606a&#34;&gt;cause: model is INT4 compressed-tensors despite the AWQ name&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;326&#34; font-size=&#34;12&#34; fill=&#34;#1a7f37&#34;&gt;fix: drop --quantization awq, let vLLM read the config&lt;/text&gt;
+
+    &lt;!-- item 4 --&gt;
+    &lt;circle cx=&#34;60&#34; cy=&#34;396&#34; r=&#34;16&#34; fill=&#34;#24292f&#34;/&gt;&lt;text x=&#34;60&#34; y=&#34;401&#34; text-anchor=&#34;middle&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#ffffff&#34;&gt;4&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;388&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#d1242f&#34;&gt;17 GB of weights in a literal ~ dir&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;408&#34; font-size=&#34;12&#34; fill=&#34;#57606a&#34;&gt;cause: Compose does not expand ~ in volume paths&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;426&#34; font-size=&#34;12&#34; fill=&#34;#1a7f37&#34;&gt;fix: mount ./.cache/huggingface relative to the project&lt;/text&gt;
+  &lt;/g&gt;
+&lt;/svg&gt;
+
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;nvidia-smi&lt;/code&gt; failed with a driver/library mismatch. The driver had been updated, the kernel module was stale, and the box had been up for ten days. Fix: reboot.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;docker compose up&lt;/code&gt; died with &amp;ldquo;unknown or invalid runtime name: nvidia&amp;rdquo;. The box runs rootless Docker as the user context, but the systemd unit talks to the system daemon. The daemon had a daemon.json declaring the nvidia runtime that it was not loading. Fix: restart Docker and target the system daemon. Rootless Docker is not supported by this setup, and that is now documented.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;vLLM crashed on startup: the model config says compressed-tensors, and I had forced &lt;code&gt;--quantization awq&lt;/code&gt;. The &amp;ldquo;AWQ&amp;rdquo; in the repo name lied. Fix: delete the flag and let vLLM read the config.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;A few days in I found 17 GB of model weights inside a directory literally named &lt;code&gt;~&lt;/code&gt;. Compose does not expand &lt;code&gt;~&lt;/code&gt; in volume paths, so the cache mount created a literal directory. Fix: mount &lt;code&gt;./.cache/huggingface&lt;/code&gt;, which Compose resolves relative to the project. The cache is gitignored, so the repo stays clean.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;decisions-that-stuck&#34;&gt;
+  Decisions that stuck
+  &lt;a class=&#34;heading-link&#34; href=&#34;#decisions-that-stuck&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;System Docker, not rootless, for the service. The systemd unit runs compose as root, and rootless Docker ignores /etc/docker/daemon.json.&lt;/li&gt;
+&lt;li&gt;compressed-tensors INT4 over a gated AWQ build and an FP8 build that does not fit.&lt;/li&gt;
+&lt;li&gt;One model, no swap. A second model means a second compose service, not Ollama-style load and unload.&lt;/li&gt;
+&lt;li&gt;Model cache in the repo under &lt;code&gt;.cache&lt;/code&gt;, so &lt;code&gt;git pull&lt;/code&gt; plus a restart updates the stack without re-downloading weights.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;where-it-landed&#34;&gt;
+  Where it landed
+  &lt;a class=&#34;heading-link&#34; href=&#34;#where-it-landed&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Public repo: &lt;a href=&#34;https://github.com/dashaun/rtx5090-vllm&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/dashaun/rtx5090-vllm&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;An OpenAI-compatible endpoint at &lt;code&gt;http://kintsugi:8000/v1&lt;/code&gt; serving &lt;code&gt;qwen3-coder&lt;/code&gt;. Point Spring AI or your favorite agent harness at it. Ollama is uninstalled and its ~94 GB of models are gone from the box.&lt;/p&gt;
+&lt;p&gt;If you have outgrown Ollama, clone it and take it for a spin. The setup script is the whole story: one command, reboot safe.&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Two DGX Sparks, One Model: DeepSeek-V4-Flash with a 1M-Token Context</title>
+            <link>https://dashaun.com/posts/deepseek-v4-flash-2x-dgx-spark/</link>
+            <pubDate>Mon, 14 Sep 2026 20:00:00 -0700</pubDate>
+            <author>dashaun@dashaun.com (DaShaun Carter)</author>
+            <guid>https://dashaun.com/posts/deepseek-v4-flash-2x-dgx-spark/</guid>
+            <description>&lt;p&gt;I got some new hardware.&lt;/p&gt;
+&lt;p&gt;Two NVIDIA DGX Sparks. I connected them to each other with two QSFP cables, and put both of them on my Tailscale network.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/sparks.jpg&#34; alt=&#34;Both Sparks on the bench, joined by the two QSFP cables&#34;&gt;&lt;/p&gt;
+&lt;p&gt;A single Spark has 128 GB of memory, shared between the CPU and the GPU. That is a lot of memory. It is also not the point. I did not buy two of them to run two copies of the same small model. I wanted to run something that &lt;strong&gt;needed both nodes&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;NVIDIA even has a &lt;a href=&#34;https://build.nvidia.com/spark/vllm/multi-node&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;playbook for running vLLM across two Sparks&lt;/a&gt;. Follow the steps, pick a big model, done.&lt;/p&gt;
+&lt;p&gt;Easy, right?&lt;/p&gt;
+&lt;p&gt;Well, eventually.&lt;/p&gt;
+&lt;p&gt;I got it working. DeepSeek-V4-Flash is running across both Sparks with the full 1,048,576-token context. It was not as easy as I hoped, so I made a repo to keep track of what I did: &lt;a href=&#34;https://github.com/dashaun/deepseek-v4-flash-2x-dgx-spark&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;dashaun/deepseek-v4-flash-2x-dgx-spark&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This post is the story behind that repo.&lt;/p&gt;
+&lt;h2 id=&#34;the-rules-i-set-for-myself&#34;&gt;
+  The rules I set for myself
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-rules-i-set-for-myself&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Before I started, I decided on a few constraints:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;vLLM and Ray run in Docker containers.&lt;/strong&gt; Nothing gets installed on the Spark hosts.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The head node&lt;/strong&gt; is one Spark, and &lt;strong&gt;the worker node&lt;/strong&gt; is the other.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The model has to need both nodes.&lt;/strong&gt; Tensor parallelism across the two GPUs, over the QSFP link.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Everything is driven from my Mac&lt;/strong&gt; over SSH. No logging in to each node and typing commands in two terminals.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;I did this work in a long session with &lt;a href=&#34;https://claude.com/claude-code&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Claude Code&lt;/a&gt; driving the terminal, while I made the decisions. That turned out to be a good fit for this kind of project: lots of reading docs, checking logs, and trying the next thing. It also meant that when something failed, we stopped and figured out &lt;em&gt;why&lt;/em&gt; before changing anything.&lt;/p&gt;
+&lt;h2 id=&#34;picking-the-model&#34;&gt;
+  Picking the model
+  &lt;a class=&#34;heading-link&#34; href=&#34;#picking-the-model&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;My first instinct was &amp;ldquo;the latest DeepSeek.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;The latest one, DeepSeek-V4.1-Flash, needs about 614 GB of memory at its released precision. The only full-weight DGX Spark setup I could find uses &lt;strong&gt;four&lt;/strong&gt; Sparks. There is a community 2.9-bit quantization that squeezes it onto two, but that means a different base image and very aggressive quantization.&lt;/p&gt;
+&lt;p&gt;So I settled on &lt;strong&gt;DeepSeek-V4-Flash&lt;/strong&gt; (the 0731 release): a 284B-parameter mixture-of-experts model, 13B active, about 156 GB of weights. Too big for one Spark. Just right for two.&lt;/p&gt;
+&lt;h2 id=&#34;picking-the-container-image&#34;&gt;
+  Picking the container image
+  &lt;a class=&#34;heading-link&#34; href=&#34;#picking-the-container-image&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The NVIDIA playbook uses the NGC vLLM container. My plan was to use the newest NGC image.&lt;/p&gt;
+&lt;p&gt;It did not take long to find out that nobody runs DeepSeek V4 on a DGX Spark with the stock images. The GB10 (compute capability 12.1) needs kernels that just are not in them.&lt;/p&gt;
+&lt;p&gt;The community has done a lot of work here. I went with &lt;a href=&#34;https://github.com/eugr/spark-vllm-docker&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;eugr/spark-vllm-docker&lt;/a&gt; and its &lt;code&gt;spark-vllm-b12x&lt;/code&gt; image, which has a recipe for exactly this model on two Sparks. I pinned the image by digest, so both nodes always run identical bits.&lt;/p&gt;
+&lt;p&gt;eugr&amp;rsquo;s tooling defaults to running without Ray. I wanted Ray, and I wanted nothing copied onto the hosts, so I wrote my own &lt;code&gt;start.sh&lt;/code&gt;, &lt;code&gt;stop.sh&lt;/code&gt; and &lt;code&gt;status.sh&lt;/code&gt; that drive both nodes over SSH. They run &lt;code&gt;docker&lt;/code&gt; commands on each Spark and install nothing.&lt;/p&gt;
+&lt;h2 id=&#34;two-cables-four-links&#34;&gt;
+  Two cables, four links
+  &lt;a class=&#34;heading-link&#34; href=&#34;#two-cables-four-links&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Here is something I did not expect: two QSFP cables show up as &lt;strong&gt;four&lt;/strong&gt; RoCE devices on each Spark.&lt;/p&gt;
+&lt;p&gt;Each physical port appears twice, once for each of the GB10&amp;rsquo;s PCIe connections. So &lt;code&gt;rocep1s0f0&lt;/code&gt; and &lt;code&gt;roceP2p1s0f0&lt;/code&gt; are the same cable.&lt;/p&gt;
+&lt;p&gt;That matters, because NCCL has to be told which devices to use. I ended up writing &lt;code&gt;network.sh&lt;/code&gt;, which reads everything from both nodes (ports, devices, IPs, MTU, the RoCE v2 GID index) and checks it. It doesn&amp;rsquo;t change any host settings; it just tells you what you have and whether it&amp;rsquo;s right.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/network-verify.svg&#34; alt=&#34;Output of ./network.sh verify: four QSFP links at 200G with MTU 9000, RoCE ACTIVE, and every check passing. Hostnames and paths are blurred.&#34;&gt;&lt;/p&gt;
+&lt;p&gt;With all four devices in use, an NCCL all-reduce between the nodes measured &lt;strong&gt;145–185 Gbit/s&lt;/strong&gt;, over RDMA, not TCP. Later load tests showed traffic split evenly across all four devices.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/roce-balance.svg&#34; alt=&#34;RoCE traffic per device during a long-prompt load test: about 166 GB on each of the four devices, two per QSFP port&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;it-works-the-first-time&#34;&gt;
+  It works! (the first time)
+  &lt;a class=&#34;heading-link&#34; href=&#34;#it-works-the-first-time&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The first full start took about four and a half minutes: load the weights (156 GB total, split across both nodes), compile, capture CUDA graphs. Then the API came up.&lt;/p&gt;
+&lt;p&gt;vLLM&amp;rsquo;s &lt;code&gt;--max-model-len auto&lt;/code&gt; picked the full 1M-token context. A single request ran at around 41–52 tokens per second, and eight concurrent requests reached 88 tokens per second in total.&lt;/p&gt;
+&lt;p&gt;I thought I was done.&lt;/p&gt;
+&lt;h2 id=&#34;it-doesnt-work-the-second-time&#34;&gt;
+  It doesn&amp;rsquo;t work (the second time)
+  &lt;a class=&#34;heading-link&#34; href=&#34;#it-doesnt-work-the-second-time&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Before sharing anything, I wanted to prove the whole thing survives a clean stop and start.&lt;/p&gt;
+&lt;p&gt;It did not.&lt;/p&gt;
+&lt;p&gt;The second start failed while warming up the model, with an assertion deep in vLLM&amp;rsquo;s DeepSeek-V4 attention code:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;assert active_topk_width &amp;gt;= cm.max_seq_len // self.compress_ratio
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;AssertionError
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;It turned out this start had about 3 GiB less memory available for the KV cache than the first one. So &lt;code&gt;auto&lt;/code&gt; quietly shrank the context from 1,048,576 to 937,472 tokens, and part of the attention code still assumed the full length.&lt;/p&gt;
+&lt;p&gt;Same machines. Same image. Same settings. Different result.&lt;/p&gt;
+&lt;p&gt;I pinned the context at 524,288 tokens and it started cleanly. Half the context, but stable.&lt;/p&gt;
+&lt;h2 id=&#34;the-os-update-surprise&#34;&gt;
+  The OS update surprise
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-os-update-surprise&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Then I ran &lt;code&gt;sudo apt update&lt;/code&gt; and &lt;code&gt;sudo apt upgrade -y&lt;/code&gt; and rebooted both nodes.&lt;/p&gt;
+&lt;p&gt;The upgrade pulled in DGX OS OTA 7.6.0 and a new kernel: 7.0 instead of 6.17. Everything below the kernel stayed the same (driver, ConnectX firmware), and all four links came back healthy.&lt;/p&gt;
+&lt;p&gt;A reboot also taught me that nothing restarts on its own. The containers are left &amp;ldquo;Exited&amp;rdquo;, and &lt;code&gt;./stop.sh &amp;amp;&amp;amp; ./start.sh&lt;/code&gt; brings everything back.&lt;/p&gt;
+&lt;h2 id=&#34;chasing-the-1m-context&#34;&gt;
+  Chasing the 1M context
+  &lt;a class=&#34;heading-link&#34; href=&#34;#chasing-the-1m-context&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I really wanted the full context back, so I pinned &lt;code&gt;--max-model-len 1048576&lt;/code&gt; and tried again.&lt;/p&gt;
+&lt;p&gt;This time vLLM refused to start. The KV cache needed 10.06 GiB, and it had 10.03 GiB.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;30 MiB short.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The fix I reached for was to give vLLM a bigger share of memory, so I raised &lt;code&gt;--gpu-memory-utilization&lt;/code&gt; from 0.85 to 0.87.&lt;/p&gt;
+&lt;p&gt;That froze &lt;strong&gt;both&lt;/strong&gt; Sparks.&lt;/p&gt;
+&lt;p&gt;SSH stopped answering. Ping went from under a millisecond to several seconds. After 30 minutes of waiting, they needed a hard power cycle. The kernel logs from that boot showed endless &amp;ldquo;Under memory pressure&amp;rdquo; messages right up until they stopped. I am just glad nothing got corrupted.&lt;/p&gt;
+&lt;p&gt;That was the most important lesson of the whole project: &lt;strong&gt;on a DGX Spark, the GPU and the operating system share the same memory.&lt;/strong&gt; A memory setting for the GPU is also a memory setting for the OS. At 0.87, vLLM gave the KV cache 16.6 GiB and left the machines nothing to breathe with.&lt;/p&gt;
+&lt;h2 id=&#34;the-fix-stop-letting-it-guess&#34;&gt;
+  The fix: stop letting it guess
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-fix-stop-letting-it-guess&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;After the power cycle, I looked at what else was running on each node. The desktop (GDM, GNOME, Xorg) was using about 0.8 GB, so I turned it off. I will never use a desktop on these machines.&lt;/p&gt;
+&lt;p&gt;But freeing host memory was not the real fix. The real problem was that vLLM &lt;strong&gt;measures&lt;/strong&gt; how much memory it can use for the KV cache at startup, and that measurement moved around a lot:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/kv-cache-per-start.svg&#34; alt=&#34;KV cache memory per start: 12.84, 9.66, 14.35 and 10.03 GiB at utilization 0.85, 16.6 GiB at 0.87 which froze both nodes, and a fixed 11 GiB that fits the 10.06 GiB a 1M-token request needs&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Five starts, same settings, anywhere from 9.66 to 16.6 GiB. The 1M context fit on some of them and not on others.&lt;/p&gt;
+&lt;p&gt;vLLM has a flag for this: &lt;code&gt;--kv-cache-memory-bytes&lt;/code&gt;. Instead of measuring, it uses exactly the size you give it. I set it to &lt;code&gt;11G&lt;/code&gt;, enough for one full 1M-token request plus about 9% headroom, and well below the sizes that had run stably.&lt;/p&gt;
+&lt;p&gt;Every start now behaves the same.&lt;/p&gt;
+&lt;h2 id=&#34;did-the-1m-context-actually-work&#34;&gt;
+  Did the 1M context actually work?
+  &lt;a class=&#34;heading-link&#34; href=&#34;#did-the-1m-context-actually-work&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Configured is not the same as working, so I tested it with real long prompts.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;129K-token prompts:&lt;/strong&gt; about 63 seconds to the first token.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Four 129K-token prompts at once:&lt;/strong&gt; the slowest waited 228 seconds. The prompts are processed one after another, so the waits stack up.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;A 904,911-token prompt:&lt;/strong&gt; 12.2 minutes to the first token, then 42 tokens per second. No errors, and the server stayed healthy.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;images/ttft.svg&#34; alt=&#34;Time to first token for long prompts: 62.6 s for one 129K-token prompt, 114.6 s and 227.7 s for the slowest of 2 and 4 concurrent prompts, and 729 s for one 905K-token prompt&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Free memory on both hosts stayed above 8 GB the whole time.&lt;/p&gt;
+&lt;p&gt;The full 1M-token context works end to end.&lt;/p&gt;
+&lt;h2 id=&#34;why-i-made-a-repo&#34;&gt;
+  Why I made a repo
+  &lt;a class=&#34;heading-link&#34; href=&#34;#why-i-made-a-repo&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;By the end I had scripts, a network checker, a load tester, a memory-sizing rule, and a list of things that had bitten me. Next time I rebuild these nodes, or someone else tries the same thing, I don&amp;rsquo;t want to rediscover all of it.&lt;/p&gt;
+&lt;p&gt;So I wrote it down: &lt;a href=&#34;https://github.com/dashaun/deepseek-v4-flash-2x-dgx-spark&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;dashaun/deepseek-v4-flash-2x-dgx-spark&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;It includes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;start.sh&lt;/code&gt;, &lt;code&gt;stop.sh&lt;/code&gt;, &lt;code&gt;status.sh&lt;/code&gt;:&lt;/strong&gt; bring both nodes up and down from one machine, with nothing installed on the hosts.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;network.sh&lt;/code&gt;:&lt;/strong&gt; discover and verify the QSFP/RoCE setup, and write the right settings into the config.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;loadtest.py&lt;/code&gt;:&lt;/strong&gt; concurrency and long-prompt tests, with per-cable RoCE traffic.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;A README&lt;/strong&gt; with the measured results, the memory-sizing rules, troubleshooting for every failure above, and links to all the sources and community projects I leaned on.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It is &lt;strong&gt;experimental&lt;/strong&gt;. It was tested on one pair of Sparks, it depends on a community container image with a vLLM development build, and the API has no authentication. The README says all of that up front.&lt;/p&gt;
+&lt;h2 id=&#34;what-i-learned&#34;&gt;
+  What I learned
+  &lt;a class=&#34;heading-link&#34; href=&#34;#what-i-learned&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Two QSFP cables are four RoCE devices.&lt;/strong&gt; Use all four, and verify them before you blame the model.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The newest model is not always the right model.&lt;/strong&gt; Start from what fits.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Stock images are not enough for new hardware.&lt;/strong&gt; The community builds the good stuff first. Use it, credit it, and pin it.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Test a clean restart before you celebrate.&lt;/strong&gt; My first success hid a problem that only showed up on the second start.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;On unified memory, GPU memory settings are OS memory settings.&lt;/strong&gt; Be conservative, and don&amp;rsquo;t nudge them &amp;ldquo;just a little&amp;rdquo; on a live system.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Don&amp;rsquo;t let the runtime guess when you can tell it.&lt;/strong&gt; A fixed KV cache size turned &amp;ldquo;sometimes works&amp;rdquo; into &amp;ldquo;always works.&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Write it down.&lt;/strong&gt; That is what the repo is for.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If you have a pair of DGX Sparks, give it a try, and let me know what breaks.&lt;/p&gt;
+&lt;h2 id=&#34;a-note-on-how-this-post-was-edited&#34;&gt;
+  A note on how this post was edited
+  &lt;a class=&#34;heading-link&#34; href=&#34;#a-note-on-how-this-post-was-edited&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I finished editing this blog post using &lt;a href=&#34;https://opencode.ai&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;OpenCode&lt;/a&gt; and DeepSeek V4 Flash, running on the exact setup this post describes.&lt;/p&gt;
+&lt;p&gt;DeepSeek V4 Flash and OpenCode work so well together that I dropped my two $200/month subscriptions (Claude and Codex) and switched to a $200/year subscription and a $20/month subscription instead. The savings are real, and I&amp;rsquo;m getting better results.&lt;/p&gt;
+&lt;p&gt;In about two years, this will have paid for itself. Until then, I&amp;rsquo;m going to be token-maxing to get the most bang for the buck.&lt;/p&gt;
+&lt;h2 id=&#34;see-also&#34;&gt;
+  See also
+  &lt;a class=&#34;heading-link&#34; href=&#34;#see-also&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/dashaun/deepseek-v4-flash-2x-dgx-spark&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;dashaun/deepseek-v4-flash-2x-dgx-spark&lt;/a&gt; — the repo with the scripts, network checker, load tester, and notes.&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Why Upstream Testing and the N-0 Life Matter for OSS (Presentation)</title>
+            <link>https://dashaun.com/posts/docs_n-0-life-and-upstream-testing-for-oss/</link>
+            <pubDate>Thu, 10 Sep 2026 08:00:00 -0700</pubDate>
+            <author>dashaun@dashaun.com (DaShaun Carter)</author>
+            <guid>https://dashaun.com/posts/docs_n-0-life-and-upstream-testing-for-oss/</guid>
+            <description></description>
+        </item>
+        
+        <item>
+            <title>Building Resilient Microservices with Spring Cloud (Workshop)</title>
+            <link>https://dashaun.com/posts/docs_building-resilient-microservices-with-spring-cloud/</link>
+            <pubDate>Wed, 09 Sep 2026 08:50:00 -0700</pubDate>
+            <author>dashaun@dashaun.com (DaShaun Carter)</author>
+            <guid>https://dashaun.com/posts/docs_building-resilient-microservices-with-spring-cloud/</guid>
+            <description></description>
+        </item>
+        
+    </channel>
+</rss>

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+  Self-Hosting Kev: A TypeSafe-SystemOne Decision Model on My Own GPU · DaShaun
+</title>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light dark">
+
+
+
+
+<meta name="author" content="DaShaun Carter">
+<meta name="description" content="Jev&#39;s System One decision API, self-hosted with Kev-4B behind docker compose. Calibrated noul/choice/score answers on my own RTX 4090, no data leaving the box.">
+<meta name="keywords" content="dashaun,blog,developer,personal">
+<meta name="fediverse:creator" content="" />
+
+
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:image" content="https://dashaun.com/posts/self-hosting-kev-systemone/images/feature.png">
+	<meta name="twitter:title" content="Self-Hosting Kev: A TypeSafe-SystemOne Decision Model on My Own GPU">
+	<meta name="twitter:description" content="Jev&#39;s System One decision API, self-hosted with Kev-4B behind docker compose. Calibrated noul/choice/score answers on my own RTX 4090, no data leaving the box.">
+
+<meta property="og:url" content="https://dashaun.com/posts/self-hosting-kev-systemone/">
+	<meta property="og:site_name" content="DaShaun">
+	<meta property="og:title" content="Self-Hosting Kev: A TypeSafe-SystemOne Decision Model on My Own GPU">
+	<meta property="og:description" content="Jev&#39;s System One decision API, self-hosted with Kev-4B behind docker compose. Calibrated noul/choice/score answers on my own RTX 4090, no data leaving the box.">
+	<meta property="og:locale" content="en_us">
+	<meta property="og:type" content="article">
+		<meta property="article:section" content="posts">
+		<meta property="article:published_time" content="2026-09-30T09:00:00-05:00">
+		<meta property="article:modified_time" content="2026-10-01T13:32:23-05:00">
+		<meta property="article:tag" content="Kev">
+		<meta property="article:tag" content="Systemone">
+		<meta property="article:tag" content="Typesafe">
+		<meta property="article:tag" content="Jev">
+		<meta property="article:tag" content="Decision-Model">
+		<meta property="article:tag" content="Llm-Inference">
+		<meta property="og:image" content="https://dashaun.com/posts/self-hosting-kev-systemone/images/feature.png">
+
+
+
+
+<link rel="canonical" href="https://dashaun.com/posts/self-hosting-kev-systemone/">
+
+
+<link rel="preload" href="https://dashaun.com/fonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="https://dashaun.com/fonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+
+
+  
+  
+  <link rel="stylesheet" href="https://dashaun.com/css/coder.min.07092c1350ffd254998dc43a44ae96e617d14af4df4602626878df89189c5e1a.css" integrity="sha256-BwksE1D/0lSZjcQ6RK6W5hfRSvTfRgJiaHjfiRicXho=" crossorigin="anonymous" media="screen" />
+
+
+
+
+
+
+
+
+ 
+  
+    
+    <link rel="stylesheet" href="https://dashaun.com/css/books.min.b87f3c1ea0499269b841b08ad51be908f3793ba89b688237b3fb62096fb0979c.css" integrity="sha256-uH88HqBJkmm4QbCK1RvpCPN5O6ibaII3s/tiCW&#43;wl5w=" crossorigin="anonymous" media="screen" />
+  
+
+  
+    
+    <link rel="stylesheet" href="https://dashaun.com/css/img-fix.min.e21dc1566e151ac8e4c92c09a96fd84d6caa2140c97c30a3cd3a50d53b2948c1.css" integrity="sha256-4h3BVm4VGsjkySwJqW/YTWyqIUDJfDCjzTpQ1TspSME=" crossorigin="anonymous" media="screen" />
+  
+
+
+
+
+
+<link rel="icon" type="image/svg+xml" href="https://dashaun.com/images/favicon.svg" sizes="any">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="https://dashaun.com/img/favicon-16x16.png" sizes="16x16">
+
+<link rel="apple-touch-icon" href="https://dashaun.com/images/apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="https://dashaun.com/images/apple-touch-icon.png">
+
+<link rel="manifest" href="https://dashaun.com/site.webmanifest">
+<link rel="mask-icon" href="https://dashaun.com/images/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+
+<body class="preload-transitions colorscheme-light">
+  
+<div class="float-container">
+    <a id="dark-mode-toggle" class="colorscheme-toggle">
+        <i class="fa-solid fa-adjust fa-fw" aria-hidden="true"></i>
+    </a>
+</div>
+
+
+  <main class="wrapper">
+    <nav class="navigation">
+  <section class="container">
+    <a class="navigation-title" href="https://dashaun.com/">
+      DaShaun
+    </a>
+    
+      <input type="checkbox" id="menu-toggle" />
+      <label class="menu-button float-right" for="menu-toggle">
+        <i class="fa fa-bars fa-fw" aria-hidden="true"></i>
+      </label>
+      <ul class="navigation-list" id="header-navigation-list">
+        
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/let-me-introduce-myself/">About</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/posts/">Posts</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/books/pro-spring-boot-4/">Book</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item">
+              <a class="navigation-link" href="https://dashaun.com/events/">Events</a>
+            </li>
+            
+          
+            
+            <li class="navigation-item" id="twitch-status">
+              <a class="navigation-link" href="https://twitch.tv/javagrunt">Javagrunt</a>
+            </li>
+            
+          
+        
+        
+      </ul>
+    
+  </section>
+</nav>
+<script>
+  class TwitchMenuStatus {
+    constructor() {
+      this.element = document.getElementById('twitch-status');
+      this.checkInterval = 60000; 
+      this.statusEndpoint = 'https://api.dashaun.com/twitch/stream-status';
+    }
+
+    async checkStatus() {
+      try {
+        const response = await fetch(this.statusEndpoint);
+        if (!response.ok) return;
+
+        const data = await response.json();
+        const link = this.element.querySelector('.navigation-link');
+
+        if (data.isLive) {
+          this.element.classList.add('live');
+          link.innerHTML = '🔴 Watch Live Now on Twitch';
+          
+          link.title = `${data.streamTitle} (${data.viewerCount} viewers)`;
+        } else {
+          this.element.classList.remove('live');
+          link.innerHTML = 'Follow me on Twitch';
+          link.title = '';
+        }
+      } catch (error) {
+        
+      }
+    }
+
+    async initialize() {
+      await this.checkStatus();
+      setInterval(() => this.checkStatus(), this.checkInterval);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const twitchStatus = new TwitchMenuStatus();
+    twitchStatus.initialize();
+  });
+</script>
+
+<style>
+  #twitch-status.live .navigation-link {
+    color: #e91916;
+    font-weight: bold;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.8; }
+    100% { opacity: 1; }
+  }
+
+  #twitch-status.live {
+    animation: pulse 2s infinite;
+  }
+</style>
+
+    <div class="content">
+      
+  <section class="container post">
+    <article>
+      <header>
+        <div class="post-title">
+          <h1 class="title">
+            <a class="title-link" href="https://dashaun.com/posts/self-hosting-kev-systemone/">
+              Self-Hosting Kev: A TypeSafe-SystemOne Decision Model on My Own GPU
+            </a>
+          </h1>
+        </div>
+        <div class="post-meta">
+          <div class="date">
+            <span class="posted-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Published
+              <time datetime='2026-09-30T09:00:00-05:00'>
+                September 30, 2026
+              </time>
+            </span>
+            
+            
+            
+            <span class="updated-on">
+              <i class="fa fa-calendar" aria-hidden="true"></i>
+              Updated
+              <time datetime='2026-09-30T09:00:00-05:00'>
+                October 1, 2026
+              </time>
+            </span>
+            
+            <span class="reading-time">
+              <i class="fa-solid fa-clock" aria-hidden="true"></i>
+              3-minute read
+            </span>
+          </div>
+          
+        </div>
+      </header>
+
+      <div>
+        
+          
+          
+          
+          
+            
+            <img src="https://dashaun.com/posts/self-hosting-kev-systemone/images/feature_hu_46b3989b6563c3c.webp" width="1200" height="630" fetchpriority="high" decoding="async" alt="Featured image"/>
+          
+        
+        <h1 id="self-hosting-kev-a-typesafe-systemone-decision-model-on-my-own-gpu">
+  Self-Hosting Kev: A TypeSafe-SystemOne Decision Model on My Own GPU
+  <a class="heading-link" href="#self-hosting-kev-a-typesafe-systemone-decision-model-on-my-own-gpu">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h1>
+<p>I was really interested in <a href="https://typesafe.ai/blog/introducing-system-one-models-and-jev"  class="external-link" target="_blank" rel="noopener">Jev when it came out</a>. A &ldquo;System One&rdquo; model that
+answers typed questions with calibrated probabilities instead of generating
+text — no chat, no prose, just decisions. The Spring team added support for
+Jev within a week of it being released:</p>
+<p><a href="https://spring.io/blog/2026/09/21/spring-ai-typesafe-structured-judgment"  class="external-link" target="_blank" rel="noopener">Spring AI: TypeSafe structured judgment</a></p>
+<p>But I like things local. I have my own resources, and I don&rsquo;t like training
+other people&rsquo;s models with my data. So when <a href="https://github.com/jaredpalmer/kev"  class="external-link" target="_blank" rel="noopener">Kev</a>
+came out exposing the exact same API as Jev — TypeSafe&rsquo;s <code>POST /v1/systemone</code>
+contract — it was an easier drop-in replacement than anything else. Laya and
+the other open System One models are following the same API, which makes the
+whole category swappable.</p>
+<h2 id="what-a-system-one-request-looks-like">
+  What a System One request looks like
+  <a class="heading-link" href="#what-a-system-one-request-looks-like">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>You send a shared <code>state</code> plus a map of typed questions. No system prompt, no
+output schema gymnastics — the model returns a probability distribution per
+question, in one forward pass:</p>
+<p><img src="images/systemone-roundtrip.svg" alt="System One round-trip: typed questions in, calibrated answers out"></p>
+<p>No text is generated, so your code can route on the probabilities directly:
+automate the confident cases, hand the rest to a person.</p>
+<h2 id="why-kev-instead-of-the-hosted-jev">
+  Why Kev instead of the hosted Jev
+  <a class="heading-link" href="#why-kev-instead-of-the-hosted-jev">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Kev is a <a href="https://github.com/jaredpalmer/kev"  class="external-link" target="_blank" rel="noopener">LoRA adapter plus a pointer head</a>
+on a frozen Qwen3.5-4B-Base. The adapter and head are Apache-2.0, the base is
+Apache-2.0, and the whole thing serves TypeSafe&rsquo;s <code>/v1/systemone</code> contract.
+That means the same TypeSafe client code I&rsquo;d use for Jev points at my own box:</p>
+<p><img src="images/same-client-two-homes.svg" alt="Same client, two homes: the TypeSafe client pointed at local Kev instead of hosted Jev"></p>
+<p>That drop-in nature is exactly why I started with Kev. I&rsquo;ll deploy Laya too,
+but when I started, Kev was the easiest path because it exposed the same API
+as Jev.</p>
+<h2 id="what-i-use-it-for">
+  What I use it for
+  <a class="heading-link" href="#what-i-use-it-for">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>I&rsquo;m already using Kev to evaluate and judge summaries generated by other
+models, for my <a href="https://github.com/dashaun-tanzu/recent-cve-news"  class="external-link" target="_blank" rel="noopener">recent-cve-news</a>
+project: one model writes, Kev decides whether the write-up is good enough to
+publish. A typed <code>noul</code> for &ldquo;is this complete?&rdquo; and a <code>score</code> for quality —
+judged on my own GPU, no training data leaving my house.</p>
+<p>I&rsquo;m aware of this version of Kev&rsquo;s limitations (it documents them itself):
+training used states of up to 384 tokens, date arithmetic is unreliable
+without the <code>KEV_DATE_FACTS</code> preprocessor, knowledge is set by the base model,
+and changing option order can change an answer. So I added constraints to fit
+within its parameters — bounded contexts, dates rendered as day counts, and
+stable option ordering.</p>
+<h2 id="the-deployment">
+  The deployment
+  <a class="heading-link" href="#the-deployment">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Still a big fan of Docker and Docker Compose. This is my default approach —
+one command, reboot safe:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>git clone https://github.com/dashaun/kev-poc
+</span></span><span style="display:flex;"><span><span style="color:#007020">cd</span> kev-poc
+</span></span><span style="display:flex;"><span>docker compose up --build -d
+</span></span></code></pre></div><p>The container runs the maker&rsquo;s own <code>kev.serve</code> server, not vLLM. That&rsquo;s a
+deliberate choice: Kev is a pointer head on a frozen Qwen base, and the
+SystemOne <code>/v1/systemone</code> contract isn&rsquo;t servable by vLLM or the SystemOne
+llama.cpp fork. <code>kev.serve</code> is the intended runtime.</p>
+<p><img src="images/kev-architecture.svg" alt="kev-poc deployment architecture"></p>
+<h2 id="try-it">
+  Try it
+  <a class="heading-link" href="#try-it">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>The repo is self-contained and the README has curl and TypeSafe SDK examples:</p>
+<div class="highlight"><pre tabindex="0" style="background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-fallback" data-lang="fallback"><span style="display:flex;"><span>curl -s localhost:8008/v1/systemone -H &#39;content-type: application/json&#39; -d &#39;{
+</span></span><span style="display:flex;"><span>  &#34;state&#34;: &#34;Shoes arrived two weeks late and in the wrong size. Also two charges.&#34;,
+</span></span><span style="display:flex;"><span>  &#34;model&#34;: &#34;kev-latest&#34;,
+</span></span><span style="display:flex;"><span>  &#34;questions&#34;: {
+</span></span><span style="display:flex;"><span>    &#34;department&#34;:  {&#34;type&#34;: &#34;choice&#34;, &#34;instructions&#34;: &#34;Which team?&#34;,
+</span></span><span style="display:flex;"><span>                    &#34;criteria&#34;: {&#34;returns&#34;: &#34;Exchanges, refunds&#34;,
+</span></span><span style="display:flex;"><span>                                 &#34;shipping&#34;: &#34;Delivery status&#34;,
+</span></span><span style="display:flex;"><span>                                 &#34;billing&#34;: &#34;Charges, invoices&#34;}},
+</span></span><span style="display:flex;"><span>    &#34;escalate&#34;:    {&#34;type&#34;: &#34;noul&#34;, &#34;instructions&#34;: &#34;Urgent human attention?&#34;},
+</span></span><span style="display:flex;"><span>    &#34;frustration&#34;: {&#34;type&#34;: &#34;score&#34;, &#34;instructions&#34;: &#34;How frustrated?&#34;,
+</span></span><span style="display:flex;"><span>                    &#34;criteria&#34;: [&#34;Calm&#34;, &#34;Frustrated&#34;, &#34;Very angry&#34;]}
+</span></span><span style="display:flex;"><span>  }}&#39;
+</span></span></code></pre></div><p>Public repo: <a href="https://github.com/dashaun/kev-poc"  class="external-link" target="_blank" rel="noopener">https://github.com/dashaun/kev-poc</a></p>
+<p>I hope it&rsquo;s easy enough for others to use and get started quickly. If not, it&rsquo;s
+still valuable for me — this is my default approach.</p>
+<h2 id="note">
+  Note
+  <a class="heading-link" href="#note">
+    <i class="fa-solid fa-link" aria-hidden="true" title="Link to heading"></i>
+    <span class="sr-only">Link to heading</span>
+  </a>
+</h2>
+<p>Ollama added support for System One models, and I&rsquo;ve also just installed
+<strong>Nimble 9B</strong> — another drop-in for the same <code>/v1/systemone</code> contract.</p>
+
+      </div>
+
+
+      <footer>
+        
+
+
+        
+        
+        
+      </footer>
+    </article>
+
+    
+  </section>
+
+    </div>
+
+    <footer class="footer">
+  <section class="container">
+    ©
+    
+    2026
+     DaShaun Carter 
+    ·
+    
+    Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> & <a href="https://github.com/luizdepra/hugo-coder/" target="_blank" rel="noopener">Coder</a>.
+    
+  </section>
+</footer>
+
+  </main>
+
+  
+
+  
+  
+  <script src="https://dashaun.com/js/coder.min.6ae284be93d2d19dad1f02b0039508d9aab3180a12a06dcc71b0b0ef7825a317.js" integrity="sha256-auKEvpPS0Z2tHwKwA5UI2aqzGAoSoG3McbCw73gloxc="></script>
+  
+
+  
+
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+
+</html>

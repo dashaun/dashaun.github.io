@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Homelab on DaShaun</title>
+        <link>https://dashaun.com/categories/homelab/</link>
+        <description>Recent content in Homelab on DaShaun</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <managingEditor>dashaun@dashaun.com (DaShaun Carter)</managingEditor>
+        <webMaster>dashaun@dashaun.com (DaShaun Carter)</webMaster>
+        <lastBuildDate>Wed, 30 Sep 2026 09:00:00 -0500</lastBuildDate><atom:link href="https://dashaun.com/categories/homelab/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+            <title>Self-Hosting Kev: A TypeSafe-SystemOne Decision Model on My Own GPU</title>
+            <link>https://dashaun.com/posts/self-hosting-kev-systemone/</link>
+            <pubDate>Wed, 30 Sep 2026 09:00:00 -0500</pubDate>
+            <author>dashaun@dashaun.com (DaShaun Carter)</author>
+            <guid>https://dashaun.com/posts/self-hosting-kev-systemone/</guid>
+            <description>&lt;h1 id=&#34;self-hosting-kev-a-typesafe-systemone-decision-model-on-my-own-gpu&#34;&gt;
+  Self-Hosting Kev: A TypeSafe-SystemOne Decision Model on My Own GPU
+  &lt;a class=&#34;heading-link&#34; href=&#34;#self-hosting-kev-a-typesafe-systemone-decision-model-on-my-own-gpu&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;I was really interested in &lt;a href=&#34;https://typesafe.ai/blog/introducing-system-one-models-and-jev&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Jev when it came out&lt;/a&gt;. A &amp;ldquo;System One&amp;rdquo; model that
+answers typed questions with calibrated probabilities instead of generating
+text — no chat, no prose, just decisions. The Spring team added support for
+Jev within a week of it being released:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://spring.io/blog/2026/09/21/spring-ai-typesafe-structured-judgment&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Spring AI: TypeSafe structured judgment&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;But I like things local. I have my own resources, and I don&amp;rsquo;t like training
+other people&amp;rsquo;s models with my data. So when &lt;a href=&#34;https://github.com/jaredpalmer/kev&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Kev&lt;/a&gt;
+came out exposing the exact same API as Jev — TypeSafe&amp;rsquo;s &lt;code&gt;POST /v1/systemone&lt;/code&gt;
+contract — it was an easier drop-in replacement than anything else. Laya and
+the other open System One models are following the same API, which makes the
+whole category swappable.&lt;/p&gt;
+&lt;h2 id=&#34;what-a-system-one-request-looks-like&#34;&gt;
+  What a System One request looks like
+  &lt;a class=&#34;heading-link&#34; href=&#34;#what-a-system-one-request-looks-like&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;You send a shared &lt;code&gt;state&lt;/code&gt; plus a map of typed questions. No system prompt, no
+output schema gymnastics — the model returns a probability distribution per
+question, in one forward pass:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/systemone-roundtrip.svg&#34; alt=&#34;System One round-trip: typed questions in, calibrated answers out&#34;&gt;&lt;/p&gt;
+&lt;p&gt;No text is generated, so your code can route on the probabilities directly:
+automate the confident cases, hand the rest to a person.&lt;/p&gt;
+&lt;h2 id=&#34;why-kev-instead-of-the-hosted-jev&#34;&gt;
+  Why Kev instead of the hosted Jev
+  &lt;a class=&#34;heading-link&#34; href=&#34;#why-kev-instead-of-the-hosted-jev&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Kev is a &lt;a href=&#34;https://github.com/jaredpalmer/kev&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;LoRA adapter plus a pointer head&lt;/a&gt;
+on a frozen Qwen3.5-4B-Base. The adapter and head are Apache-2.0, the base is
+Apache-2.0, and the whole thing serves TypeSafe&amp;rsquo;s &lt;code&gt;/v1/systemone&lt;/code&gt; contract.
+That means the same TypeSafe client code I&amp;rsquo;d use for Jev points at my own box:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/same-client-two-homes.svg&#34; alt=&#34;Same client, two homes: the TypeSafe client pointed at local Kev instead of hosted Jev&#34;&gt;&lt;/p&gt;
+&lt;p&gt;That drop-in nature is exactly why I started with Kev. I&amp;rsquo;ll deploy Laya too,
+but when I started, Kev was the easiest path because it exposed the same API
+as Jev.&lt;/p&gt;
+&lt;h2 id=&#34;what-i-use-it-for&#34;&gt;
+  What I use it for
+  &lt;a class=&#34;heading-link&#34; href=&#34;#what-i-use-it-for&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;m already using Kev to evaluate and judge summaries generated by other
+models, for my &lt;a href=&#34;https://github.com/dashaun-tanzu/recent-cve-news&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;recent-cve-news&lt;/a&gt;
+project: one model writes, Kev decides whether the write-up is good enough to
+publish. A typed &lt;code&gt;noul&lt;/code&gt; for &amp;ldquo;is this complete?&amp;rdquo; and a &lt;code&gt;score&lt;/code&gt; for quality —
+judged on my own GPU, no training data leaving my house.&lt;/p&gt;
+&lt;p&gt;I&amp;rsquo;m aware of this version of Kev&amp;rsquo;s limitations (it documents them itself):
+training used states of up to 384 tokens, date arithmetic is unreliable
+without the &lt;code&gt;KEV_DATE_FACTS&lt;/code&gt; preprocessor, knowledge is set by the base model,
+and changing option order can change an answer. So I added constraints to fit
+within its parameters — bounded contexts, dates rendered as day counts, and
+stable option ordering.&lt;/p&gt;
+&lt;h2 id=&#34;the-deployment&#34;&gt;
+  The deployment
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-deployment&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Still a big fan of Docker and Docker Compose. This is my default approach —
+one command, reboot safe:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git clone https://github.com/dashaun/kev-poc
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;cd&lt;/span&gt; kev-poc
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;docker compose up --build -d
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;The container runs the maker&amp;rsquo;s own &lt;code&gt;kev.serve&lt;/code&gt; server, not vLLM. That&amp;rsquo;s a
+deliberate choice: Kev is a pointer head on a frozen Qwen base, and the
+SystemOne &lt;code&gt;/v1/systemone&lt;/code&gt; contract isn&amp;rsquo;t servable by vLLM or the SystemOne
+llama.cpp fork. &lt;code&gt;kev.serve&lt;/code&gt; is the intended runtime.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/kev-architecture.svg&#34; alt=&#34;kev-poc deployment architecture&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;try-it&#34;&gt;
+  Try it
+  &lt;a class=&#34;heading-link&#34; href=&#34;#try-it&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The repo is self-contained and the README has curl and TypeSafe SDK examples:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl -s localhost:8008/v1/systemone -H &amp;#39;content-type: application/json&amp;#39; -d &amp;#39;{
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &amp;#34;state&amp;#34;: &amp;#34;Shoes arrived two weeks late and in the wrong size. Also two charges.&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &amp;#34;model&amp;#34;: &amp;#34;kev-latest&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  &amp;#34;questions&amp;#34;: {
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;#34;department&amp;#34;:  {&amp;#34;type&amp;#34;: &amp;#34;choice&amp;#34;, &amp;#34;instructions&amp;#34;: &amp;#34;Which team?&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    &amp;#34;criteria&amp;#34;: {&amp;#34;returns&amp;#34;: &amp;#34;Exchanges, refunds&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                                 &amp;#34;shipping&amp;#34;: &amp;#34;Delivery status&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                                 &amp;#34;billing&amp;#34;: &amp;#34;Charges, invoices&amp;#34;}},
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;#34;escalate&amp;#34;:    {&amp;#34;type&amp;#34;: &amp;#34;noul&amp;#34;, &amp;#34;instructions&amp;#34;: &amp;#34;Urgent human attention?&amp;#34;},
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;    &amp;#34;frustration&amp;#34;: {&amp;#34;type&amp;#34;: &amp;#34;score&amp;#34;, &amp;#34;instructions&amp;#34;: &amp;#34;How frustrated?&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;                    &amp;#34;criteria&amp;#34;: [&amp;#34;Calm&amp;#34;, &amp;#34;Frustrated&amp;#34;, &amp;#34;Very angry&amp;#34;]}
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;  }}&amp;#39;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Public repo: &lt;a href=&#34;https://github.com/dashaun/kev-poc&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/dashaun/kev-poc&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I hope it&amp;rsquo;s easy enough for others to use and get started quickly. If not, it&amp;rsquo;s
+still valuable for me — this is my default approach.&lt;/p&gt;
+&lt;h2 id=&#34;note&#34;&gt;
+  Note
+  &lt;a class=&#34;heading-link&#34; href=&#34;#note&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Ollama added support for System One models, and I&amp;rsquo;ve also just installed
+&lt;strong&gt;Nimble 9B&lt;/strong&gt; — another drop-in for the same &lt;code&gt;/v1/systemone&lt;/code&gt; contract.&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>From Ollama to vLLM on an RTX 5090</title>
+            <link>https://dashaun.com/posts/ollama-to-vllm-on-rtx-5090/</link>
+            <pubDate>Tue, 22 Sep 2026 12:09:27 -0500</pubDate>
+            <author>dashaun@dashaun.com (DaShaun Carter)</author>
+            <guid>https://dashaun.com/posts/ollama-to-vllm-on-rtx-5090/</guid>
+            <description>&lt;h1 id=&#34;from-ollama-to-vllm-on-an-rtx-5090&#34;&gt;
+  From Ollama to vLLM on an RTX 5090
+  &lt;a class=&#34;heading-link&#34; href=&#34;#from-ollama-to-vllm-on-an-rtx-5090&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;I run a couple of DGX Sparks with DeepSeek via vLLM and Ray. The RTX 5090 box (kintsugi) was still on Ollama. That split stopped making sense once my agent workflows outgrew what Ollama does well.&lt;/p&gt;
+&lt;h2 id=&#34;why-i-left-ollama&#34;&gt;
+  Why I left Ollama
+  &lt;a class=&#34;heading-link&#34; href=&#34;#why-i-left-ollama&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Ollama is fine for one user and one chat. My multi-agent workflows fire dozens of concurrent requests, and Ollama serializes them behind a single model slot. Queues form, latency climbs, and agents stall waiting on each other.&lt;/p&gt;
+&lt;p&gt;vLLM does continuous batching. Requests arrive, get packed into the same forward pass, and everyone gets a turn. Same GPU, but the pipeline stays busy.&lt;/p&gt;
+
+
+&lt;svg viewBox=&#34;0 0 760 420&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34; role=&#34;img&#34; aria-label=&#34;Ollama queues requests, vLLM batches them&#34;&gt;
+  &lt;rect width=&#34;760&#34; height=&#34;420&#34; fill=&#34;#ffffff&#34;/&gt;
+  &lt;text x=&#34;24&#34; y=&#34;28&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;14&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;Multi-agent load&lt;/text&gt;
+
+  &lt;!-- Ollama panel --&gt;
+  &lt;rect x=&#34;24&#34; y=&#34;44&#34; width=&#34;336&#34; height=&#34;340&#34; rx=&#34;12&#34; fill=&#34;#fafbfc&#34; stroke=&#34;#24292f&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;192&#34; y=&#34;70&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;14&#34; font-weight=&#34;600&#34; fill=&#34;#d1242f&#34;&gt;Ollama&lt;/text&gt;
+
+  &lt;g font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; text-anchor=&#34;middle&#34; fill=&#34;#24292f&#34;&gt;
+    &lt;rect x=&#34;44&#34; y=&#34;96&#34; width=&#34;110&#34; height=&#34;30&#34; rx=&#34;6&#34; fill=&#34;#ffffff&#34; stroke=&#34;#d1242f&#34; opacity=&#34;0&#34;&gt;&lt;animate attributeName=&#34;opacity&#34; from=&#34;0&#34; to=&#34;1&#34; begin=&#34;0.4s&#34; dur=&#34;0.3s&#34; fill=&#34;freeze&#34;/&gt;&lt;/rect&gt;&lt;text x=&#34;99&#34; y=&#34;116&#34; opacity=&#34;0&#34;&gt;&lt;animate attributeName=&#34;opacity&#34; from=&#34;0&#34; to=&#34;1&#34; begin=&#34;0.4s&#34; dur=&#34;0.3s&#34; fill=&#34;freeze&#34;/&gt;req 1&lt;/text&gt;
+    &lt;rect x=&#34;44&#34; y=&#34;136&#34; width=&#34;110&#34; height=&#34;30&#34; rx=&#34;6&#34; fill=&#34;#ffffff&#34; stroke=&#34;#d1242f&#34; opacity=&#34;0&#34;&gt;&lt;animate attributeName=&#34;opacity&#34; from=&#34;0&#34; to=&#34;1&#34; begin=&#34;1.0s&#34; dur=&#34;0.3s&#34; fill=&#34;freeze&#34;/&gt;&lt;/rect&gt;&lt;text x=&#34;99&#34; y=&#34;156&#34; opacity=&#34;0&#34;&gt;&lt;animate attributeName=&#34;opacity&#34; from=&#34;0&#34; to=&#34;1&#34; begin=&#34;1.0s&#34; dur=&#34;0.3s&#34; fill=&#34;freeze&#34;/&gt;req 2&lt;/text&gt;
+    &lt;rect x=&#34;44&#34; y=&#34;176&#34; width=&#34;110&#34; height=&#34;30&#34; rx=&#34;6&#34; fill=&#34;#ffffff&#34; stroke=&#34;#d1242f&#34; opacity=&#34;0&#34;&gt;&lt;animate attributeName=&#34;opacity&#34; from=&#34;0&#34; to=&#34;1&#34; begin=&#34;1.6s&#34; dur=&#34;0.3s&#34; fill=&#34;freeze&#34;/&gt;&lt;/rect&gt;&lt;text x=&#34;99&#34; y=&#34;196&#34; opacity=&#34;0&#34;&gt;&lt;animate attributeName=&#34;opacity&#34; from=&#34;0&#34; to=&#34;1&#34; begin=&#34;1.6s&#34; dur=&#34;0.3s&#34; fill=&#34;freeze&#34;/&gt;req 3&lt;/text&gt;
+    &lt;rect x=&#34;44&#34; y=&#34;216&#34; width=&#34;110&#34; height=&#34;30&#34; rx=&#34;6&#34; fill=&#34;#ffffff&#34; stroke=&#34;#d1242f&#34; opacity=&#34;0&#34;&gt;&lt;animate attributeName=&#34;opacity&#34; from=&#34;0&#34; to=&#34;1&#34; begin=&#34;2.2s&#34; dur=&#34;0.3s&#34; fill=&#34;freeze&#34;/&gt;&lt;/rect&gt;&lt;text x=&#34;99&#34; y=&#34;236&#34; opacity=&#34;0&#34;&gt;&lt;animate attributeName=&#34;opacity&#34; from=&#34;0&#34; to=&#34;1&#34; begin=&#34;2.2s&#34; dur=&#34;0.3s&#34; fill=&#34;freeze&#34;/&gt;req 4&lt;/text&gt;
+  &lt;/g&gt;
+  &lt;text x=&#34;99&#34; y=&#34;268&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#57606a&#34;&gt;queue grows&lt;/text&gt;
+
+  &lt;path d=&#34;M 154 200 H 208&#34; stroke=&#34;#d1242f&#34; stroke-width=&#34;2&#34; stroke-dasharray=&#34;6 4&#34; fill=&#34;none&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;0&#34; to=&#34;-20&#34; dur=&#34;0.8s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/path&gt;
+
+  &lt;rect x=&#34;208&#34; y=&#34;140&#34; width=&#34;136&#34; height=&#34;120&#34; rx=&#34;10&#34; fill=&#34;#ffffff&#34; stroke=&#34;#d1242f&#34; stroke-width=&#34;2&#34;/&gt;
+  &lt;text x=&#34;276&#34; y=&#34;186&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;model slot&lt;/text&gt;
+  &lt;text x=&#34;276&#34; y=&#34;206&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#57606a&#34;&gt;one at a time&lt;/text&gt;
+  &lt;text x=&#34;276&#34; y=&#34;240&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; fill=&#34;#d1242f&#34;&gt;1 / N served&lt;/text&gt;
+
+  &lt;!-- vLLM panel --&gt;
+  &lt;rect x=&#34;400&#34; y=&#34;44&#34; width=&#34;336&#34; height=&#34;340&#34; rx=&#34;12&#34; fill=&#34;#fafbfc&#34; stroke=&#34;#24292f&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;568&#34; y=&#34;70&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;14&#34; font-weight=&#34;600&#34; fill=&#34;#1a7f37&#34;&gt;vLLM&lt;/text&gt;
+
+  &lt;g font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; text-anchor=&#34;middle&#34; fill=&#34;#24292f&#34;&gt;
+    &lt;rect x=&#34;420&#34; y=&#34;96&#34; width=&#34;110&#34; height=&#34;30&#34; rx=&#34;6&#34; fill=&#34;#ffffff&#34; stroke=&#34;#1a7f37&#34;/&gt;&lt;text x=&#34;475&#34; y=&#34;116&#34;&gt;req 1&lt;/text&gt;
+    &lt;rect x=&#34;420&#34; y=&#34;136&#34; width=&#34;110&#34; height=&#34;30&#34; rx=&#34;6&#34; fill=&#34;#ffffff&#34; stroke=&#34;#1a7f37&#34;/&gt;&lt;text x=&#34;475&#34; y=&#34;156&#34;&gt;req 2&lt;/text&gt;
+    &lt;rect x=&#34;420&#34; y=&#34;176&#34; width=&#34;110&#34; height=&#34;30&#34; rx=&#34;6&#34; fill=&#34;#ffffff&#34; stroke=&#34;#1a7f37&#34;/&gt;&lt;text x=&#34;475&#34; y=&#34;196&#34;&gt;req 3&lt;/text&gt;
+  &lt;/g&gt;
+  &lt;text x=&#34;475&#34; y=&#34;240&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#57606a&#34;&gt;in parallel&lt;/text&gt;
+
+  &lt;path d=&#34;M 530 111 C 552 111 552 140 560 140&#34; stroke=&#34;#1a7f37&#34; stroke-width=&#34;2&#34; stroke-dasharray=&#34;6 4&#34; fill=&#34;none&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;0&#34; to=&#34;-20&#34; dur=&#34;0.6s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/path&gt;
+  &lt;path d=&#34;M 530 151 C 552 151 552 160 560 160&#34; stroke=&#34;#1a7f37&#34; stroke-width=&#34;2&#34; stroke-dasharray=&#34;6 4&#34; fill=&#34;none&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;0&#34; to=&#34;-20&#34; dur=&#34;0.6s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/path&gt;
+  &lt;path d=&#34;M 530 191 C 552 191 552 180 560 180&#34; stroke=&#34;#1a7f37&#34; stroke-width=&#34;2&#34; stroke-dasharray=&#34;6 4&#34; fill=&#34;none&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;0&#34; to=&#34;-20&#34; dur=&#34;0.6s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/path&gt;
+
+  &lt;rect x=&#34;560&#34; y=&#34;130&#34; width=&#34;160&#34; height=&#34;120&#34; rx=&#34;10&#34; fill=&#34;#ffffff&#34; stroke=&#34;#1a7f37&#34; stroke-width=&#34;2&#34;/&gt;
+  &lt;text x=&#34;640&#34; y=&#34;176&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;engine&lt;/text&gt;
+  &lt;text x=&#34;640&#34; y=&#34;196&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#57606a&#34;&gt;batch&lt;/text&gt;
+  &lt;rect x=&#34;578&#34; y=&#34;212&#34; width=&#34;124&#34; height=&#34;8&#34; rx=&#34;4&#34; fill=&#34;#d0d7de&#34;/&gt;
+  &lt;rect x=&#34;578&#34; y=&#34;212&#34; width=&#34;20&#34; height=&#34;8&#34; rx=&#34;4&#34; fill=&#34;#1a7f37&#34;&gt;&lt;animate attributeName=&#34;width&#34; values=&#34;20;124;20&#34; dur=&#34;2.5s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/rect&gt;
+  &lt;text x=&#34;640&#34; y=&#34;240&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; fill=&#34;#1a7f37&#34;&gt;3 / 3 concurrent&lt;/text&gt;
+&lt;/svg&gt;
+
+&lt;h2 id=&#34;the-box-before&#34;&gt;
+  The box before
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-box-before&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;kintsugi ran Ollama with eleven models: a few Qwen sizes, Llama 3.x, Phi-4, Granite, an embedding model, and two FLUX diffusion models. The FLUX models moved to a 4090 / M4 because vLLM does not serve diffusion image models. It serves LLMs.&lt;/p&gt;
+&lt;h2 id=&#34;picking-a-model&#34;&gt;
+  Picking a model
+  &lt;a class=&#34;heading-link&#34; href=&#34;#picking-a-model&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;For a 32 GB card the sweet spot is a MoE with sparse active params: fast because only a slice of the network runs per token, small enough to quantize into the card. That pointed at Qwen3-Coder-30B-A3B (30B total, 3.3B active).&lt;/p&gt;
+&lt;p&gt;Then the quantization decision.&lt;/p&gt;
+
+
+&lt;svg viewBox=&#34;0 0 760 300&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34; role=&#34;img&#34; aria-label=&#34;Model quantization decision&#34;&gt;
+  &lt;rect width=&#34;760&#34; height=&#34;300&#34; fill=&#34;#ffffff&#34;/&gt;
+  &lt;text x=&#34;24&#34; y=&#34;28&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;14&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;Qwen3-Coder-30B-A3B on 32 GB&lt;/text&gt;
+  &lt;text x=&#34;24&#34; y=&#34;48&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; fill=&#34;#57606a&#34;&gt;30B total · 3.3B active · MoE&lt;/text&gt;
+
+  &lt;!-- row 1: official AWQ --&gt;
+  &lt;rect x=&#34;24&#34; y=&#34;66&#34; width=&#34;580&#34; height=&#34;56&#34; rx=&#34;10&#34; fill=&#34;#fafbfc&#34; stroke=&#34;#d0d7de&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;48&#34; y=&#34;90&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;Official AWQ&lt;/text&gt;
+  &lt;text x=&#34;48&#34; y=&#34;110&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; fill=&#34;#57606a&#34;&gt;gated · needs HF token and license&lt;/text&gt;
+  &lt;text x=&#34;668&#34; y=&#34;102&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;20&#34; font-weight=&#34;600&#34; fill=&#34;#d1242f&#34;&gt;✗&lt;/text&gt;
+
+  &lt;!-- row 2: official FP8 --&gt;
+  &lt;rect x=&#34;24&#34; y=&#34;134&#34; width=&#34;580&#34; height=&#34;56&#34; rx=&#34;10&#34; fill=&#34;#fafbfc&#34; stroke=&#34;#d0d7de&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;48&#34; y=&#34;158&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;Official FP8&lt;/text&gt;
+  &lt;text x=&#34;48&#34; y=&#34;178&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; fill=&#34;#57606a&#34;&gt;~30.5 GB weights · no KV cache headroom in 32 GB&lt;/text&gt;
+  &lt;text x=&#34;668&#34; y=&#34;170&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;20&#34; font-weight=&#34;600&#34; fill=&#34;#d1242f&#34;&gt;✗&lt;/text&gt;
+
+  &lt;!-- row 3: chosen --&gt;
+  &lt;rect x=&#34;24&#34; y=&#34;202&#34; width=&#34;580&#34; height=&#34;56&#34; rx=&#34;10&#34; fill=&#34;#f6fff8&#34; stroke=&#34;#1a7f37&#34; stroke-width=&#34;2&#34;/&gt;
+  &lt;text x=&#34;48&#34; y=&#34;226&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;cyankiwi INT4&lt;/text&gt;
+  &lt;text x=&#34;48&#34; y=&#34;246&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; fill=&#34;#57606a&#34;&gt;open · ~16 GB · auto-detected (compressed-tensors)&lt;/text&gt;
+  &lt;rect x=&#34;620&#34; y=&#34;214&#34; width=&#34;96&#34; height=&#34;28&#34; rx=&#34;14&#34; fill=&#34;#1a7f37&#34;/&gt;
+  &lt;text x=&#34;668&#34; y=&#34;233&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; font-weight=&#34;600&#34; fill=&#34;#ffffff&#34;&gt;chosen&lt;/text&gt;
+  &lt;path d=&#34;M 648 270 l 12 12 l 22 -22&#34; fill=&#34;none&#34; stroke=&#34;#1a7f37&#34; stroke-width=&#34;3&#34; stroke-linecap=&#34;round&#34; stroke-linejoin=&#34;round&#34; pathLength=&#34;1&#34; stroke-dasharray=&#34;1 1&#34; stroke-dashoffset=&#34;1&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;1&#34; to=&#34;0&#34; dur=&#34;0.5s&#34; begin=&#34;1s&#34; fill=&#34;freeze&#34;/&gt;&lt;/path&gt;
+&lt;/svg&gt;
+
+&lt;p&gt;I serve one model, no swap logic. vLLM keeps weights in VRAM for the life of the process, so unlike Ollama there is no load and unload. With one model that is exactly what I want.&lt;/p&gt;
+&lt;h2 id=&#34;how-it-runs&#34;&gt;
+  How it runs
+  &lt;a class=&#34;heading-link&#34; href=&#34;#how-it-runs&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;The repo is self-contained: a compose file, a setup script, and a systemd unit. &lt;code&gt;sudo ./scripts/setup.sh&lt;/code&gt; installs Docker and the NVIDIA Container Toolkit if missing, wires the nvidia runtime, installs the unit, and starts the stack. The unit plus &lt;code&gt;restart: unless-stopped&lt;/code&gt; mean the box comes back serving after a reboot.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;git clone https://github.com/dashaun/rtx5090-vllm
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;&lt;span style=&#34;color:#007020&#34;&gt;cd&lt;/span&gt; rtx5090-vllm
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;sudo ./scripts/setup.sh
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt;curl localhost:8000/v1/models
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;svg viewBox=&#34;0 0 760 400&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34; role=&#34;img&#34; aria-label=&#34;kintsugi architecture&#34;&gt;
+  &lt;rect width=&#34;760&#34; height=&#34;400&#34; fill=&#34;#ffffff&#34;/&gt;
+  &lt;text x=&#34;24&#34; y=&#34;28&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;14&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;Agents&lt;/text&gt;
+
+  &lt;g font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34;&gt;
+    &lt;rect x=&#34;24&#34; y=&#34;44&#34; width=&#34;130&#34; height=&#34;56&#34; rx=&#34;8&#34; fill=&#34;#f6f8fa&#34; stroke=&#34;#24292f&#34; stroke-width=&#34;1.5&#34;/&gt;
+    &lt;text x=&#34;89&#34; y=&#34;68&#34; text-anchor=&#34;middle&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;Agent&lt;/text&gt;
+    &lt;text x=&#34;89&#34; y=&#34;86&#34; text-anchor=&#34;middle&#34; fill=&#34;#57606a&#34;&gt;Cline&lt;/text&gt;
+    &lt;rect x=&#34;24&#34; y=&#34;116&#34; width=&#34;130&#34; height=&#34;56&#34; rx=&#34;8&#34; fill=&#34;#f6f8fa&#34; stroke=&#34;#24292f&#34; stroke-width=&#34;1.5&#34;/&gt;
+    &lt;text x=&#34;89&#34; y=&#34;140&#34; text-anchor=&#34;middle&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;Agent&lt;/text&gt;
+    &lt;text x=&#34;89&#34; y=&#34;158&#34; text-anchor=&#34;middle&#34; fill=&#34;#57606a&#34;&gt;LangChain&lt;/text&gt;
+    &lt;rect x=&#34;24&#34; y=&#34;188&#34; width=&#34;130&#34; height=&#34;56&#34; rx=&#34;8&#34; fill=&#34;#f6f8fa&#34; stroke=&#34;#24292f&#34; stroke-width=&#34;1.5&#34;/&gt;
+    &lt;text x=&#34;89&#34; y=&#34;212&#34; text-anchor=&#34;middle&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;Agent&lt;/text&gt;
+    &lt;text x=&#34;89&#34; y=&#34;230&#34; text-anchor=&#34;middle&#34; fill=&#34;#57606a&#34;&gt;Qwen Code&lt;/text&gt;
+  &lt;/g&gt;
+
+  &lt;g stroke=&#34;#0969da&#34; stroke-width=&#34;2&#34; stroke-dasharray=&#34;6 4&#34; fill=&#34;none&#34;&gt;
+    &lt;path d=&#34;M 154 72 H 300&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;0&#34; to=&#34;-20&#34; dur=&#34;0.8s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/path&gt;
+    &lt;path d=&#34;M 154 144 H 300&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;0&#34; to=&#34;-20&#34; dur=&#34;0.8s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/path&gt;
+    &lt;path d=&#34;M 154 216 H 300&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;0&#34; to=&#34;-20&#34; dur=&#34;0.8s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/path&gt;
+  &lt;/g&gt;
+
+  &lt;rect x=&#34;300&#34; y=&#34;40&#34; width=&#34;250&#34; height=&#34;320&#34; rx=&#34;12&#34; fill=&#34;#fafbfc&#34; stroke=&#34;#24292f&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;425&#34; y=&#34;66&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;vLLM · Docker&lt;/text&gt;
+
+  &lt;rect x=&#34;322&#34; y=&#34;84&#34; width=&#34;206&#34; height=&#34;56&#34; rx=&#34;8&#34; fill=&#34;#ffffff&#34; stroke=&#34;#0969da&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;425&#34; y=&#34;106&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; font-weight=&#34;600&#34; fill=&#34;#0969da&#34;&gt;API server&lt;/text&gt;
+  &lt;text x=&#34;425&#34; y=&#34;124&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#57606a&#34;&gt;POST /v1/chat/completions&lt;/text&gt;
+
+  &lt;rect x=&#34;322&#34; y=&#34;164&#34; width=&#34;206&#34; height=&#34;64&#34; rx=&#34;8&#34; fill=&#34;#ffffff&#34; stroke=&#34;#24292f&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;425&#34; y=&#34;186&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;Engine&lt;/text&gt;
+  &lt;text x=&#34;425&#34; y=&#34;204&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#57606a&#34;&gt;continuous batching&lt;/text&gt;
+  &lt;rect x=&#34;340&#34; y=&#34;214&#34; width=&#34;170&#34; height=&#34;6&#34; rx=&#34;3&#34; fill=&#34;#d0d7de&#34;/&gt;
+  &lt;rect x=&#34;340&#34; y=&#34;214&#34; width=&#34;20&#34; height=&#34;6&#34; rx=&#34;3&#34; fill=&#34;#0969da&#34;&gt;&lt;animate attributeName=&#34;width&#34; values=&#34;20;170;20&#34; dur=&#34;3s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/rect&gt;
+
+  &lt;rect x=&#34;322&#34; y=&#34;252&#34; width=&#34;206&#34; height=&#34;64&#34; rx=&#34;8&#34; fill=&#34;#ffffff&#34; stroke=&#34;#24292f&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;text x=&#34;425&#34; y=&#34;274&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;qwen3-coder&lt;/text&gt;
+  &lt;text x=&#34;425&#34; y=&#34;292&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#57606a&#34;&gt;30B-A3B · INT4 · 16 GB&lt;/text&gt;
+
+  &lt;g stroke=&#34;#24292f&#34; stroke-width=&#34;2&#34; fill=&#34;none&#34;&gt;
+    &lt;path d=&#34;M 425 140 V 164&#34;/&gt;
+    &lt;path d=&#34;M 425 228 V 252&#34;/&gt;
+    &lt;path d=&#34;M 528 284 H 590&#34;/&gt;
+  &lt;/g&gt;
+
+  &lt;rect x=&#34;590&#34; y=&#34;120&#34; width=&#34;150&#34; height=&#34;130&#34; rx=&#34;12&#34; fill=&#34;#f6f8fa&#34; stroke=&#34;#24292f&#34; stroke-width=&#34;1.5&#34;/&gt;
+  &lt;rect x=&#34;590&#34; y=&#34;120&#34; width=&#34;150&#34; height=&#34;130&#34; rx=&#34;12&#34; fill=&#34;none&#34; stroke=&#34;#0969da&#34; stroke-width=&#34;2&#34;&gt;&lt;animate attributeName=&#34;opacity&#34; values=&#34;0.3;1;0.3&#34; dur=&#34;2s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/rect&gt;
+  &lt;text x=&#34;665&#34; y=&#34;146&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;12&#34; font-weight=&#34;600&#34; fill=&#34;#24292f&#34;&gt;RTX 5090&lt;/text&gt;
+  &lt;g fill=&#34;#0969da&#34;&gt;
+    &lt;rect x=&#34;612&#34; y=&#34;162&#34; width=&#34;20&#34; height=&#34;20&#34; rx=&#34;4&#34;/&gt;
+    &lt;rect x=&#34;640&#34; y=&#34;162&#34; width=&#34;20&#34; height=&#34;20&#34; rx=&#34;4&#34;/&gt;
+    &lt;rect x=&#34;668&#34; y=&#34;162&#34; width=&#34;20&#34; height=&#34;20&#34; rx=&#34;4&#34;/&gt;
+    &lt;rect x=&#34;612&#34; y=&#34;190&#34; width=&#34;20&#34; height=&#34;20&#34; rx=&#34;4&#34;/&gt;
+    &lt;rect x=&#34;640&#34; y=&#34;190&#34; width=&#34;20&#34; height=&#34;20&#34; rx=&#34;4&#34;/&gt;
+    &lt;rect x=&#34;668&#34; y=&#34;190&#34; width=&#34;20&#34; height=&#34;20&#34; rx=&#34;4&#34;/&gt;
+  &lt;/g&gt;
+  &lt;text x=&#34;665&#34; y=&#34;238&#34; text-anchor=&#34;middle&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#57606a&#34;&gt;32 GB&lt;/text&gt;
+
+  &lt;path d=&#34;M 590 300 C 500 340, 320 340, 154 240&#34; fill=&#34;none&#34; stroke=&#34;#1a7f37&#34; stroke-width=&#34;2&#34; stroke-dasharray=&#34;6 4&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;0&#34; to=&#34;-20&#34; dur=&#34;1.2s&#34; repeatCount=&#34;indefinite&#34;/&gt;&lt;/path&gt;
+  &lt;text x=&#34;330&#34; y=&#34;362&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#1a7f37&#34;&gt;tokens back to agents&lt;/text&gt;
+
+  &lt;text x=&#34;24&#34; y=&#34;382&#34; font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34; font-size=&#34;11&#34; fill=&#34;#57606a&#34;&gt;kintsugi · Ubuntu · systemd restarts it on boot&lt;/text&gt;
+&lt;/svg&gt;
+
+&lt;h2 id=&#34;what-bit-us&#34;&gt;
+  What bit us
+  &lt;a class=&#34;heading-link&#34; href=&#34;#what-bit-us&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Everything looked simple until it ran. Four problems, each with a clear cause once we found it.&lt;/p&gt;
+
+
+&lt;svg viewBox=&#34;0 0 760 500&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34; role=&#34;img&#34; aria-label=&#34;Deployment problems and fixes&#34;&gt;
+  &lt;rect width=&#34;760&#34; height=&#34;500&#34; fill=&#34;#ffffff&#34;/&gt;
+  &lt;line x1=&#34;60&#34; y1=&#34;80&#34; x2=&#34;60&#34; y2=&#34;440&#34; stroke=&#34;#d0d7de&#34; stroke-width=&#34;3&#34; pathLength=&#34;1&#34; stroke-dasharray=&#34;1 1&#34; stroke-dashoffset=&#34;1&#34;&gt;&lt;animate attributeName=&#34;stroke-dashoffset&#34; from=&#34;1&#34; to=&#34;0&#34; dur=&#34;1.6s&#34; fill=&#34;freeze&#34;/&gt;&lt;/line&gt;
+
+  &lt;g font-family=&#34;ui-monospace,SFMono-Regular,Menlo,monospace&#34;&gt;
+    &lt;!-- item 1 --&gt;
+    &lt;circle cx=&#34;60&#34; cy=&#34;96&#34; r=&#34;16&#34; fill=&#34;#24292f&#34;/&gt;&lt;text x=&#34;60&#34; y=&#34;101&#34; text-anchor=&#34;middle&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#ffffff&#34;&gt;1&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;88&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#d1242f&#34;&gt;nvidia-smi fails&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;108&#34; font-size=&#34;12&#34; fill=&#34;#57606a&#34;&gt;cause: driver updated, kernel module stale, box up 10 days&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;126&#34; font-size=&#34;12&#34; fill=&#34;#1a7f37&#34;&gt;fix: reboot&lt;/text&gt;
+
+    &lt;!-- item 2 --&gt;
+    &lt;circle cx=&#34;60&#34; cy=&#34;196&#34; r=&#34;16&#34; fill=&#34;#24292f&#34;/&gt;&lt;text x=&#34;60&#34; y=&#34;201&#34; text-anchor=&#34;middle&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#ffffff&#34;&gt;2&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;188&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#d1242f&#34;&gt;unknown or invalid runtime name: nvidia&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;208&#34; font-size=&#34;12&#34; fill=&#34;#57606a&#34;&gt;cause: rootless vs system Docker; daemon.json not reloaded&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;226&#34; font-size=&#34;12&#34; fill=&#34;#1a7f37&#34;&gt;fix: target system daemon, systemctl restart docker&lt;/text&gt;
+
+    &lt;!-- item 3 --&gt;
+    &lt;circle cx=&#34;60&#34; cy=&#34;296&#34; r=&#34;16&#34; fill=&#34;#24292f&#34;/&gt;&lt;text x=&#34;60&#34; y=&#34;301&#34; text-anchor=&#34;middle&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#ffffff&#34;&gt;3&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;288&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#d1242f&#34;&gt;compressed-tensors does not match awq&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;308&#34; font-size=&#34;12&#34; fill=&#34;#57606a&#34;&gt;cause: model is INT4 compressed-tensors despite the AWQ name&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;326&#34; font-size=&#34;12&#34; fill=&#34;#1a7f37&#34;&gt;fix: drop --quantization awq, let vLLM read the config&lt;/text&gt;
+
+    &lt;!-- item 4 --&gt;
+    &lt;circle cx=&#34;60&#34; cy=&#34;396&#34; r=&#34;16&#34; fill=&#34;#24292f&#34;/&gt;&lt;text x=&#34;60&#34; y=&#34;401&#34; text-anchor=&#34;middle&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#ffffff&#34;&gt;4&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;388&#34; font-size=&#34;13&#34; font-weight=&#34;600&#34; fill=&#34;#d1242f&#34;&gt;17 GB of weights in a literal ~ dir&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;408&#34; font-size=&#34;12&#34; fill=&#34;#57606a&#34;&gt;cause: Compose does not expand ~ in volume paths&lt;/text&gt;
+    &lt;text x=&#34;96&#34; y=&#34;426&#34; font-size=&#34;12&#34; fill=&#34;#1a7f37&#34;&gt;fix: mount ./.cache/huggingface relative to the project&lt;/text&gt;
+  &lt;/g&gt;
+&lt;/svg&gt;
+
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;nvidia-smi&lt;/code&gt; failed with a driver/library mismatch. The driver had been updated, the kernel module was stale, and the box had been up for ten days. Fix: reboot.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;docker compose up&lt;/code&gt; died with &amp;ldquo;unknown or invalid runtime name: nvidia&amp;rdquo;. The box runs rootless Docker as the user context, but the systemd unit talks to the system daemon. The daemon had a daemon.json declaring the nvidia runtime that it was not loading. Fix: restart Docker and target the system daemon. Rootless Docker is not supported by this setup, and that is now documented.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;vLLM crashed on startup: the model config says compressed-tensors, and I had forced &lt;code&gt;--quantization awq&lt;/code&gt;. The &amp;ldquo;AWQ&amp;rdquo; in the repo name lied. Fix: delete the flag and let vLLM read the config.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;A few days in I found 17 GB of model weights inside a directory literally named &lt;code&gt;~&lt;/code&gt;. Compose does not expand &lt;code&gt;~&lt;/code&gt; in volume paths, so the cache mount created a literal directory. Fix: mount &lt;code&gt;./.cache/huggingface&lt;/code&gt;, which Compose resolves relative to the project. The cache is gitignored, so the repo stays clean.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;decisions-that-stuck&#34;&gt;
+  Decisions that stuck
+  &lt;a class=&#34;heading-link&#34; href=&#34;#decisions-that-stuck&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;System Docker, not rootless, for the service. The systemd unit runs compose as root, and rootless Docker ignores /etc/docker/daemon.json.&lt;/li&gt;
+&lt;li&gt;compressed-tensors INT4 over a gated AWQ build and an FP8 build that does not fit.&lt;/li&gt;
+&lt;li&gt;One model, no swap. A second model means a second compose service, not Ollama-style load and unload.&lt;/li&gt;
+&lt;li&gt;Model cache in the repo under &lt;code&gt;.cache&lt;/code&gt;, so &lt;code&gt;git pull&lt;/code&gt; plus a restart updates the stack without re-downloading weights.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;where-it-landed&#34;&gt;
+  Where it landed
+  &lt;a class=&#34;heading-link&#34; href=&#34;#where-it-landed&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Public repo: &lt;a href=&#34;https://github.com/dashaun/rtx5090-vllm&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;https://github.com/dashaun/rtx5090-vllm&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;An OpenAI-compatible endpoint at &lt;code&gt;http://kintsugi:8000/v1&lt;/code&gt; serving &lt;code&gt;qwen3-coder&lt;/code&gt;. Point Spring AI or your favorite agent harness at it. Ollama is uninstalled and its ~94 GB of models are gone from the box.&lt;/p&gt;
+&lt;p&gt;If you have outgrown Ollama, clone it and take it for a spin. The setup script is the whole story: one command, reboot safe.&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Homelab BOM February 2021</title>
+            <link>https://dashaun.com/posts/homelab-bom-feb-2021/</link>
+            <pubDate>Sat, 27 Feb 2021 14:11:50 -0600</pubDate>
+            <author>dashaun@dashaun.com (DaShaun Carter)</author>
+            <guid>https://dashaun.com/posts/homelab-bom-feb-2021/</guid>
+            <description>&lt;h2 id=&#34;homelab-redux&#34;&gt;
+  Homelab Redux
+  &lt;a class=&#34;heading-link&#34; href=&#34;#homelab-redux&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; style=&#34;background-color:#f0f0f0;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;&#34;&gt;&lt;code class=&#34;language-gdscript3&#34; data-lang=&#34;gdscript3&#34;&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; My homelab is always under construction&lt;span style=&#34;color:#666&#34;&gt;.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; Like the dude that is always working on his car, I&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;m always working on my homelab.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; I&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;m always wiping it clean and building it over.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; I&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;m always trying out different configurations.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style=&#34;display:flex;&#34;&gt;&lt;span&gt; I&lt;span style=&#34;color:#4070a0&#34;&gt;&amp;#39;m swapping out some type of hardware about every 3 months.&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;bom&#34;&gt;
+  BOM
+  &lt;a class=&#34;heading-link&#34; href=&#34;#bom&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;(4) CompuLab HDMI Display Emulator (fit-headless) &lt;a href=&#34;https://www.fit-pc.com/web/products/fit-headless/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;1&lt;/a&gt; &lt;a href=&#34;https://www.amazon.com/CompuLab-fit-Headless-Display-Emulator/dp/B00FLZXGJ6&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;(4) SanDisk UltraFit 32GB USB 3.1&lt;/li&gt;
+&lt;li&gt;(4) Anker USB 3.0 Gigabit Ethernet Adapter&lt;/li&gt;
+&lt;li&gt;(8) Samsung 32GB SODIMM DDR4 2666Mhz&lt;/li&gt;
+&lt;li&gt;(3) 128GB NVMe&lt;/li&gt;
+&lt;li&gt;(1) 500GB NVMe&lt;/li&gt;
+&lt;li&gt;(3) Intel NUC7i5BNH&lt;/li&gt;
+&lt;li&gt;(1) Intel NUC8i5BEH&lt;/li&gt;
+&lt;li&gt;(2) 2TB WD RED HDD&lt;/li&gt;
+&lt;li&gt;(1) QNAP TS-231P&lt;/li&gt;
+&lt;li&gt;(10) Raspberry Pi 3B+&lt;/li&gt;
+&lt;li&gt;(2) Raspberry Pi 4 2GB&lt;/li&gt;
+&lt;li&gt;(2) Raspberry Pi 4 4GB&lt;/li&gt;
+&lt;li&gt;(3) Raspberry Pi 4 8GB&lt;/li&gt;
+&lt;li&gt;(4) LoveRPI PoE Hat&lt;/li&gt;
+&lt;li&gt;(3) Padarsey M.2 NVME USB 3.1 Adapter&lt;/li&gt;
+&lt;li&gt;(3) Transcend 128GB NVME M.2 SSD TS128GMTE110S&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Homelab - The Big Rack</title>
+            <link>https://dashaun.com/posts/homelab-big-rack/</link>
+            <pubDate>Sat, 07 Mar 2020 18:47:02 -0600</pubDate>
+            <author>dashaun@dashaun.com (DaShaun Carter)</author>
+            <guid>https://dashaun.com/posts/homelab-big-rack/</guid>
+            <description>&lt;h1 id=&#34;homelab-updates&#34;&gt;
+  Homelab Updates
+  &lt;a class=&#34;heading-link&#34; href=&#34;#homelab-updates&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h1&gt;
+&lt;p&gt;This morning I had 3 separate DCs and 3 separate VCSA instances.
+Right now I have 4 &amp;ldquo;servers&amp;rdquo; ready for action with another 4 NUCs on deck.&lt;/p&gt;
+&lt;h2 id=&#34;wipe-em&#34;&gt;
+  Wipe em
+  &lt;a class=&#34;heading-link&#34; href=&#34;#wipe-em&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;With ESXi, my current approach has been to make a bootable USB from an ISO.
+So that&amp;rsquo;s what I&amp;rsquo;ve done with the first 4.
+I think this part is pretty trivial, but I have done it at least a 100 times.
+For the next 4, I&amp;rsquo;m going to try go back to PXE boot.
+Time will definitely be the deciding factor.&lt;/p&gt;
+&lt;h2 id=&#34;network&#34;&gt;
+  Network
+  &lt;a class=&#34;heading-link&#34; href=&#34;#network&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;lsquo;The internet is broken!&amp;rsquo;&lt;/p&gt;
+&lt;p&gt;Fifth place on the list of things I hate hearing from my wife&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;One of my favorite features of the homelab is that I have two network connections, setup for failover.
+I have fiber connection from one provider on one side of the house.
+On the opposite side, I have a 70mbit connection from another provider.
+Additionally, I can still load balance inbound traffic across the two providers.
+I&amp;rsquo;m using a &lt;a href=&#34;https://www.netgate.com/solutions/pfsense/sg-1100.html&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Netgate SG-1100&lt;/a&gt; for that.&lt;/p&gt;
+&lt;p&gt;Behind the Netgate, I have a Cisco Catalyst 2960-X.
+This one serves network to the rooms of the house and the homelab.
+The PiHole running on a Raspberry Pi 3B+ is also part of this tier.&lt;/p&gt;
+&lt;p&gt;Next in this line is a &lt;a href=&#34;https://www.netgear.com/support/product/FS728TLP.aspx&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Netgear FS728TLP &lt;/a&gt; which handles the big rack and the shared storage.&lt;/p&gt;
+&lt;h2 id=&#34;the-big-rack&#34;&gt;
+  The &amp;lsquo;big&amp;rsquo; rack
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-big-rack&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;https://dashaun.com/images/blog/the_big_rack_2.png&#34; alt=&#34;The Big Rack&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Behind the Netgear are four Dell R710s and a &lt;a href=&#34;https://www.qnap.com/en-us/product/ts-231p&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;QNAP TS-321P&lt;/a&gt;.
+The R710s are a unique blend of hand-me-downs from an really good &lt;a href=&#34;https://twitter.com/aegershman_&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;friend&lt;/a&gt; with a kind soul (and no more room for a rack).
+The rack runs 1000W at idle.
+Three of the R710s can run ESXI 6.7u3, the other is too old, but can still run ESXI 6.5.
+They do their fair share of keeping the basement warm in the winter.&lt;/p&gt;
+&lt;p&gt;At this point, they each have ESXI installed on the USB key.
+I&amp;rsquo;ve also gone in an cleared out most of the orphaned disk partitions.
+There is still one partition that I can&amp;rsquo;t figure out how to delete.
+I have not yet reverted to booting from a USB running Linux.
+I&amp;rsquo;m being stubborn and trying to use the tools provided by ESXI.&lt;/p&gt;
+&lt;p&gt;The QNAP is very affordable.
+It&amp;rsquo;s got 2 bays with WD Red 2TB drives.
+It has dual 1GB NICs also.
+I&amp;rsquo;ve done a factory reset, upgraded the firmware, and set it up to capture syslog.
+I gave the syslog share 5GB of disk.&lt;/p&gt;
+&lt;p&gt;At this point, its just the Netgate shipping syslogs.&lt;/p&gt;
+&lt;h2 id=&#34;the-plan&#34;&gt;
+  The plan
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-plan&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;One of the R710s will be the management node.
+It will run VCSA and a jumpbox to start.
+The other 3 will be a DC and each host will be configured &amp;rsquo;like&amp;rsquo; an AZ via resource pools.&lt;/p&gt;
+&lt;p&gt;I will use terraform and various CLI to create:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Data Center&lt;/li&gt;
+&lt;li&gt;Data Stores&lt;/li&gt;
+&lt;li&gt;Resource Pools&lt;/li&gt;
+&lt;li&gt;Clusters&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;the-goals&#34;&gt;
+  The goals
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-goals&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;PKS&lt;/li&gt;
+&lt;li&gt;Harbor&lt;/li&gt;
+&lt;li&gt;Concourse&lt;/li&gt;
+&lt;li&gt;Spinnaker&lt;/li&gt;
+&lt;li&gt;TASonK8s&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;the-catalyst-1&#34;&gt;
+  The catalyst #1
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-catalyst-1&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;https://dashaun.com/images/blog/the_big_rack_1.png&#34; alt=&#34;David&amp;rsquo;s Tweet&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;the-catalyst-2&#34;&gt;
+  The catalyst #2
+  &lt;a class=&#34;heading-link&#34; href=&#34;#the-catalyst-2&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I was there when &lt;a href=&#34;https://twitter.com/madhav_sathe&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Madhav Sathe&lt;/a&gt; coined the phrase:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;cf push cf&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;So I need to hurry up and get some of that.
+&lt;a href=&#34;https://twitter.com/emalminator&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Eric&lt;/a&gt; literally ruined the rest of the week and my weekend with that demo.
+But in a good way.&lt;/p&gt;
+&lt;h2 id=&#34;share-and-learn&#34;&gt;
+  Share and Learn
+  &lt;a class=&#34;heading-link&#34; href=&#34;#share-and-learn&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;I&amp;rsquo;ll be providing access to my friends.
+I will also be treating the homelab like its production so that I can learn.
+Repaving is great, but I have never been on the clock.
+Opening it up to others will be one part of the process.
+I will also try to make the metrics relevant and public.&lt;/p&gt;
+</description>
+        </item>
+        
+        <item>
+            <title>Homelab Bill of Materials August 2019</title>
+            <link>https://dashaun.com/posts/homelab-bom-aug-2019/</link>
+            <pubDate>Thu, 29 Aug 2019 22:09:06 -0500</pubDate>
+            <author>dashaun@dashaun.com (DaShaun Carter)</author>
+            <guid>https://dashaun.com/posts/homelab-bom-aug-2019/</guid>
+            <description>&lt;h2 id=&#34;i-need-to-give-my-homelab-more-power&#34;&gt;
+  I need to give my homelab more power
+  &lt;a class=&#34;heading-link&#34; href=&#34;#i-need-to-give-my-homelab-more-power&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;My homelab is always under construction.
+Like the dude that is always working on his car, I&amp;rsquo;m always working on my homelab.
+I&amp;rsquo;m always wiping it clean and building it over.
+I&amp;rsquo;m always trying out different configurations.
+I&amp;rsquo;m swapping out some type of hardware about every 3 months.
+This week I have been doing a ton of studying.
+I&amp;rsquo;m rebuilding the homelab because of the recent release of 6.7u3.
+This time I would like to use vsan, but I&amp;rsquo;m focused on PKS with NSX-T..
+I&amp;rsquo;m getting lots of help from the web, but I&amp;rsquo;m following Keith Lee&amp;rsquo;s &lt;a href=&#34;http://keithlee.ie/2018/10/30/pks-nsx-t-homelab-part-1-shopping-list/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;example&lt;/a&gt; from last year, and documenting along the way.
+I&amp;rsquo;ll also lean on William Lam at &lt;a href=&#34;https://www.virtuallyghetto.com/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;VirtuallyGhetto&lt;/a&gt;.
+I haven&amp;rsquo;t had NSX-T working completely in the homelab yet, I&amp;rsquo;ve failed multiple times.
+So, this time I do have some new hardware, which also means I can&amp;rsquo;t use a lot of the previous work.
+I&amp;rsquo;ve added an additional NUC and now each host has a second NIC.&lt;/p&gt;
+&lt;h3 id=&#34;bom&#34;&gt;
+  BOM
+  &lt;a class=&#34;heading-link&#34; href=&#34;#bom&#34;&gt;
+    &lt;i class=&#34;fa-solid fa-link&#34; aria-hidden=&#34;true&#34; title=&#34;Link to heading&#34;&gt;&lt;/i&gt;
+    &lt;span class=&#34;sr-only&#34;&gt;Link to heading&lt;/span&gt;
+  &lt;/a&gt;
+&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;(4) CompuLab HDMI Display Emulator (fit-headless) &lt;a href=&#34;https://www.fit-pc.com/web/products/fit-headless/&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;1&lt;/a&gt; &lt;a href=&#34;https://www.amazon.com/CompuLab-fit-Headless-Display-Emulator/dp/B00FLZXGJ6&#34;  class=&#34;external-link&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;2&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;(4) SanDisk UltraFit 32GB USB 3.1&lt;/li&gt;
+&lt;li&gt;(4) Anker USB 3.0 Gigabit Ethernet Adapter&lt;/li&gt;
+&lt;li&gt;(8) Samsung 32GB SODIMM DDR4 2666Mhz&lt;/li&gt;
+&lt;li&gt;(3) 128GB NVMe&lt;/li&gt;
+&lt;li&gt;(1) 500GB NVMe&lt;/li&gt;
+&lt;li&gt;(3) Intel NUC7i5BNH&lt;/li&gt;
+&lt;li&gt;(1) Intel NUC8i5BEH&lt;/li&gt;
+&lt;li&gt;(2) 2TB WD RED HDD&lt;/li&gt;
+&lt;li&gt;(1) QNAP TS-231P&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;On this day, all of the hardware is installed, and running.
+Tomorrow, I&amp;rsquo;ll try to start over, wipe everything and deploy ESX 6.7u3.&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>
